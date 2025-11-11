@@ -7,10 +7,11 @@ import {
   DollarSign,
   FileText,
   Settings,
-  LogOut,
   Menu
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { LogoutButton } from "@/components/logout-button"
+import { UserNav } from "@/components/user-nav"
 
 export default function DashboardLayout({
   children,
@@ -20,13 +21,13 @@ export default function DashboardLayout({
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-lg">
+      <aside className="w-64 bg-white shadow-lg flex flex-col">
         <div className="p-6 border-b">
           <h1 className="text-2xl font-bold text-blue-600">JUNTAY</h1>
           <p className="text-sm text-gray-600">Casa de Empeño</p>
         </div>
         
-        <nav className="p-4 space-y-2">
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
           <NavItem href="/dashboard" icon={<LayoutDashboard size={20} />}>
             Dashboard
           </NavItem>
@@ -62,11 +63,8 @@ export default function DashboardLayout({
           </div>
         </nav>
         
-        <div className="absolute bottom-0 w-64 p-4 border-t">
-          <Button variant="ghost" className="w-full justify-start text-red-600">
-            <LogOut size={20} className="mr-2" />
-            Cerrar Sesión
-          </Button>
+        <div className="p-4 border-t">
+          <LogoutButton />
         </div>
       </aside>
       
@@ -78,15 +76,7 @@ export default function DashboardLayout({
             <Menu size={24} />
           </Button>
           
-          <div className="flex items-center space-x-4">
-            <div className="text-right">
-              <p className="text-sm font-medium">Miguel Ángel</p>
-              <p className="text-xs text-gray-600">Administrador</p>
-            </div>
-            <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
-              MA
-            </div>
-          </div>
+          <UserNav />
         </header>
         
         {/* Page Content */}
