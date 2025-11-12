@@ -18,6 +18,9 @@ export default async function CajaDetallePage({ params }: { params: { id: string
   const sesion = await getSesionActual(params.id)
   const movimientos = sesion ? await getMovimientosSesion(sesion.id!) : []
 
+  // Determinar estado real (basado en sesión, no en tabla cajas)
+  const estaAbierta = sesion !== null && sesion.estado === 'abierta'
+  
   // Calcular saldo actual
   const saldoActual = sesion 
     ? (sesion.monto_inicial || 0) + (sesion.total_ingresos || 0) - (sesion.total_egresos || 0)
@@ -38,14 +41,12 @@ export default async function CajaDetallePage({ params }: { params: { id: string
               <h1 className="text-3xl font-bold">{caja.nombre}</h1>
               <Badge
                 variant={
-                  caja.estado === 'abierta'
+                  estaAbierta
                     ? 'default'
-                    : caja.estado === 'cerrada'
-                    ? 'secondary'
-                    : 'destructive'
+                    : 'secondary'
                 }
               >
-                {caja.estado === 'abierta' ? '🟢 Abierta' : '🔴 Cerrada'}
+                {estaAbierta ? '🟢 Abierta' : '🔴 Cerrada'}
               </Badge>
             </div>
             <p className="text-gray-600 mt-1">
@@ -55,7 +56,7 @@ export default async function CajaDetallePage({ params }: { params: { id: string
         </div>
 
         <div className="flex gap-2">
-          {caja.estado === 'cerrada' ? (
+          {!estaAbierta ? (
             <Link href={`/dashboard/caja/${params.id}/abrir`}>
               <Button>
                 <DollarSign className="h-4 w-4 mr-2" />
@@ -232,7 +233,7 @@ export default async function CajaDetallePage({ params }: { params: { id: string
           ) : (
             <div className="text-center py-12 text-gray-500">
               <p>No hay movimientos registrados</p>
-              {caja.estado === 'cerrada' && (
+              {!estaAbierta && (
                 <Link href={`/dashboard/caja/${params.id}/abrir`}>
                   <Button variant="outline" className="mt-4">
                     Abrir Caja
