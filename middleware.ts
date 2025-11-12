@@ -32,22 +32,27 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // Refresh session if expired
+  // Obtener y refrescar sesión
   const {
     data: { session },
+    error: sessionError
   } = await supabase.auth.getSession()
+
+  // Verificar si hay una sesión válida
+  const hasValidSession = session && !sessionError && session.user
 
   // Proteger rutas del dashboard
   if (request.nextUrl.pathname.startsWith('/dashboard')) {
-    if (!session) {
+    if (!hasValidSession) {
       const redirectUrl = new URL('/login', request.url)
       return NextResponse.redirect(redirectUrl)
     }
   }
 
   // Redirigir a dashboard si ya está autenticado y trata de ir a login
+  // Solo si realmente hay una sesión válida
   if (request.nextUrl.pathname === '/login') {
-    if (session) {
+    if (hasValidSession) {
       const redirectUrl = new URL('/dashboard', request.url)
       return NextResponse.redirect(redirectUrl)
     }
