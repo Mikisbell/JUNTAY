@@ -13,7 +13,6 @@ import { getCurrentUser, getDefaultEmpresaId } from '@/lib/utils/auth'
 import { DNIAutoComplete } from '@/components/dni-autocomplete'
 import { RUCAutoComplete } from '@/components/ruc-autocomplete'
 import { UbicacionSelector } from '@/components/ubicacion-selector'
-import { buscarUbigeoPorCodigo } from '@/lib/data/ubigeos-peru'
 
 export default function NuevoClientePage() {
   const router = useRouter()
@@ -70,21 +69,6 @@ export default function NuevoClientePage() {
 
   // Manejar datos obtenidos de RENIEC - Autorelleno completo
   const handleDatosRENIEC = (datos: any) => {
-    // Extraer ubicación del ubigeo si está disponible
-    let departamento = formData.departamento
-    let provincia = formData.provincia  
-    let distrito = formData.distrito
-    
-    // Buscar ubicación por ubigeo usando base de datos inteligente
-    if (datos.ubigeo) {
-      const ubicacionEncontrada = buscarUbigeoPorCodigo(datos.ubigeo)
-      if (ubicacionEncontrada) {
-        departamento = ubicacionEncontrada.departamento
-        provincia = ubicacionEncontrada.provincia
-        distrito = ubicacionEncontrada.distrito
-      }
-    }
-    
     // Campos que se van a auto-rellenar
     const camposAutoLlenados = ['numero_documento', 'nombres', 'apellido_paterno']
     
@@ -92,9 +76,11 @@ export default function NuevoClientePage() {
     if (datos.apellido_materno) camposAutoLlenados.push('apellido_materno')
     if (datos.fecha_nacimiento) camposAutoLlenados.push('fecha_nacimiento')
     if (datos.direccion) camposAutoLlenados.push('direccion')
-    if (departamento !== formData.departamento) camposAutoLlenados.push('departamento')
-    if (provincia !== formData.provincia) camposAutoLlenados.push('provincia')
-    if (distrito !== formData.distrito) camposAutoLlenados.push('distrito')
+    
+    // Solo auto-rellenar ubicación si viene directamente de la API
+    if (datos.departamento) camposAutoLlenados.push('departamento')
+    if (datos.provincia) camposAutoLlenados.push('provincia')
+    if (datos.distrito) camposAutoLlenados.push('distrito')
 
     setFormData({
       ...formData,
@@ -104,11 +90,11 @@ export default function NuevoClientePage() {
       apellido_paterno: datos.apellido_paterno,
       apellido_materno: datos.apellido_materno || '',
       fecha_nacimiento: datos.fecha_nacimiento || '',
-      // Dirección completa
+      // Dirección y ubicación (solo si vienen directamente de la API)
       direccion: datos.direccion || formData.direccion,
-      departamento: departamento,
-      provincia: provincia,
-      distrito: distrito
+      departamento: datos.departamento || formData.departamento,
+      provincia: datos.provincia || formData.provincia,
+      distrito: datos.distrito || formData.distrito
     })
     
     // Marcar campos como auto-rellenados
