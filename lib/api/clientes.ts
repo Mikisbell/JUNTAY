@@ -11,6 +11,9 @@ export interface Cliente {
   nombres?: string
   apellido_paterno?: string
   apellido_materno?: string
+  fecha_nacimiento?: string
+  genero?: string
+  estado_civil?: string
   
   // Para persona jurídica
   razon_social?: string
@@ -18,12 +21,13 @@ export interface Cliente {
   
   // Contacto
   email?: string
-  telefono?: string
-  celular?: string
+  telefono_principal?: string
+  telefono_secundario?: string
   direccion?: string
   distrito?: string
   provincia?: string
   departamento?: string
+  referencia?: string
   
   // Datos laborales
   ocupacion?: string
@@ -31,10 +35,12 @@ export interface Cliente {
   ingreso_mensual?: number
   
   // Estado
-  calificacion?: string // 'A', 'B', 'C', 'D'
+  calificacion_crediticia?: string // 'excelente', 'bueno', 'regular', 'malo'
   activo?: boolean
   observaciones?: string
+  foto_url?: string
   
+  created_by?: string
   created_at?: string
   updated_at?: string
 }
@@ -146,7 +152,7 @@ export async function getClientesStats() {
   const [total, activos, conMora, nuevos] = await Promise.all([
     supabase.from('clientes').select('id', { count: 'exact', head: true }),
     supabase.from('clientes').select('id', { count: 'exact', head: true }).eq('activo', true),
-    supabase.from('clientes').select('id', { count: 'exact', head: true }).in('calificacion', ['C', 'D']),
+    supabase.from('clientes').select('id', { count: 'exact', head: true }).in('calificacion_crediticia', ['regular', 'malo']),
     supabase.from('clientes').select('id', { count: 'exact', head: true }).gte('created_at', new Date(new Date().setDate(1)).toISOString())
   ])
   
