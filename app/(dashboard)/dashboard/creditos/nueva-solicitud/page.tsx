@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase/client'
-import { calcularCronograma } from '@/lib/api/creditos'
+import { calcularCronograma } from '@/lib/utils/calculos'
 import type { Cliente } from '@/lib/api/clientes'
 import type { Garantia } from '@/lib/api/garantias'
 
@@ -171,7 +171,9 @@ export default function NuevaSolicitudPage() {
       // Insertar cronograma
       const cronogramaData = cronograma.map(cuota => ({
         credito_id: credito.id,
-        ...cuota
+        ...cuota,
+        monto_pagado: 0,
+        estado: 'pendiente'
       }))
       
       const { error: cronogramaError } = await supabase
