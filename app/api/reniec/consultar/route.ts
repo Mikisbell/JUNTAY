@@ -35,37 +35,45 @@ export async function POST(request: Request) {
       )
     }
 
-    // API RENIEC Pública (gratuita con límites)
-    // Alternativas: apis.net.pe, consultar-dni.com, reniec.gob.pe
-    
-    // OPCIÓN 1: API Pública Gratuita (con límites)
-    const response = await consultarAPIRENIEC(dni)
-    
-    if (response.success && response.data) {
-      const datosFormateados = {
-        dni: response.data.dni,
-        nombres: response.data.nombres,
-        apellido_paterno: response.data.apellido_paterno,
-        apellido_materno: response.data.apellido_materno,
-        nombre_completo: `${response.data.nombres} ${response.data.apellido_paterno} ${response.data.apellido_materno || ''}`.trim(),
-        ubigeo: response.data.ubigeo,
-        direccion: response.data.direccion,
-        estado_civil: response.data.estado_civil,
-        fecha_nacimiento: response.data.fecha_nacimiento,
-        validado: true,
-        fecha_consulta: new Date()
+    // Intentar API real primero
+    const token = process.env.RENIEC_API_TOKEN
+    if (token) {
+      try {
+        const response = await consultarRENIECReal(dni)
+        
+        if (response) {
+          const datosFormateados = {
+            dni: response.dni,
+            nombres: response.nombres,
+            apellido_paterno: response.apellido_paterno,
+            apellido_materno: response.apellido_materno,
+            nombre_completo: `${response.nombres} ${response.apellido_paterno} ${response.apellido_materno || ''}`.trim(),
+            ubigeo: response.ubigeo,
+            direccion: response.direccion,
+            estado_civil: response.estado_civil,
+            fecha_nacimiento: response.fecha_nacimiento,
+            timestamp: new Date().toISOString()
+          }
+          
+          return NextResponse.json({
+            success: true,
+            data: datosFormateados,
+            source: 'api'
+          })
+        }
+      } catch (error) {
+        console.log('API real falló, usando mock:', error)
       }
-
-      return NextResponse.json({
-        success: true,
-        data: datosFormateados
-      })
-    } else {
-      return NextResponse.json(
-        { success: false, error: response.error || 'DNI no encontrado en RENIEC' },
-        { status: 404 }
-      )
     }
+
+    // Si falla la API real o no hay token, usar mock como fallback
+    const mockResponse = await consultarRENIECMock(dni)
+    
+    return NextResponse.json({
+      success: mockResponse.success,
+      data: mockResponse.data,
+      source: 'mock'
+    })
 
   } catch (error) {
     console.error('Error en consulta RENIEC:', error)
@@ -77,7 +85,7 @@ export async function POST(request: Request) {
 }
 
 // Función para consultar RENIEC real con consultasperu.com
-async function consultarRENIECReal(dni: string): Promise<ConsultaRENIEC | null> {
+async function consultarRENIECReal(dni: string): Promise<any | null> {
   return new Promise(async (resolve, reject) => {
     try {
       const token = process.env.RENIEC_API_TOKEN
@@ -138,7 +146,6 @@ async function consultarRENIECReal(dni: string): Promise<ConsultaRENIEC | null> 
       resolve(null)
     }
   })
-  }
 }
 
 // Función mock para desarrollo y testing
