@@ -156,7 +156,11 @@ export default function NuevaSolicitudPage() {
         fecha_ultimo_vencimiento: cronograma[cronograma.length - 1].fecha_vencimiento,
         estado: 'vigente',
         dias_mora: 0,
-        observaciones: formData.observaciones || null
+        observaciones: formData.observaciones || null,
+        empresa_id: null,        // Por ahora NULL - TODO: obtener de contexto
+        solicitud_id: null,      // Por ahora NULL - crear solicitud es opcional
+        tipo_credito_id: null,   // Por ahora NULL - TODO: agregar selector de tipo
+        desembolsado_por: null   // Por ahora NULL - TODO: obtener usuario actual
       }
       
       // Insertar crédito

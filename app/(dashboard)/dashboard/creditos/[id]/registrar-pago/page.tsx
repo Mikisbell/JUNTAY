@@ -98,7 +98,11 @@ export default function RegistrarPagoPage({ params }: { params: { id: string } }
           monto_mora: 0,
           fecha_pago: formData.fecha_pago,
           numero_operacion: formData.numero_recibo || null,
-          observaciones: formData.observaciones || null
+          observaciones: formData.observaciones || null,
+          cronograma_id: null,     // Por ahora NULL - TODO: vincular a cuota específica
+          caja_id: null,           // Por ahora NULL - TODO: agregar selector de caja
+          cuenta_bancaria_id: null, // Por ahora NULL - solo si es transferencia
+          registrado_por: null     // Por ahora NULL - TODO: obtener usuario actual
         }])
         .select()
         .single()

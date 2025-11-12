@@ -106,7 +106,9 @@ export default function NuevoClientePage() {
         ingreso_mensual: formData.ingreso_mensual ? parseFloat(formData.ingreso_mensual) : null,
         observaciones: formData.observaciones || null,
         activo: true,
-        calificacion_crediticia: 'bueno'
+        calificacion_crediticia: 'bueno',
+        empresa_id: null,  // Por ahora NULL - TODO: obtener de contexto
+        created_by: null   // Por ahora NULL - TODO: obtener usuario actual
       }
 
       const { data, error: supabaseError } = await supabase

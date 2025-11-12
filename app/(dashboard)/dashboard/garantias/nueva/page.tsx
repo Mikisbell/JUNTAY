@@ -80,7 +80,9 @@ export default function NuevaGarantiaPage() {
         estado: 'en_garantia',
         estado_conservacion: formData.estado_conservacion,
         ubicacion_fisica: formData.ubicacion_fisica || null,
-        observaciones: formData.observaciones || null
+        observaciones: formData.observaciones || null,
+        tasado_por: null,  // Por ahora NULL - TODO: obtener usuario actual
+        credito_id: null   // NULL hasta que se vincule a un crédito
       }
 
       const { error: supabaseError } = await supabase
