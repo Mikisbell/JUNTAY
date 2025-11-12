@@ -30,10 +30,8 @@ export default function LoginPage() {
       if (error) throw error
 
       if (data.session) {
-        // Esperar un momento para que las cookies se establezcan
-        await new Promise(resolve => setTimeout(resolve, 100))
-        router.refresh()
-        router.push('/dashboard')
+        // Hacer una redirección completa del navegador
+        window.location.href = '/dashboard'
       }
     } catch (error: any) {
       setError(error.message || 'Error al iniciar sesión')
