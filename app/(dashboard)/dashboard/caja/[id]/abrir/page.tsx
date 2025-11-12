@@ -71,6 +71,9 @@ export default function AbrirCajaPage({ params }: { params: { id: string } }) {
       
       const numeroSesion = (ultimaSesion?.numero_sesion || 0) + 1
 
+      // Obtener usuario actual
+      const { data: { user } } = await supabase.auth.getUser()
+      
       // Crear sesión
       const { data: sesion, error: sesionError } = await supabase
         .from('sesiones_caja')
@@ -78,6 +81,7 @@ export default function AbrirCajaPage({ params }: { params: { id: string } }) {
           caja_id: params.id,
           numero_sesion: numeroSesion,
           fecha_apertura: new Date().toISOString(),
+          usuario_apertura_id: user?.id || null,
           monto_inicial: total,
           billetes_apertura: billetes,
           observaciones_apertura: observaciones || null,
@@ -89,19 +93,28 @@ export default function AbrirCajaPage({ params }: { params: { id: string } }) {
         .select()
         .single()
 
-      if (sesionError) throw sesionError
+      if (sesionError) {
+        console.error('Error al crear sesión:', sesionError)
+        throw new Error(`Error al crear sesión: ${sesionError.message}`)
+      }
 
       // Actualizar estado de caja
-      await supabase
+      const { error: cajaError } = await supabase
         .from('cajas')
         .update({
           estado: 'abierta',
-          fecha_ultima_apertura: new Date().toISOString()
+          fecha_ultima_apertura: new Date().toISOString(),
+          responsable_actual_id: user?.id || null
         })
         .eq('id', params.id)
 
+      if (cajaError) {
+        console.error('Error al actualizar caja:', cajaError)
+        throw new Error(`Error al actualizar caja: ${cajaError.message}`)
+      }
+
       // Registrar movimiento de apertura
-      await supabase
+      const { error: movError } = await supabase
         .from('movimientos_caja')
         .insert([{
           sesion_id: sesion.id,
@@ -112,11 +125,17 @@ export default function AbrirCajaPage({ params }: { params: { id: string } }) {
           saldo_anterior: 0,
           saldo_nuevo: total,
           descripcion: 'Apertura de caja',
+          usuario_id: user?.id || null,
           fecha: new Date().toISOString()
         }])
 
+      if (movError) {
+        console.error('Error al crear movimiento:', movError)
+        throw new Error(`Error al crear movimiento: ${movError.message}`)
+      }
+
       // Crear arqueo de apertura
-      await supabase
+      const { error: arqueoError } = await supabase
         .from('arqueos_caja')
         .insert([{
           sesion_id: sesion.id,
@@ -127,8 +146,14 @@ export default function AbrirCajaPage({ params }: { params: { id: string } }) {
           diferencia: 0,
           ...billetes,
           detalle_efectivo: billetes,
+          realizado_por: user?.id || null,
           fecha: new Date().toISOString()
         }])
+
+      if (arqueoError) {
+        console.error('Error al crear arqueo:', arqueoError)
+        throw new Error(`Error al crear arqueo: ${arqueoError.message}`)
+      }
 
       // Redirigir a la página de caja
       router.push(`/dashboard/caja/${params.id}`)
