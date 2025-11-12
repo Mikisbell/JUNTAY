@@ -92,8 +92,7 @@ async function consultarAPIRENIEC(dni: string): Promise<RENIECAPIResponse> {
 
     const response = await fetch(url, { 
       headers,
-      method: 'GET',
-      timeout: 10000 // 10 segundos timeout
+      method: 'GET'
     })
 
     if (!response.ok) {
