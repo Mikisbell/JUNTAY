@@ -8,7 +8,9 @@ import {
   FileText,
   Settings,
   Menu,
-  Wallet
+  Wallet,
+  Calculator,
+  BarChart3
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { LogoutButton } from "@/components/logout-button"
@@ -46,7 +48,7 @@ export default function DashboardLayout({
             <NavItem href="/dashboard/garantias" icon={<Package size={20} />}>
               Garantías
             </NavItem>
-            <NavItem href="/dashboard/cobranzas" icon={<DollarSign size={20} />}>
+            <NavItem href="/dashboard/cobranzas" icon={<Calculator size={20} />}>
               Cobranzas
             </NavItem>
           </div>
@@ -64,7 +66,7 @@ export default function DashboardLayout({
             <p className="text-xs font-semibold text-gray-400 uppercase mb-2">
               Administración
             </p>
-            <NavItem href="/dashboard/reportes" icon={<FileText size={20} />}>
+            <NavItem href="/dashboard/reportes" icon={<BarChart3 size={20} />}>
               Reportes
             </NavItem>
             <NavItem href="/dashboard/configuracion" icon={<Settings size={20} />}>
