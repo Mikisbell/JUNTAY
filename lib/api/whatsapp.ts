@@ -302,11 +302,11 @@ export function procesarPlantilla(template: string, variables: Record<string, an
   })
   
   // Procesar condicionales simples {{#if_condicion}} ... {{/if_condicion}}
-  mensaje = mensaje.replace(/{{#if_(\w+)}}(.*?){{else}}(.*?){{\/if_\w+}}/gs, (match, condicion, textoIf, textoElse) => {
+  mensaje = mensaje.replace(/{{#if_(\w+)}}([\s\S]*?){{else}}([\s\S]*?){{\/if_\w+}}/g, (match, condicion, textoIf, textoElse) => {
     return variables[condicion] ? textoIf : textoElse
   })
   
-  mensaje = mensaje.replace(/{{#if_(\w+)}}(.*?){{\/if_\w+}}/gs, (match, condicion, texto) => {
+  mensaje = mensaje.replace(/{{#if_(\w+)}}([\s\S]*?){{\/if_\w+}}/g, (match, condicion, texto) => {
     return variables[condicion] ? texto : ''
   })
   
