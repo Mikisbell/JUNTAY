@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase/client'
 import { getCurrentUser, getDefaultEmpresaId } from '@/lib/utils/auth'
+import { DNIAutoComplete } from '@/components/dni-autocomplete'
 
 export default function NuevoClientePage() {
   const router = useRouter()
@@ -44,6 +45,28 @@ export default function NuevoClientePage() {
       ...formData,
       [e.target.name]: e.target.value
     })
+  }
+
+  // Manejar datos obtenidos de RENIEC
+  const handleDatosRENIEC = (datos: any) => {
+    setFormData({
+      ...formData,
+      numero_documento: datos.dni,
+      nombres: datos.nombres,
+      apellido_paterno: datos.apellido_paterno,
+      apellido_materno: datos.apellido_materno || '',
+      direccion: datos.direccion || formData.direccion
+    })
+    setError(null)
+  }
+
+  // Manejar cliente existente
+  const handleClienteExistente = (clienteId: string, nombre: string) => {
+    setError(`Cliente ya existe: ${nombre}`)
+    // Opcionalmente redirigir al cliente existente
+    setTimeout(() => {
+      router.push(`/dashboard/clientes/${clienteId}`)
+    }, 3000)
   }
 
   const validateForm = () => {
@@ -212,18 +235,27 @@ export default function NuevoClientePage() {
                     <option value="CE">Carnet de Extranjería</option>
                   </select>
                 </div>
-                <div>
-                  <Label htmlFor="numero_documento">Número de Documento *</Label>
-                  <Input
-                    id="numero_documento"
-                    name="numero_documento"
-                    value={formData.numero_documento}
-                    onChange={handleInputChange}
-                    placeholder="12345678"
-                    maxLength={formData.tipo_documento === 'DNI' ? 8 : 20}
-                    required
+                {formData.tipo_documento === 'DNI' ? (
+                  <DNIAutoComplete
+                    onDatosObtenidos={handleDatosRENIEC}
+                    onClienteExistente={handleClienteExistente}
+                    valorInicial={formData.numero_documento}
+                    disabled={loading}
                   />
-                </div>
+                ) : (
+                  <div>
+                    <Label htmlFor="numero_documento">Número de Documento *</Label>
+                    <Input
+                      id="numero_documento"
+                      name="numero_documento"
+                      value={formData.numero_documento}
+                      onChange={handleInputChange}
+                      placeholder={formData.tipo_documento === 'CE' ? 'CE12345678' : '12345678'}
+                      maxLength={20}
+                      required
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
