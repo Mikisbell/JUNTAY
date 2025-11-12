@@ -254,7 +254,7 @@ export function GaleriaFotosGarantia({ garantiaId, readonly = false }: GaleriaFo
       <div className="text-xs text-gray-500 flex items-center justify-between">
         <span>
           <ImageIcon className="h-3 w-3 inline mr-1" />
-          Total: {fotos.reduce((acc, f) => acc + (f.tamano_bytes || 0), 0) / (1024 * 1024):.1f} MB
+          Total: {(fotos.reduce((acc, f) => acc + (f.tamano_bytes || 0), 0) / (1024 * 1024)).toFixed(1)} MB
         </span>
         <span>
           <Calendar className="h-3 w-3 inline mr-1" />
