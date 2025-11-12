@@ -22,6 +22,13 @@ export default function LoginPage() {
     setError(null)
 
     try {
+      // Limpiar cualquier sesión anterior antes de hacer login
+      await supabase.auth.signOut()
+
+      // Esperar un momento para que se limpien las cookies
+      await new Promise(resolve => setTimeout(resolve, 200))
+
+      // Hacer login
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -31,7 +38,7 @@ export default function LoginPage() {
 
       if (data.session) {
         // Esperar un momento para que las cookies se guarden
-        await new Promise(resolve => setTimeout(resolve, 100))
+        await new Promise(resolve => setTimeout(resolve, 300))
         
         // Refrescar la sesión
         router.refresh()

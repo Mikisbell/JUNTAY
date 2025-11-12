@@ -38,8 +38,28 @@ export async function middleware(request: NextRequest) {
     error: sessionError
   } = await supabase.auth.getSession()
 
-  // Verificar si hay una sesión válida
-  const hasValidSession = session && !sessionError && session.user
+  // Verificar si hay una sesión válida (más estricto)
+  const hasValidSession = 
+    session && 
+    !sessionError && 
+    session.user && 
+    session.access_token &&
+    session.expires_at &&
+    new Date(session.expires_at * 1000) > new Date()
+
+  // Si hay error de sesión o cookies inválidas, limpiar
+  if (sessionError || (session && !hasValidSession)) {
+    // Limpiar cookies de Supabase inválidas
+    const authCookieNames = [
+      'sb-access-token',
+      'sb-refresh-token',
+      `sb-${process.env.NEXT_PUBLIC_SUPABASE_URL?.split('//')[1]?.split('.')[0]}-auth-token`
+    ]
+    
+    authCookieNames.forEach(name => {
+      response.cookies.delete(name)
+    })
+  }
 
   // Proteger rutas del dashboard
   if (request.nextUrl.pathname.startsWith('/dashboard')) {
@@ -49,14 +69,9 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Redirigir a dashboard si ya está autenticado y trata de ir a login
-  // Solo si realmente hay una sesión válida
-  if (request.nextUrl.pathname === '/login') {
-    if (hasValidSession) {
-      const redirectUrl = new URL('/dashboard', request.url)
-      return NextResponse.redirect(redirectUrl)
-    }
-  }
+  // NO redirigir de login a dashboard automáticamente
+  // Dejar que el usuario haga login primero
+  // Esto evita loops cuando hay cookies inválidas
 
   return response
 }
