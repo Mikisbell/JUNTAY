@@ -11,6 +11,7 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase/client'
 import { getCurrentUser, getDefaultEmpresaId } from '@/lib/utils/auth'
 import { DNIAutoComplete } from '@/components/dni-autocomplete'
+import { RUCAutoComplete } from '@/components/ruc-autocomplete'
 
 export default function NuevoClientePage() {
   const router = useRouter()
@@ -129,6 +130,32 @@ export default function NuevoClientePage() {
     // Opcionalmente redirigir al cliente existente
     setTimeout(() => {
       router.push(`/dashboard/clientes/${clienteId}`)
+    }, 3000)
+  }
+
+  // Manejar datos obtenidos de SUNAT - Autorelleno para empresas
+  const handleDatosSUNAT = (datos: any) => {
+    setFormData({
+      ...formData,
+      // Datos básicos de empresa
+      numero_documento: datos.ruc,
+      razon_social: datos.razon_social,
+      direccion: datos.direccion || formData.direccion,
+      departamento: datos.departamento || formData.departamento,
+      provincia: datos.provincia || formData.provincia,
+      distrito: datos.distrito || formData.distrito,
+      // Representante legal si está disponible
+      representante_legal: datos.representante_legal?.nombres || formData.representante_legal
+    })
+    setError(null)
+  }
+
+  // Manejar empresa existente
+  const handleEmpresaExistente = (empresaId: string, nombre: string) => {
+    setError(`Empresa ya existe: ${nombre}`)
+    // Opcionalmente redirigir a la empresa existente
+    setTimeout(() => {
+      router.push(`/dashboard/clientes/${empresaId}`)
     }, 3000)
   }
 
@@ -524,18 +551,12 @@ export default function NuevoClientePage() {
               <CardTitle>Datos de la Empresa</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="numero_documento">RUC *</Label>
-                <Input
-                  id="numero_documento"
-                  name="numero_documento"
-                  value={formData.numero_documento}
-                  onChange={handleInputChange}
-                  placeholder="20123456789"
-                  maxLength={11}
-                  required
-                />
-              </div>
+              <RUCAutoComplete
+                onDatosObtenidos={handleDatosSUNAT}
+                onEmpresaExistente={handleEmpresaExistente}
+                valorInicial={formData.numero_documento}
+                disabled={loading}
+              />
 
               <div>
                 <Label htmlFor="razon_social">Razón Social *</Label>
