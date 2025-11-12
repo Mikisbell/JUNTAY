@@ -2,9 +2,10 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Eye, Edit, Trash2 } from "lucide-react"
+import { Plus } from "lucide-react"
 import { getClientes, getClientesStats } from "@/lib/api/clientes"
 import { ClientesSearch } from "@/components/clientes-search"
+import { ClienteActions } from "@/components/cliente-actions"
 
 export const dynamic = 'force-dynamic'
 
@@ -121,17 +122,7 @@ export default async function ClientesPage() {
                         <span className="font-medium">S/ 0</span>
                       </td>
                       <td className="p-4">
-                        <div className="flex items-center justify-end space-x-2">
-                          <Button variant="ghost" size="icon">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="icon">
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="icon" className="text-red-600">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
+                        <ClienteActions clienteId={cliente.id!} />
                       </td>
                     </tr>
                   ))}
