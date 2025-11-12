@@ -12,7 +12,7 @@ import { supabase } from '@/lib/supabase/client'
 import { getCurrentUser, getDefaultEmpresaId } from '@/lib/utils/auth'
 import { DNIAutoComplete } from '@/components/dni-autocomplete'
 import { RUCAutoComplete } from '@/components/ruc-autocomplete'
-import { buscarUbigeoPorCodigo } from '@/lib/data/ubigeos'
+import { buscarUbigeoPorCodigo } from '@/lib/data/ubigeos-peru'
 
 export default function NuevoClientePage() {
   const router = useRouter()
