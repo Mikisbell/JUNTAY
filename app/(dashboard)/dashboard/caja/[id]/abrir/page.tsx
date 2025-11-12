@@ -81,7 +81,7 @@ export default function AbrirCajaPage({ params }: { params: { id: string } }) {
           caja_id: params.id,
           numero_sesion: numeroSesion,
           fecha_apertura: new Date().toISOString(),
-          usuario_apertura_id: user?.id || null,
+          usuario_apertura_id: null,
           monto_inicial: total,
           billetes_apertura: billetes,
           observaciones_apertura: observaciones || null,
@@ -104,7 +104,7 @@ export default function AbrirCajaPage({ params }: { params: { id: string } }) {
         .update({
           estado: 'abierta',
           fecha_ultima_apertura: new Date().toISOString(),
-          responsable_actual_id: user?.id || null
+          responsable_actual_id: null
         })
         .eq('id', params.id)
 
@@ -125,7 +125,7 @@ export default function AbrirCajaPage({ params }: { params: { id: string } }) {
           saldo_anterior: 0,
           saldo_nuevo: total,
           descripcion: 'Apertura de caja',
-          usuario_id: user?.id || null,
+          usuario_id: null,
           fecha: new Date().toISOString()
         }])
 
@@ -146,7 +146,7 @@ export default function AbrirCajaPage({ params }: { params: { id: string } }) {
           diferencia: 0,
           ...billetes,
           detalle_efectivo: billetes,
-          realizado_por: user?.id || null,
+          realizado_por: null,
           fecha: new Date().toISOString()
         }])
 

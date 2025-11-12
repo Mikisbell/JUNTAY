@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase/client'
+import { getCurrentUser } from '@/lib/utils/auth'
 import type { CategoriaGarantia } from '@/lib/api/garantias'
 
 export default function NuevaGarantiaPage() {
@@ -64,6 +65,9 @@ export default function NuevaGarantiaPage() {
     setLoading(true)
 
     try {
+      // Obtener usuario actual
+      const user = await getCurrentUser()
+
       // Generar código único
       const codigo = `GAR-${Date.now().toString().slice(-8)}`
 
@@ -81,8 +85,8 @@ export default function NuevaGarantiaPage() {
         estado_conservacion: formData.estado_conservacion,
         ubicacion_fisica: formData.ubicacion_fisica || null,
         observaciones: formData.observaciones || null,
-        tasado_por: null,  // Por ahora NULL - TODO: obtener usuario actual
-        credito_id: null   // NULL hasta que se vincule a un crédito
+        tasado_por: user?.id || null,
+        credito_id: null
       }
 
       const { error: supabaseError } = await supabase

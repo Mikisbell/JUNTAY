@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase/client'
+import { getCurrentUser, getDefaultEmpresaId } from '@/lib/utils/auth'
 
 export default function NuevoClientePage() {
   const router = useRouter()
@@ -82,6 +83,10 @@ export default function NuevoClientePage() {
     setLoading(true)
 
     try {
+      // Obtener usuario y empresa
+      const user = await getCurrentUser()
+      const empresaId = await getDefaultEmpresaId()
+
       const clienteData = {
         tipo_persona: tipoPersona,
         tipo_documento: formData.tipo_documento,
@@ -107,8 +112,8 @@ export default function NuevoClientePage() {
         observaciones: formData.observaciones || null,
         activo: true,
         calificacion_crediticia: 'bueno',
-        empresa_id: null,  // Por ahora NULL - TODO: obtener de contexto
-        created_by: null   // Por ahora NULL - TODO: obtener usuario actual
+        empresa_id: empresaId,
+        created_by: user?.id || null
       }
 
       const { data, error: supabaseError } = await supabase
@@ -119,7 +124,6 @@ export default function NuevoClientePage() {
 
       if (supabaseError) throw supabaseError
 
-      // Éxito - redirigir al listado
       router.push('/dashboard/clientes?success=Cliente creado exitosamente')
       router.refresh()
     } catch (err: any) {

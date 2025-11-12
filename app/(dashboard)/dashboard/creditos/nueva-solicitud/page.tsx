@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase/client'
 import { calcularCronograma } from '@/lib/utils/calculos'
+import { getCurrentUser, getDefaultEmpresaId } from '@/lib/utils/auth'
 import type { Cliente } from '@/lib/api/clientes'
 import type { Garantia } from '@/lib/api/garantias'
 
@@ -117,6 +118,10 @@ export default function NuevaSolicitudPage() {
     setLoading(true)
 
     try {
+      // Obtener usuario y empresa
+      const user = await getCurrentUser()
+      const empresaId = await getDefaultEmpresaId()
+
       const monto = parseFloat(formData.monto_prestado)
       const tasa = parseFloat(formData.tasa_interes_mensual)
       const cuotas = parseInt(formData.numero_cuotas)
@@ -157,10 +162,10 @@ export default function NuevaSolicitudPage() {
         estado: 'vigente',
         dias_mora: 0,
         observaciones: formData.observaciones || null,
-        empresa_id: null,        // Por ahora NULL - TODO: obtener de contexto
-        solicitud_id: null,      // Por ahora NULL - crear solicitud es opcional
-        tipo_credito_id: null,   // Por ahora NULL - TODO: agregar selector de tipo
-        desembolsado_por: null   // Por ahora NULL - TODO: obtener usuario actual
+        empresa_id: empresaId,
+        solicitud_id: null,
+        tipo_credito_id: null,
+        desembolsado_por: user?.id || null
       }
       
       // Insertar crédito
