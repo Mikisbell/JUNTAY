@@ -96,19 +96,19 @@ export default async function ClientesPage() {
                         </p>
                       </td>
                       <td className="p-4">
-                        <p className="text-sm">{cliente.celular || cliente.telefono || '-'}</p>
+                        <p className="text-sm">{cliente.telefono_secundario || cliente.telefono_principal || '-'}</p>
                         <p className="text-xs text-gray-600">{cliente.email || '-'}</p>
                       </td>
                       <td className="p-4">
-                        {cliente.calificacion ? (
+                        {cliente.calificacion_crediticia ? (
                           <Badge 
                             variant={
-                              cliente.calificacion === 'A' ? 'default' : 
-                              cliente.calificacion === 'B' ? 'secondary' : 
+                              cliente.calificacion_crediticia === 'excelente' ? 'default' : 
+                              cliente.calificacion_crediticia === 'bueno' ? 'secondary' : 
                               'destructive'
                             }
                           >
-                            {cliente.calificacion}
+                            {cliente.calificacion_crediticia}
                           </Badge>
                         ) : (
                           <span className="text-gray-400">-</span>

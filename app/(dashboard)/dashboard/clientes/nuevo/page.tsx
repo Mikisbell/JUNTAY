@@ -84,7 +84,7 @@ export default function NuevoClientePage() {
     try {
       const clienteData = {
         tipo_persona: tipoPersona,
-        tipo_documento: formData.tipo_documento as 'DNI' | 'RUC' | 'CE' | 'PASAPORTE',
+        tipo_documento: formData.tipo_documento,
         numero_documento: formData.numero_documento,
         ...(tipoPersona === 'natural' ? {
           nombres: formData.nombres,
@@ -95,8 +95,8 @@ export default function NuevoClientePage() {
           representante_legal: formData.representante_legal,
         }),
         email: formData.email || null,
-        telefono: formData.telefono || null,
-        celular: formData.celular || null,
+        telefono_principal: formData.telefono || null,
+        telefono_secundario: formData.celular || null,
         direccion: formData.direccion || null,
         distrito: formData.distrito || null,
         provincia: formData.provincia || null,
@@ -106,7 +106,7 @@ export default function NuevoClientePage() {
         ingreso_mensual: formData.ingreso_mensual ? parseFloat(formData.ingreso_mensual) : null,
         observaciones: formData.observaciones || null,
         activo: true,
-        calificacion: 'A'
+        calificacion_crediticia: 'bueno'
       }
 
       const { data, error: supabaseError } = await supabase
