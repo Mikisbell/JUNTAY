@@ -1,10 +1,11 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Edit, Trash2, Phone, Mail, MapPin, Briefcase, DollarSign } from 'lucide-react'
+import { ArrowLeft, Edit, Phone, Mail, MapPin, Briefcase, DollarSign } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { getClienteById } from '@/lib/api/clientes'
+import { DeleteClienteButton } from '@/components/delete-cliente-button'
 
 export const dynamic = 'force-dynamic'
 
@@ -43,10 +44,10 @@ export default async function ClienteDetallePage({ params }: { params: { id: str
               Editar
             </Button>
           </Link>
-          <Button variant="destructive">
-            <Trash2 className="h-4 w-4 mr-2" />
-            Eliminar
-          </Button>
+          <DeleteClienteButton 
+            clienteId={params.id} 
+            clienteNombre={nombreCompleto || 'este cliente'} 
+          />
         </div>
       </div>
 

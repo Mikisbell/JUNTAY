@@ -30,8 +30,11 @@ export function ClienteActions({ clienteId }: ClienteActionsProps) {
 
       if (error) throw error
 
+      // Redirigir al listado con mensaje de éxito
+      router.push('/dashboard/clientes?success=Cliente eliminado exitosamente')
       router.refresh()
     } catch (error: any) {
+      console.error('Error al eliminar cliente:', error)
       alert(`Error al eliminar: ${error.message}`)
       setDeleting(false)
     }
