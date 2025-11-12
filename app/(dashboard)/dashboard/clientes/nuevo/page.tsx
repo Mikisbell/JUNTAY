@@ -26,6 +26,7 @@ export default function NuevoClientePage() {
     nombres: '',
     apellido_paterno: '',
     apellido_materno: '',
+    fecha_nacimiento: '',
     razon_social: '',
     representante_legal: '',
     telefono: '',
@@ -115,6 +116,7 @@ export default function NuevoClientePage() {
       nombres: datos.nombres,
       apellido_paterno: datos.apellido_paterno,
       apellido_materno: datos.apellido_materno || '',
+      fecha_nacimiento: datos.fecha_nacimiento || '',
       // Dirección completa
       direccion: datos.direccion || formData.direccion,
       departamento: departamento,
@@ -348,7 +350,7 @@ export default function NuevoClientePage() {
                 )}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
                   <Label htmlFor="nombres">Nombres *</Label>
                   <Input
@@ -379,6 +381,16 @@ export default function NuevoClientePage() {
                     value={formData.apellido_materno}
                     onChange={handleInputChange}
                     placeholder="López"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="fecha_nacimiento">Fecha de Nacimiento</Label>
+                  <Input
+                    id="fecha_nacimiento"
+                    name="fecha_nacimiento"
+                    type="date"
+                    value={formData.fecha_nacimiento}
+                    onChange={handleInputChange}
                   />
                 </div>
               </div>
