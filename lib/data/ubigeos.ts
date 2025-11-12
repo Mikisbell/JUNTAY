@@ -129,26 +129,26 @@ export function buscarUbigeosPorDistrito(distrito: string): UbigeoData[] {
 
 // Función para obtener todos los departamentos únicos
 export function obtenerDepartamentos(): string[] {
-  const departamentos = [...new Set(ubigeosComunes.map(ubigeo => ubigeo.departamento))]
+  const departamentos = Array.from(new Set(ubigeosComunes.map(ubigeo => ubigeo.departamento)))
   return departamentos.sort()
 }
 
 // Función para obtener provincias por departamento
 export function obtenerProvinciasPorDepartamento(departamento: string): string[] {
-  const provincias = [...new Set(
+  const provincias = Array.from(new Set(
     ubigeosComunes
       .filter(ubigeo => ubigeo.departamento === departamento)
       .map(ubigeo => ubigeo.provincia)
-  )]
+  ))
   return provincias.sort()
 }
 
 // Función para obtener distritos por departamento y provincia
 export function obtenerDistritosPorProvincia(departamento: string, provincia: string): string[] {
-  const distritos = [...new Set(
+  const distritos = Array.from(new Set(
     ubigeosComunes
       .filter(ubigeo => ubigeo.departamento === departamento && ubigeo.provincia === provincia)
       .map(ubigeo => ubigeo.distrito)
-  )]
+  ))
   return distritos.sort()
 }
