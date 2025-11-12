@@ -121,7 +121,7 @@ export function buscarUbigeoPorCodigo(codigo: string): UbigeoResuelto | null {
  * Obtiene lista de departamentos disponibles
  */
 export function obtenerDepartamentos(): string[] {
-  const departamentos = [...new Set(Object.values(ubigeosMap).map(u => u.departamento))]
+  const departamentos = Array.from(new Set(Object.values(ubigeosMap).map(u => u.departamento)))
   return departamentos.sort()
 }
 
