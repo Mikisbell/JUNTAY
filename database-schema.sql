@@ -33,7 +33,8 @@ CREATE TABLE usuarios (
     email VARCHAR(100) UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
     nombres VARCHAR(100) NOT NULL,
-    apellidos VARCHAR(100) NOT NULL,
+    apellido_paterno VARCHAR(100) NOT NULL,
+    apellido_materno VARCHAR(100),
     dni VARCHAR(8) UNIQUE NOT NULL,
     telefono VARCHAR(20),
     rol VARCHAR(50) NOT NULL, -- 'admin', 'gerente', 'cajero', 'analista'
