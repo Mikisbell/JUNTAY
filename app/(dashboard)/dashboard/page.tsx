@@ -8,8 +8,23 @@ import {
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { getClientesStats } from "@/lib/api/clientes"
+import { getCreditosStats, getCreditos } from "@/lib/api/creditos"
+import { getGarantiasStats } from "@/lib/api/garantias"
+import Link from "next/link"
 
-export default function DashboardPage() {
+export const dynamic = 'force-dynamic'
+
+export default async function DashboardPage() {
+  const [clientesStats, creditosStats, garantiasStats, creditosRecientes] = await Promise.all([
+    getClientesStats(),
+    getCreditosStats(),
+    getGarantiasStats(),
+    getCreditos()
+  ])
+
+  const ultimosCreditos = creditosRecientes.slice(0, 5)
+
   return (
     <div className="space-y-6">
       <div>
@@ -21,31 +36,27 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
           title="Créditos Activos"
-          value="45"
+          value={creditosStats.vigentes.toString()}
           icon={<CreditCard className="h-8 w-8 text-blue-600" />}
-          trend="+12%"
-          trendUp={true}
+          subtitle={`${creditosStats.enMora} en mora`}
         />
         <StatsCard
-          title="Total Prestado"
-          value="S/ 125,450"
+          title="Cartera Activa"
+          value={`S/ ${creditosStats.montoCartera.toFixed(0)}`}
           icon={<DollarSign className="h-8 w-8 text-green-600" />}
-          trend="+8%"
-          trendUp={true}
+          subtitle={`${creditosStats.total} créditos`}
         />
         <StatsCard
-          title="Clientes Activos"
-          value="128"
+          title="Clientes"
+          value={clientesStats.total.toString()}
           icon={<Users className="h-8 w-8 text-purple-600" />}
-          trend="+23"
-          trendUp={true}
+          subtitle={`${clientesStats.activos} activos`}
         />
         <StatsCard
           title="Garantías"
-          value="67"
+          value={garantiasStats.total.toString()}
           icon={<Package className="h-8 w-8 text-orange-600" />}
-          trend="+5"
-          trendUp={true}
+          subtitle={`${garantiasStats.enGarantia} en uso`}
         />
       </div>
       
@@ -56,29 +67,36 @@ export default function DashboardPage() {
             <CardTitle>Créditos Recientes</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <CreditoItem
-                codigo="CRE-2025-001"
-                cliente="Juan Pérez López"
-                monto="S/ 5,000"
-                estado="vigente"
-                fecha="10/11/2025"
-              />
-              <CreditoItem
-                codigo="CRE-2025-002"
-                cliente="María García Ruiz"
-                monto="S/ 3,500"
-                estado="vigente"
-                fecha="09/11/2025"
-              />
-              <CreditoItem
-                codigo="CRE-2025-003"
-                cliente="Carlos Sánchez"
-                monto="S/ 8,000"
-                estado="en_mora"
-                fecha="05/11/2025"
-              />
-            </div>
+            {ultimosCreditos.length > 0 ? (
+              <div className="space-y-4">
+                {ultimosCreditos.map((credito) => {
+                  const nombreCliente = credito.cliente?.tipo_persona === 'natural'
+                    ? `${credito.cliente?.nombres} ${credito.cliente?.apellido_paterno}`
+                    : credito.cliente?.razon_social
+                  
+                  return (
+                    <Link key={credito.id} href={`/dashboard/creditos/${credito.id}`}>
+                      <CreditoItem
+                        codigo={credito.codigo || 'N/A'}
+                        cliente={nombreCliente || 'Sin nombre'}
+                        monto={`S/ ${credito.monto_prestado.toFixed(2)}`}
+                        estado={credito.estado}
+                        fecha={new Date(credito.fecha_desembolso).toLocaleDateString('es-PE')}
+                      />
+                    </Link>
+                  )
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <p className="text-sm">No hay créditos registrados</p>
+                <Link href="/dashboard/creditos/nueva-solicitud">
+                  <button className="text-blue-600 text-sm mt-2 hover:underline">
+                    Crear primer crédito
+                  </button>
+                </Link>
+              </div>
+            )}
           </CardContent>
         </Card>
         
@@ -119,9 +137,9 @@ export default function DashboardPage() {
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <QuickAction title="Nuevo Cliente" href="/dashboard/clientes/nuevo" />
-            <QuickAction title="Nueva Solicitud" href="/dashboard/creditos/solicitud" />
-            <QuickAction title="Registrar Pago" href="/dashboard/cobranzas/nuevo" />
-            <QuickAction title="Ver Reportes" href="/dashboard/reportes" />
+            <QuickAction title="Nueva Solicitud" href="/dashboard/creditos/nueva-solicitud" />
+            <QuickAction title="Nueva Garantía" href="/dashboard/garantias/nueva" />
+            <QuickAction title="Ver Créditos" href="/dashboard/creditos" />
           </div>
         </CardContent>
       </Card>
@@ -133,14 +151,12 @@ function StatsCard({
   title, 
   value, 
   icon, 
-  trend, 
-  trendUp 
+  subtitle
 }: { 
   title: string
   value: string
   icon: React.ReactNode
-  trend: string
-  trendUp: boolean
+  subtitle?: string
 }) {
   return (
     <Card>
@@ -149,9 +165,11 @@ function StatsCard({
           <div>
             <p className="text-sm text-gray-600">{title}</p>
             <p className="text-2xl font-bold mt-2">{value}</p>
-            <p className={`text-sm mt-2 ${trendUp ? 'text-green-600' : 'text-red-600'}`}>
-              {trend} vs mes anterior
-            </p>
+            {subtitle && (
+              <p className="text-sm mt-2 text-gray-500">
+                {subtitle}
+              </p>
+            )}
           </div>
           <div>{icon}</div>
         </div>
