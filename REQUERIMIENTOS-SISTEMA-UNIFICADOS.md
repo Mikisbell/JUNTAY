@@ -1,35 +1,130 @@
 # 📋 REQUERIMIENTOS DE SISTEMA UNIFICADOS - JUNTAY
 
 **Proyecto:** Sistema Casa de Empeño - Cliente Único  
-**Basado en:** Análisis completo de archivos MD existentes  
-**Estado Actual:** Sistema base 6/10 → Objetivo 9.5/10  
+**Basado en:** Entrevista completa con cliente + análisis técnico  
+**Estado Actual:** Sistema base funcional → Customización completa  
+**Última Actualización:** 12 Nov 2025 - Post Entrevista Cliente  
 
 ---
 
 ## 🎯 RESUMEN EJECUTIVO DE REQUERIMIENTOS
 
-### **Estado Actual del Sistema**
-- ✅ **Infraestructura:** Next.js 14 + Supabase + TypeScript (COMPLETADO)
-- ✅ **Base de Datos:** 20+ tablas implementadas (COMPLETADO)  
-- ✅ **Módulo Clientes:** Funcional con correcciones (COMPLETADO)
-- ✅ **Autenticación:** Implementada y corregida (COMPLETADO)
-- 🚧 **Módulos Principales:** Necesitan implementación completa
+### **📊 INFORMACIÓN DEL CLIENTE (Post-Entrevista)**
 
-### **Gap Analysis: Requerimientos vs Estado Actual**
-| Módulo | Estado Actual | Requerido | Prioridad | Impacto |
-|--------|---------------|-----------|-----------|---------|
-| Control Caja | ❌ Falta | ✅ Crítico | **ALTA** | **Sin esto no operan** |
-| Contratos PDF | ❌ Falta | ✅ Crítico | **ALTA** | **Riesgo legal** |
-| Fotos Garantías | ❌ Falta | ✅ Crítico | **ALTA** | **Obligatorio ley** |
-| Proceso Vencimientos | ❌ Falta | ✅ Crítico | **ALTA** | **Core negocio** |
-| WhatsApp Integration | ❌ Falta | ✅ Importante | MEDIA | Reduce morosidad 25-40% |
-| IA Valuación | ❌ Falta | ✅ Diferenciador | MEDIA | Ventaja competitiva |
-| Roles/Permisos | ⚠️ Básico | ✅ Completo | MEDIA | Seguridad |
-| Reportes SUNAT | ❌ Falta | ✅ Legal | BAJA | Cumplimiento |
+#### **🏢 Operación Actual:**
+- **Volumen diario:** 10 empeños promedio
+- **Manejo de efectivo:** Hasta S/10,000 diarios
+- **Personal actual:** 2 empleados operativos
+- **Usuarios sistema:** 4 simultáneos requeridos
+- **Sucursales:** 1 actual + 1 planificada
+- **Sistema actual:** Excel (insuficiente, sin automatización)
+
+#### **💰 Estructura de Intereses:**
+- **Base mensual:** 20%
+- **Pago semanal:** 5%
+- **Pago quincenal:** 10% 
+- **Pago tri-semanal:** 15%
+- **Renovaciones:** Solo pago de intereses (20% o proporcional)
+- **Tickets:** Pagos parciales/totales requeridos
+
+#### **⚠️ Puntos Críticos Identificados:**
+- **Control de caja deficiente:** Faltantes/sobrantes frecuentes
+- **Comunicación fragmentada:** WhatsApp manual sin automatización
+- **Valuación ineficiente:** Envío fotos por WhatsApp a terceros
+- **Proceso vencimientos:** 1 semana gracia → venta inmediata
+- **Dependencia crítica:** "Si sistema cae 1 hora, empresa se detiene"
+
+### **Estado del Sistema Post-Implementaciones Recientes**
+- ✅ **Control de Caja:** COMPLETADO (Nov 12)
+- ✅ **Contratos PDF:** COMPLETADO (Nov 12)  
+- ✅ **Sistema Fotos:** COMPLETADO (Nov 12)
+- ✅ **Navegación completa:** COMPLETADO (Nov 12)
+- 🎯 **NEXT UP:** RENIEC API + WhatsApp Business
+
+### **Gap Analysis Actualizado: Cliente Específico**
+| Módulo | Estado Nov 12 | Requerido Cliente | Prioridad | Días Estimados |
+|--------|---------------|-------------------|-----------|----------------|
+| ✅ Control Caja | **COMPLETADO** | ✅ Crítico | ~~ALTA~~ | ~~Hecho~~ |
+| ✅ Contratos PDF | **COMPLETADO** | ✅ Crítico | ~~ALTA~~ | ~~Hecho~~ |
+| ✅ Fotos Garantías | **COMPLETADO** | ✅ Crítico | ~~ALTA~~ | ~~Hecho~~ |
+| 🚧 RENIEC API | ❌ **PENDIENTE** | ✅ **MUY ALTA** | **EXTREMA** | **2-3 días** |
+| 🚧 WhatsApp Business | ❌ **PENDIENTE** | ✅ **MUY ALTA** | **EXTREMA** | **2-3 días** |
+| 🚧 Proceso Vencimientos | ❌ Pendiente | ✅ Alta | ALTA | 3-4 días |
+| 🚧 Pagos Flexibles | ❌ Pendiente | ✅ Alta | ALTA | 2-3 días |
+| 🚧 IA Valuación | ❌ Pendiente | ✅ Diferenciador | MEDIA | 4-5 días |
+| 🚧 Roles Avanzados | ⚠️ Básico | ✅ Completo | MEDIA | 2-3 días |
 
 ---
 
-## 🚨 REQUERIMIENTOS CRÍTICOS (SIN ESTOS NO PUEDEN OPERAR)
+## 🚨 REQUERIMIENTOS EXTREMA PRIORIDAD (POST-ENTREVISTA)
+
+### **🔥 RENIEC API INTEGRATION**
+
+#### **Funcionalidades Requeridas (Cliente Específico):**
+- **Autocompletado por DNI:**
+  - Input DNI → datos completos automáticos
+  - Nombres, apellidos, dirección actualizada
+  - Validación en tiempo real
+  - Fallback manual si API no responde
+
+- **Validación de Identidad:**
+  - Verificar DNI válido y activo
+  - Detectar DNI duplicados en sistema
+  - Alertas para DNI observados/inhabilitados
+  - Cache local para consultas frecuentes
+
+#### **Especificaciones Técnicas:**
+```typescript
+interface ConsultaRENIEC {
+  dni: string
+  nombres: string
+  apellido_paterno: string
+  apellido_materno: string
+  direccion: string
+  ubigeo: string
+  estado_civil?: string
+  fecha_nacimiento?: string
+  validado: boolean
+  fecha_consulta: Date
+}
+```
+
+### **📱 WHATSAPP BUSINESS INTEGRATION**
+
+#### **Funcionalidades Requeridas (Cliente Específico):**
+- **Confirmaciones Automáticas:**
+  - "Pago recibido: S/XXX - Saldo: S/XXX"
+  - "Contrato firmado - Código: CRE-XXX"  
+  - "Prenda lista para retiro"
+  - Adjuntar recibos PDF automáticamente
+
+- **Recordatorios de Vencimiento:**
+  - 7 días antes: "Su cuota vence en 1 semana"
+  - 3 días antes: "Recordatorio: cuota vence en 3 días"
+  - Día vencimiento: "Su cuota vence HOY"
+  - Post-vencimiento: "Su préstamo está vencido - 1 semana gracia"
+
+- **Saludos Estacionales (Cliente Request):**
+  - Año Nuevo, Navidad, Día de la Madre, etc.
+  - Mensajes personalizados con nombre cliente
+  - Programación automática de envíos
+
+#### **Especificaciones Técnicas:**
+```typescript
+interface WhatsAppAutomation {
+  cliente_id: string
+  telefono: string
+  tipo_mensaje: 'confirmacion' | 'recordatorio' | 'saludo'
+  plantilla_id: string
+  variables: Record<string, any>
+  programado_para: Date
+  estado: 'pendiente' | 'enviado' | 'entregado' | 'error'
+}
+```
+
+---
+
+## 🚨 REQUERIMIENTOS CRÍTICOS BASE (YA IMPLEMENTADOS)
 
 ### **1. CONTROL DE CAJA COMPLETO**
 
@@ -154,26 +249,63 @@ interface GarantiaFoto {
 }
 ```
 
-### **4. PROCESO DE VENCIMIENTOS**
+### **4. SISTEMA DE PAGOS FLEXIBLES (CLIENTE ESPECÍFICO)**
 
 #### **Funcionalidades Requeridas:**
-- **Detección Automática:**
-  - Cálculo diario de vencimientos
-  - Identificación de cuotas pendientes
-  - Cálculo automático de días de mora
-  - Interés moratorio automático
+- **Cálculo Automático por Frecuencia:**
+  - **Mensual:** 20% base
+  - **Semanal:** 5% (20%/4)
+  - **Quincenal:** 10% (20%/2)  
+  - **Tri-semanal:** 15% (20%*3/4)
+  - Configuración personalizable por cliente
 
-- **Alertas y Notificaciones:**
-  - Vencimientos próximos (3, 7, 15 días)
-  - Vencidos hoy
-  - Clientes en mora crítica
-  - Dashboard de vencimientos
+- **Tickets de Pago:**
+  - "Pago Parcial" - Reduce saldo pendiente
+  - "Pago Total" - Liquida cuota completa
+  - "Renovación" - Solo intereses, extiende plazo
+  - Estado visual: Pendiente/Pagado/Vencido
 
-- **Proceso de Gestión:**
-  - Actualización automática de estados
-  - Workflow de cobranza
-  - Registro de gestiones realizadas
-  - Preparación para remate/venta
+- **Renovaciones (Cliente Request):**
+  - Opción: Pagar solo intereses del periodo
+  - Resetea contador de días a 30 días más
+  - Mantiene capital original intacto
+  - Limita renovaciones (máx 3 veces)
+
+#### **Especificaciones Técnicas:**
+```typescript
+interface PagoFlexible {
+  cuota_id: string
+  tipo_pago: 'parcial' | 'total' | 'renovacion'
+  frecuencia: 'diario' | 'semanal' | 'quincenal' | 'tri-semanal' | 'mensual'
+  porcentaje_aplicado: number
+  monto_calculado: number
+  monto_pagado: number
+  saldo_pendiente: number
+  es_renovacion: boolean
+  numero_renovacion?: number
+}
+```
+
+### **5. PROCESO DE VENCIMIENTOS (CLIENTE ESPECÍFICO)**
+
+#### **Funcionalidades Requeridas:**
+- **Plazo de Gracia (Cliente Request):**
+  - **1 semana exacta** después de vencimiento
+  - Durante gracia: Solo recordatorios, NO mora
+  - Después de gracia: Preparar para venta
+  - "Cuando cliente no responde en 1 semana → venta"
+
+- **Escalamiento Automático:**
+  - Día 1-7: Recordatorios WhatsApp automáticos
+  - Día 8: "Plazo gracia terminado"
+  - Día 8+: Proceso de remate activado
+  - Precio venta: "Monto mayor al que se le dio"
+
+- **Workflow de Venta:**
+  - Cambiar estado prenda: "En proceso venta"
+  - Calcular precio mínimo venta
+  - Generar ficha para vitrina/marketplace
+  - Notificar al cliente última oportunidad
 
 #### **Especificaciones Técnicas:**
 ```typescript
@@ -385,23 +517,31 @@ interface ComprobanteElectronico {
 
 ---
 
-## 📅 CRONOGRAMA DE IMPLEMENTACIÓN
+## 📅 CRONOGRAMA ACTUALIZADO (POST-ENTREVISTA)
 
-### **Semana 1-2: Funcionalidades Críticas**
-- [ ] Control de Caja completo
-- [ ] Generación de Contratos PDF
+### **✅ COMPLETADO (12 Nov 2025):**
+- ✅ Control de Caja completo
+- ✅ Generación de Contratos PDF
+- ✅ Sistema de Fotos de Garantías
+- ✅ Navegación completa del dashboard
 
-### **Semana 3-4: Core Operativo**  
-- [ ] Sistema de Fotos de Garantías
-- [ ] Proceso de Vencimientos
+### **🚀 EN CURSO (13-15 Nov 2025):**
+- 🚧 **RENIEC API Integration** (2-3 días)
+- 🚧 **WhatsApp Business API** (2-3 días)
 
-### **Semana 5-6: Diferenciación**
-- [ ] Integración WhatsApp
-- [ ] IA de Valuación básica
+### **⚡ SIGUIENTE SPRINT (16-20 Nov 2025):**
+- [ ] Sistema de Pagos Flexibles (2-3 días)
+- [ ] Proceso de Vencimientos específico (3-4 días)
 
-### **Semana 7-8: Seguridad y Compliance**
-- [ ] Roles y Permisos completos
-- [ ] Reportes SUNAT básicos
+### **🎯 SPRINT DIFERENCIACIÓN (21-27 Nov 2025):**
+- [ ] IA de Valuación con cámara (4-5 días)
+- [ ] Roles y Permisos granulares (2-3 días)
+
+### **📊 SPRINT FINAL (28 Nov - 5 Dic 2025):**
+- [ ] Reportes gerenciales
+- [ ] Optimizaciones de performance
+- [ ] Testing exhaustivo
+- [ ] Capacitación y go-live
 
 ---
 
@@ -423,13 +563,36 @@ interface ComprobanteElectronico {
 
 ---
 
-## 🚀 PRÓXIMO PASO
+## 🚀 PRÓXIMOS PASOS INMEDIATOS
 
-**IMPLEMENTAR EN ORDEN DE PRIORIDAD:**
+### **✅ COMPLETADOS (60% del Sprint 1):**
+1. ✅ **Control de Caja** - FUNCIONANDO AL 100%
+2. ✅ **Contratos PDF** - FUNCIONANDO AL 100%  
+3. ✅ **Fotos Garantías** - FUNCIONANDO AL 100%
 
-1. **Control de Caja** (Semana 1) - SIN ESTO NO PUEDEN OPERAR
-2. **Contratos PDF** (Semana 2) - RIESGO LEGAL ALTO  
-3. **Fotos Garantías** (Semana 3) - OBLIGATORIO POR LEY
-4. **Proceso Vencimientos** (Semana 4) - CORE DEL NEGOCIO
+### **🎯 PRIORIDAD EXTREMA (Esta Semana):**
 
-**¿Empezamos con Control de Caja?**
+#### **1. RENIEC API Integration (2-3 días)**
+- **Impacto:** Reduce tiempo registro 80%
+- **Cliente dice:** "Solo ingresar DNI para rellenar datos"
+- **ROI:** 5-10 min → 30 seg por cliente
+
+#### **2. WhatsApp Business API (2-3 días)**  
+- **Impacto:** Automatiza 100% comunicación cliente
+- **Cliente dice:** "Confirmaciones pago, recordatorios, saludos"
+- **ROI:** Reduce morosidad 25-40%
+
+### **🔥 JUSTIFICACIÓN PRIORIDAD:**
+- **Excel actual:** "No cumple expectativas"
+- **Sistema crítico:** "Si cae 1 hora, empresa se detiene"
+- **Comunicación manual:** Fragmentada y sin seguimiento
+- **Proceso actual:** Envían fotos WhatsApp para valuar
+
+### **📋 CRITERIOS DE ÉXITO (Cliente):**
+- [ ] DNI → datos completos < 30 segundos
+- [ ] WhatsApp automático confirmando pagos
+- [ ] Recordatorios 7, 3, 1 días antes vencimiento
+- [ ] Saludos automáticos en feriados
+- [ ] Reducir tiempo registro cliente 80%
+
+**¿PROCEDEMOS CON RENIEC API + WHATSAPP BUSINESS?**
