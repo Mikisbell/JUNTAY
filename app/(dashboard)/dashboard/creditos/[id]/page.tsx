@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic'
 export default async function CreditoDetallePage({ params }: { params: { id: string } }) {
   const credito = await getCreditoById(params.id)
 
-  if (!credito) {
+  if (!credito || !credito.id) {
     notFound()
   }
 
@@ -37,13 +37,13 @@ export default async function CreditoDetallePage({ params }: { params: { id: str
         </div>
         <div className="flex items-center space-x-2">
           <GenerarContratoButton 
-            creditoId={credito.id} 
+            creditoId={credito.id!} 
             creditoCodigo={credito.codigo}
             variant="outline"
             size="sm"
           />
           <DescargarContratoButton 
-            creditoId={credito.id} 
+            creditoId={credito.id!} 
             creditoCodigo={credito.codigo}
             variant="ghost"
             size="sm"
