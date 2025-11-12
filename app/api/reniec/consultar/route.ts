@@ -154,6 +154,15 @@ function consultarRENIECMock(dni: string): Promise<RENIECAPIResponse> {
           direccion: 'JR. CUSCO 456, LIMA, PERU',
           estado_civil: 'CASADA',
           fecha_nacimiento: '1985-12-20'
+        },
+        '43708661': {
+          nombres: 'MATEO',
+          apellido_paterno: 'USUARIO',
+          apellido_materno: 'JUNTAY',
+          ubigeo: '150101',
+          direccion: 'DIRECCION DE PRUEBA, LIMA, PERU',
+          estado_civil: 'SOLTERO',
+          fecha_nacimiento: '1990-01-01'
         }
       }
 
