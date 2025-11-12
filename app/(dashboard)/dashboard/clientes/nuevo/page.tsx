@@ -638,16 +638,28 @@ export default function NuevoClientePage() {
                 </div>
               </div>
 
-              <div>
-                <Label htmlFor="direccion">Dirección</Label>
-                <Input
-                  id="direccion"
-                  name="direccion"
-                  value={formData.direccion}
-                  onChange={handleInputChange}
-                  placeholder="Dirección de la empresa"
-                  className={getCampoStyle('direccion', formData.direccion)}
+              {/* Ubicación de la Empresa */}
+              <div className="space-y-4">
+                <UbicacionSelector
+                  departamentoInicial={formData.departamento}
+                  provinciaInicial={formData.provincia}
+                  distritoInicial={formData.distrito}
+                  onUbicacionChange={handleUbicacionChange}
+                  getCampoStyle={getCampoStyle}
+                  disabled={loading}
                 />
+
+                <div>
+                  <Label htmlFor="direccion">Dirección Completa</Label>
+                  <Input
+                    id="direccion"
+                    name="direccion"
+                    value={formData.direccion}
+                    onChange={handleInputChange}
+                    placeholder="Av. Principal 123, Urb. Industrial"
+                    className={getCampoStyle('direccion', formData.direccion)}
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>
