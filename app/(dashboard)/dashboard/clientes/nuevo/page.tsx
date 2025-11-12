@@ -18,6 +18,10 @@ export default function NuevoClientePage() {
   const [tipoPersona, setTipoPersona] = useState<'natural' | 'juridica'>('natural')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  
+  // Tracking de campos auto-rellenados vs campos completados manualmente
+  const [camposAutoRellenados, setCamposAutoRellenados] = useState<Set<string>>(new Set())
+  const [camposCompletadosManualmente, setCamposCompletadosManualmente] = useState<Set<string>>(new Set())
 
   // Estado del formulario
   const [formData, setFormData] = useState({
@@ -43,10 +47,23 @@ export default function NuevoClientePage() {
   })
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value
     })
+    
+    // Marcar campo como completado manualmente si tiene valor
+    if (value.trim()) {
+      setCamposCompletadosManualmente(prev => new Set(prev).add(name))
+    } else {
+      setCamposCompletadosManualmente(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(name)
+        return newSet
+      })
+    }
   }
 
   // Manejar datos obtenidos de RENIEC - Autorelleno completo
@@ -109,6 +126,17 @@ export default function NuevoClientePage() {
       }
     }
     
+    // Campos que se van a auto-rellenar
+    const camposAutoLlenados = ['numero_documento', 'nombres', 'apellido_paterno']
+    
+    // Agregar campos opcionales si tienen datos
+    if (datos.apellido_materno) camposAutoLlenados.push('apellido_materno')
+    if (datos.fecha_nacimiento) camposAutoLlenados.push('fecha_nacimiento')
+    if (datos.direccion) camposAutoLlenados.push('direccion')
+    if (departamento !== formData.departamento) camposAutoLlenados.push('departamento')
+    if (provincia !== formData.provincia) camposAutoLlenados.push('provincia')
+    if (distrito !== formData.distrito) camposAutoLlenados.push('distrito')
+
     setFormData({
       ...formData,
       // Datos básicos
@@ -123,6 +151,9 @@ export default function NuevoClientePage() {
       provincia: provincia,
       distrito: distrito
     })
+    
+    // Marcar campos como auto-rellenados
+    setCamposAutoRellenados(new Set(camposAutoLlenados))
     setError(null)
   }
 
@@ -137,6 +168,16 @@ export default function NuevoClientePage() {
 
   // Manejar datos obtenidos de SUNAT - Autorelleno para empresas
   const handleDatosSUNAT = (datos: any) => {
+    // Campos que se van a auto-rellenar
+    const camposAutoLlenados = ['numero_documento', 'razon_social']
+    
+    // Agregar campos opcionales si tienen datos
+    if (datos.direccion) camposAutoLlenados.push('direccion')
+    if (datos.departamento) camposAutoLlenados.push('departamento')
+    if (datos.provincia) camposAutoLlenados.push('provincia')
+    if (datos.distrito) camposAutoLlenados.push('distrito')
+    if (datos.representante_legal?.nombres) camposAutoLlenados.push('representante_legal')
+
     setFormData({
       ...formData,
       // Datos básicos de empresa
@@ -149,6 +190,9 @@ export default function NuevoClientePage() {
       // Representante legal si está disponible
       representante_legal: datos.representante_legal?.nombres || formData.representante_legal
     })
+    
+    // Marcar campos como auto-rellenados
+    setCamposAutoRellenados(new Set(camposAutoLlenados))
     setError(null)
   }
 
@@ -159,6 +203,24 @@ export default function NuevoClientePage() {
     setTimeout(() => {
       router.push(`/dashboard/clientes/${empresaId}`)
     }, 3000)
+  }
+
+  // Función para obtener el estilo del campo según su estado
+  const getCampoStyle = (nombreCampo: string, valor: string) => {
+    const tieneValor = valor && valor.trim()
+    const esAutoRellenado = camposAutoRellenados.has(nombreCampo)
+    const esCompletadoManualmente = camposCompletadosManualmente.has(nombreCampo)
+    
+    if (esAutoRellenado || (tieneValor && esCompletadoManualmente)) {
+      // Verde: auto-rellenado o completado manualmente
+      return 'border-green-500 bg-green-50 focus:border-green-600 focus:ring-green-500'
+    } else if (!tieneValor && (camposAutoRellenados.size > 0 || camposCompletadosManualmente.size > 0)) {
+      // Rojo: campo vacío después de que se han rellenado otros campos
+      return 'border-red-300 bg-red-50 focus:border-red-500 focus:ring-red-500'
+    } else {
+      // Normal: estado inicial
+      return ''
+    }
   }
 
   const validateForm = () => {
@@ -359,6 +421,7 @@ export default function NuevoClientePage() {
                     value={formData.nombres}
                     onChange={handleInputChange}
                     placeholder="Juan Carlos"
+                    className={getCampoStyle('nombres', formData.nombres)}
                     required
                   />
                 </div>

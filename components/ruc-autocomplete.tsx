@@ -253,82 +253,12 @@ export function RUCAutoComplete({
         </Card>
       )}
 
-      {/* Resultados */}
+      {/* Mensaje de éxito simple */}
       {consulta.estado === 'completado' && consulta.datos && (
-        <Card className="border-green-200 bg-green-50">
-          <CardContent className="pt-4">
-            <div className="flex items-start gap-3">
-              <Building className="h-5 w-5 text-green-600 mt-0.5" />
-              <div className="flex-1">
-                <h4 className="font-medium text-green-800">
-                  Datos SUNAT Obtenidos
-                </h4>
-                <div className="mt-2 text-sm text-green-700 space-y-1">
-                  <p><strong>Razón Social:</strong> {consulta.datos.razon_social}</p>
-                  <p><strong>RUC:</strong> {consulta.datos.ruc}</p>
-                  <p><strong>Estado:</strong> 
-                    <span className={`ml-1 px-2 py-0.5 rounded text-xs ${
-                      consulta.datos.estado === 'ACTIVO' 
-                        ? 'bg-green-200 text-green-800' 
-                        : 'bg-red-200 text-red-800'
-                    }`}>
-                      {consulta.datos.estado}
-                    </span>
-                  </p>
-                  {consulta.datos.condicion_domicilio && (
-                    <p><strong>Condición:</strong> 
-                      <span className={`ml-1 px-2 py-0.5 rounded text-xs ${
-                        consulta.datos.condicion_domicilio === 'HABIDO' 
-                          ? 'bg-green-200 text-green-800' 
-                          : 'bg-yellow-200 text-yellow-800'
-                      }`}>
-                        {consulta.datos.condicion_domicilio}
-                      </span>
-                    </p>
-                  )}
-                  {consulta.datos.direccion && (
-                    <p><strong>Dirección:</strong> {consulta.datos.direccion}</p>
-                  )}
-                  {consulta.datos.distrito && (
-                    <p><strong>Ubicación:</strong> {consulta.datos.distrito}, {consulta.datos.provincia}, {consulta.datos.departamento}</p>
-                  )}
-                  <p><strong>Actividad:</strong> {consulta.datos.actividad_economica || '-'}</p>
-                  {consulta.datos.tipo_persona && (
-                    <p><strong>Tipo Persona:</strong> {consulta.datos.tipo_persona}</p>
-                  )}
-                  {consulta.datos.fecha_inscripcion && (
-                    <p><strong>Fecha Inscripción:</strong> {formatearFecha(consulta.datos.fecha_inscripcion)}</p>
-                  )}
-                  {consulta.datos.es_buen_contribuyente !== undefined && (
-                    <p><strong>Buen Contribuyente:</strong> 
-                      <span className={`ml-1 px-2 py-0.5 rounded text-xs ${
-                        consulta.datos.es_buen_contribuyente 
-                          ? 'bg-green-200 text-green-800' 
-                          : 'bg-gray-200 text-gray-800'
-                      }`}>
-                        {consulta.datos.es_buen_contribuyente ? 'SÍ' : 'NO'}
-                      </span>
-                    </p>
-                  )}
-                  {consulta.datos.ubigeo && (
-                    <p><strong>Ubigeo:</strong> {consulta.datos.ubigeo}</p>
-                  )}
-                  {consulta.datos.representante_legal && (
-                    <div className="mt-3 pt-2 border-t border-green-200">
-                      <p className="font-medium">Representante Legal:</p>
-                      <p><strong>Nombre:</strong> {consulta.datos.representante_legal.nombres}</p>
-                      <p><strong>DNI:</strong> {consulta.datos.representante_legal.dni}</p>
-                      <p><strong>Cargo:</strong> {consulta.datos.representante_legal.cargo}</p>
-                      {consulta.datos.representante_legal.fecha_desde && (
-                        <p><strong>Desde:</strong> {formatearFecha(consulta.datos.representante_legal.fecha_desde)}</p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 border border-green-200 rounded-md px-3 py-2">
+          <Building className="h-4 w-4" />
+          <span>Datos SUNAT obtenidos - Campos rellenados automáticamente</span>
+        </div>
       )}
 
       {/* Empresa existente */}

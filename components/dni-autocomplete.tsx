@@ -193,35 +193,12 @@ export function DNIAutoComplete({
         )}
       </div>
 
-      {/* Resultados */}
+      {/* Mensaje de éxito simple */}
       {consulta.estado === 'completado' && consulta.datos && (
-        <Card className="border-green-200 bg-green-50">
-          <CardContent className="pt-4">
-            <div className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
-              <div className="flex-1">
-                <h4 className="font-medium text-green-800">
-                  Datos RENIEC Obtenidos
-                </h4>
-                <div className="mt-2 text-sm text-green-700 space-y-1">
-                  <p><strong>Nombre:</strong> {consulta.datos.nombre_completo}</p>
-                  {consulta.datos.direccion && (
-                    <p><strong>Dirección:</strong> {consulta.datos.direccion}</p>
-                  )}
-                  {consulta.datos.estado_civil && (
-                    <p><strong>Estado Civil:</strong> {consulta.datos.estado_civil}</p>
-                  )}
-                  {consulta.datos.fecha_nacimiento && (
-                    <p><strong>Fecha Nacimiento:</strong> {new Date(consulta.datos.fecha_nacimiento).toLocaleDateString('es-PE')}</p>
-                  )}
-                  {consulta.datos.ubigeo && (
-                    <p><strong>Ubigeo:</strong> {consulta.datos.ubigeo}</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 border border-green-200 rounded-md px-3 py-2">
+          <CheckCircle className="h-4 w-4" />
+          <span>Datos RENIEC obtenidos - Campos rellenados automáticamente</span>
+        </div>
       )}
 
       {/* Cliente existente */}
