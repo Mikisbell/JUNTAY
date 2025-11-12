@@ -105,7 +105,8 @@ export async function POST(request: Request) {
       plantilla_id: 'confirmacion_pago',
       mensaje: '', // Se genera automáticamente desde la plantilla
       variables: variables,
-      programado_para: new Date() // Enviar inmediatamente
+      programado_para: new Date(), // Enviar inmediatamente
+      estado: 'pendiente'
     })
 
     if (resultado.success) {

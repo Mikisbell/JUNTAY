@@ -48,8 +48,9 @@ export async function POST(request: Request) {
       )
     }
 
-    const cliente = credito.clientes
-    const telefono = cliente.celular || cliente.telefono
+    // clientes puede venir como array, tomar el primer elemento
+    const cliente = Array.isArray(credito.clientes) ? credito.clientes[0] : credito.clientes
+    const telefono = cliente?.celular || cliente?.telefono
 
     if (!telefono) {
       return NextResponse.json(
@@ -100,7 +101,7 @@ export async function POST(request: Request) {
       // Recordatorio 7 días antes (si aún no ha pasado)
       if (fecha7Dias >= hoy) {
         await programarRecordatorio({
-          cliente_id: cliente.id,
+          cliente_id: cliente.id!,
           telefono,
           plantilla_id: 'recordatorio_7_dias',
           variables,
@@ -112,7 +113,7 @@ export async function POST(request: Request) {
       // Recordatorio 3 días antes (si aún no ha pasado)
       if (fecha3Dias >= hoy) {
         await programarRecordatorio({
-          cliente_id: cliente.id,
+          cliente_id: cliente.id!,
           telefono,
           plantilla_id: 'recordatorio_3_dias',
           variables,
@@ -124,7 +125,7 @@ export async function POST(request: Request) {
       // Recordatorio el día de vencimiento (si es hoy o futuro)
       if (fechaHoy >= hoy) {
         await programarRecordatorio({
-          cliente_id: cliente.id,
+          cliente_id: cliente.id!,
           telefono,
           plantilla_id: 'recordatorio_hoy',
           variables,
@@ -139,7 +140,7 @@ export async function POST(request: Request) {
 
       if (fechaRecordatorioGracia >= hoy) {
         await programarRecordatorio({
-          cliente_id: cliente.id,
+          cliente_id: cliente.id!,
           telefono,
           plantilla_id: 'vencido_gracia',
           variables,
@@ -190,7 +191,8 @@ async function programarRecordatorio({
       plantilla_id,
       mensaje: '',
       variables,
-      programado_para: fecha_envio
+      programado_para: fecha_envio,
+      estado: 'pendiente'
     })
   } catch (error) {
     console.error('Error programando recordatorio individual:', error)
