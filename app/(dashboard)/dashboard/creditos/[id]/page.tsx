@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { getCreditoById } from '@/lib/api/creditos'
+import { GenerarContratoButton, DescargarContratoButton } from '@/components/generar-contrato-button'
 
 export const dynamic = 'force-dynamic'
 
@@ -35,6 +36,18 @@ export default async function CreditoDetallePage({ params }: { params: { id: str
           </div>
         </div>
         <div className="flex items-center space-x-2">
+          <GenerarContratoButton 
+            creditoId={credito.id} 
+            creditoCodigo={credito.codigo}
+            variant="outline"
+            size="sm"
+          />
+          <DescargarContratoButton 
+            creditoId={credito.id} 
+            creditoCodigo={credito.codigo}
+            variant="ghost"
+            size="sm"
+          />
           <Badge 
             variant={
               credito.estado === 'vigente' ? 'default' : 

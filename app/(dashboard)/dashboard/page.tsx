@@ -70,9 +70,9 @@ export default async function DashboardPage() {
             {ultimosCreditos.length > 0 ? (
               <div className="space-y-4">
                 {ultimosCreditos.map((credito) => {
-                  const nombreCliente = credito.cliente?.tipo_persona === 'natural'
-                    ? `${credito.cliente?.nombres} ${credito.cliente?.apellido_paterno}`
-                    : credito.cliente?.razon_social
+                  const nombreCliente = credito.clientes?.tipo_persona === 'natural'
+                    ? `${credito.clientes?.nombres} ${credito.clientes?.apellido_paterno}`
+                    : credito.clientes?.razon_social
                   
                   return (
                     <Link key={credito.id} href={`/dashboard/creditos/${credito.id}`}>

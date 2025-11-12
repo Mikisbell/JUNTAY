@@ -7,7 +7,8 @@ import {
   DollarSign,
   FileText,
   Settings,
-  Menu
+  Menu,
+  Wallet
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { LogoutButton } from "@/components/logout-button"
@@ -47,6 +48,15 @@ export default function DashboardLayout({
             </NavItem>
             <NavItem href="/dashboard/cobranzas" icon={<DollarSign size={20} />}>
               Cobranzas
+            </NavItem>
+          </div>
+          
+          <div className="pt-4">
+            <p className="text-xs font-semibold text-gray-400 uppercase mb-2">
+              Finanzas
+            </p>
+            <NavItem href="/dashboard/caja" icon={<Wallet size={20} />}>
+              Control de Caja
             </NavItem>
           </div>
           

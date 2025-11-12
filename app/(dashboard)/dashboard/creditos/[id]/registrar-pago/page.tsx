@@ -53,7 +53,7 @@ export default function RegistrarPagoPage({ params }: { params: { id: string } }
       if (cuotaPendiente) {
         setFormData(prev => ({
           ...prev,
-          monto_pago: cuotaPendiente.monto_total.toString()
+          monto_pago: ((cuotaPendiente.monto_total ?? cuotaPendiente.monto_cuota ?? 0).toString())
         }))
       }
     } catch (err: any) {
@@ -81,6 +81,9 @@ export default function RegistrarPagoPage({ params }: { params: { id: string } }
         throw new Error('Ingrese un monto válido')
       }
 
+      // Obtener usuario actual
+      const { data: { user } } = await supabase.auth.getUser()
+
       // Generar código único para el pago
       const codigoPago = `PAG-${Date.now().toString().slice(-8)}`
 
@@ -102,7 +105,7 @@ export default function RegistrarPagoPage({ params }: { params: { id: string } }
           cronograma_id: null,     // Por ahora NULL - TODO: vincular a cuota específica
           caja_id: null,           // Por ahora NULL - TODO: agregar selector de caja
           cuenta_bancaria_id: null, // Por ahora NULL - solo si es transferencia
-          registrado_por: null     // Por ahora NULL - TODO: obtener usuario actual
+          registrado_por: user?.id || null     // Registrar usuario actual si existe
         }])
         .select()
         .single()
@@ -115,7 +118,8 @@ export default function RegistrarPagoPage({ params }: { params: { id: string } }
         if (montoRestante <= 0) break
         if (cuota.estado === 'pagado') continue
 
-        const saldoCuota = cuota.monto_total - (cuota.monto_pagado || 0)
+        const montoCuota = (cuota.monto_total ?? cuota.monto_cuota ?? 0)
+        const saldoCuota = montoCuota - (cuota.monto_pagado || 0)
         const montoAAplicar = Math.min(montoRestante, saldoCuota)
         const nuevoMontoPagado = (cuota.monto_pagado || 0) + montoAAplicar
 
@@ -124,8 +128,8 @@ export default function RegistrarPagoPage({ params }: { params: { id: string } }
           .from('cronograma_pagos')
           .update({
             monto_pagado: nuevoMontoPagado,
-            estado: nuevoMontoPagado >= cuota.monto_total ? 'pagado' : 'parcial',
-            fecha_pago: nuevoMontoPagado >= cuota.monto_total ? formData.fecha_pago : null
+            estado: nuevoMontoPagado >= montoCuota ? 'pagado' : 'parcial',
+            fecha_pago: nuevoMontoPagado >= montoCuota ? formData.fecha_pago : null
           })
           .eq('id', cuota.id)
 
@@ -136,7 +140,7 @@ export default function RegistrarPagoPage({ params }: { params: { id: string } }
       const nuevoMontoPagado = (credito.monto_pagado || 0) + montoPago
       const nuevoSaldo = credito.monto_total - nuevoMontoPagado
       const cuotasPagadas = cuotas.filter(c => 
-        c.estado === 'pagado' || (c.monto_pagado || 0) >= c.monto_total
+        c.estado === 'pagado' || (c.monto_pagado || 0) >= (c.monto_total ?? c.monto_cuota ?? 0)
       ).length
 
       await supabase
@@ -288,7 +292,7 @@ export default function RegistrarPagoPage({ params }: { params: { id: string } }
               {cuotasPendientes.length > 0 ? (
                 <div className="space-y-2">
                   {cuotasPendientes.map((cuota) => {
-                    const saldo = cuota.monto_total - (cuota.monto_pagado || 0)
+                    const saldo = (cuota.monto_total ?? cuota.monto_cuota ?? 0) - (cuota.monto_pagado || 0)
                     return (
                       <div key={cuota.id} className="p-3 bg-gray-50 rounded-md flex justify-between items-center">
                         <div>

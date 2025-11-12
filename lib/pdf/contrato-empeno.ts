@@ -1,9 +1,8 @@
 // Generador de contratos de empeño en PDF
-// NOTA: Requiere instalación: npm install jspdf
-
+import jsPDF from 'jspdf'
 import type { Credito } from '@/lib/api/creditos'
 
-// Función para generar contrato (sin jsPDF por ahora - template)
+// Función principal para generar PDF del contrato
 export function generarContratoEmpeno(credito: any, cliente: any, garantia: any) {
   // Esta función requiere jsPDF
   // Por ahora retornamos el HTML del contrato para preview
@@ -270,27 +269,153 @@ function numeroALetras(num: number): string {
   return resultado.trim() || 'CERO'
 }
 
-// Función para generar contrato y descargarlo
-export async function descargarContrato(creditoId: string) {
-  try {
-    // Obtener datos del crédito, cliente y garantía
-    // (esto debería llamar a las APIs correspondientes)
-    
-    // Generar HTML
-    // const html = generarContratoEmpeno(credito, cliente, garantia)
-    
-    // Por ahora, abrir en nueva ventana
-    // En producción, convertir a PDF con jsPDF o similar
-    
-    return {
-      success: true,
-      message: 'Contrato generado'
-    }
-  } catch (error) {
-    console.error('Error al generar contrato:', error)
-    return {
-      success: false,
-      error: 'Error al generar contrato'
-    }
+// Función para generar PDF del contrato
+export function generarContratoPDF(credito: any, cliente: any, garantia: any): jsPDF {
+  const doc = new jsPDF()
+  
+  // Configuración inicial
+  const pageWidth = doc.internal.pageSize.getWidth()
+  let yPosition = 20
+  
+  // Función helper para agregar texto con salto de línea automático
+  const addText = (text: string, x: number, y: number, options?: any) => {
+    const lines = doc.splitTextToSize(text, pageWidth - 40)
+    doc.text(lines, x, y, options)
+    return y + (lines.length * 6)
   }
+  
+  // Título
+  doc.setFontSize(16)
+  doc.setFont('helvetica', 'bold')
+  doc.text('CONTRATO DE MUTUO CON GARANTÍA PRENDARIA', pageWidth/2, yPosition, { align: 'center' })
+  yPosition += 20
+  
+  // Información del contrato
+  doc.setFontSize(10)
+  doc.setFont('helvetica', 'normal')
+  doc.text(`Código: ${credito.codigo}`, 20, yPosition)
+  doc.text(`Fecha: ${new Date().toLocaleDateString('es-PE')}`, pageWidth - 60, yPosition)
+  yPosition += 15
+  
+  // Partes del contrato
+  doc.setFontSize(12)
+  doc.setFont('helvetica', 'bold')
+  yPosition = addText('I. DE LAS PARTES:', 20, yPosition)
+  yPosition += 5
+  
+  doc.setFontSize(10)
+  doc.setFont('helvetica', 'bold')
+  yPosition = addText('EL MUTUANTE:', 20, yPosition)
+  
+  doc.setFont('helvetica', 'normal')
+  yPosition = addText('JUNTAY S.A.C., con RUC N° 20123456789, con domicilio en Av. Principal 123, Lima, Perú.', 20, yPosition)
+  yPosition += 8
+  
+  doc.setFont('helvetica', 'bold')
+  yPosition = addText('EL MUTUATARIO:', 20, yPosition)
+  
+  const nombreCliente = cliente.tipo_persona === 'natural'
+    ? `${cliente.nombres} ${cliente.apellido_paterno} ${cliente.apellido_materno || ''}`.trim()
+    : cliente.razon_social
+    
+  doc.setFont('helvetica', 'normal')
+  yPosition = addText(`${nombreCliente}, identificado con ${cliente.tipo_documento?.toUpperCase()} N° ${cliente.numero_documento}, con domicilio en ${cliente.direccion || 'No especificado'}.`, 20, yPosition)
+  yPosition += 15
+  
+  // Objeto del contrato
+  doc.setFontSize(12)
+  doc.setFont('helvetica', 'bold')
+  yPosition = addText('II. DEL OBJETO DEL CONTRATO:', 20, yPosition)
+  yPosition += 5
+  
+  doc.setFontSize(10)
+  doc.setFont('helvetica', 'normal')
+  yPosition = addText(`Por el presente contrato, EL MUTUANTE entrega en préstamo a EL MUTUATARIO la suma de S/ ${credito.monto_prestado?.toFixed(2)} (${numeroALetras(credito.monto_prestado)} SOLES).`, 20, yPosition)
+  yPosition += 15
+  
+  // Garantía
+  doc.setFontSize(12)
+  doc.setFont('helvetica', 'bold')
+  yPosition = addText('III. DE LA GARANTÍA PRENDARIA:', 20, yPosition)
+  yPosition += 5
+  
+  doc.setFontSize(10)
+  doc.setFont('helvetica', 'normal')
+  yPosition = addText('Para garantizar el cumplimiento de la obligación, EL MUTUATARIO entrega en prenda:', 20, yPosition)
+  yPosition += 8
+  
+  // Tabla de garantía simplificada
+  doc.setFont('helvetica', 'bold')
+  yPosition = addText(`Bien: ${garantia?.nombre || 'N/A'}`, 25, yPosition)
+  doc.setFont('helvetica', 'normal') 
+  yPosition = addText(`Descripción: ${garantia?.descripcion || 'N/A'}`, 25, yPosition)
+  yPosition = addText(`Valor de Tasación: S/ ${garantia?.valor_tasacion?.toFixed(2) || '0.00'}`, 25, yPosition)
+  yPosition += 15
+  
+  // Nueva página si es necesario
+  if (yPosition > 250) {
+    doc.addPage()
+    yPosition = 20
+  }
+  
+  // Condiciones económicas
+  doc.setFontSize(12)
+  doc.setFont('helvetica', 'bold')
+  yPosition = addText('IV. CONDICIONES ECONÓMICAS:', 20, yPosition)
+  yPosition += 5
+  
+  doc.setFontSize(10)
+  doc.setFont('helvetica', 'normal')
+  yPosition = addText(`• Monto del Préstamo: S/ ${credito.monto_prestado?.toFixed(2)}`, 25, yPosition)
+  yPosition = addText(`• Tasa de Interés: ${credito.tasa_interes_mensual}% mensual`, 25, yPosition)
+  yPosition = addText(`• Monto Total a Pagar: S/ ${credito.monto_total?.toFixed(2)}`, 25, yPosition)
+  yPosition = addText(`• Número de Cuotas: ${credito.numero_cuotas} cuotas ${credito.frecuencia_pago}s`, 25, yPosition)
+  yPosition = addText(`• Monto por Cuota: S/ ${credito.monto_cuota?.toFixed(2)}`, 25, yPosition)
+  yPosition = addText(`• Tasa de Mora: ${credito.tasa_mora_diaria}% diario`, 25, yPosition)
+  yPosition += 15
+  
+  // Obligaciones y términos legales (versión resumida)
+  doc.setFontSize(12)
+  doc.setFont('helvetica', 'bold')
+  yPosition = addText('V. TÉRMINOS LEGALES:', 20, yPosition)
+  yPosition += 5
+  
+  doc.setFontSize(9)
+  doc.setFont('helvetica', 'normal')
+  yPosition = addText('• El MUTUATARIO se obliga a pagar las cuotas puntualmente.', 25, yPosition)
+  yPosition = addText('• En caso de mora, se aplicarán intereses moratorios según la tasa pactada.', 25, yPosition)
+  yPosition = addText('• Transcurridos 30 días del vencimiento final, se podrá proceder al remate de la prenda.', 25, yPosition)
+  yPosition = addText('• Ambas partes se someten a la jurisdicción de los tribunales de Lima, Perú.', 25, yPosition)
+  yPosition += 20
+  
+  // Firmas
+  if (yPosition > 220) {
+    doc.addPage()
+    yPosition = 20
+  }
+  
+  yPosition = Math.max(yPosition, 200) // Asegurar espacio para firmas
+  
+  doc.setFont('helvetica', 'normal')
+  doc.text('_________________________', 50, yPosition)
+  doc.text('_________________________', 140, yPosition)
+  doc.text('EL MUTUANTE', 65, yPosition + 10)
+  doc.text('EL MUTUATARIO', 155, yPosition + 10)
+  doc.text('JUNTAY S.A.C.', 60, yPosition + 20)
+  doc.text(nombreCliente, 140, yPosition + 20)
+  
+  return doc
+}
+
+// Función para descargar el contrato como PDF
+export function descargarContratoPDF(credito: any, cliente: any, garantia: any) {
+  const doc = generarContratoPDF(credito, cliente, garantia)
+  const fileName = `contrato-${credito.codigo}-${new Date().toISOString().split('T')[0]}.pdf`
+  doc.save(fileName)
+}
+
+// Función para obtener el PDF como blob (para almacenamiento)
+export function obtenerContratoPDFBlob(credito: any, cliente: any, garantia: any): Blob {
+  const doc = generarContratoPDF(credito, cliente, garantia)
+  return doc.output('blob')
 }
