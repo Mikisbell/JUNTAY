@@ -10,11 +10,17 @@ export const dynamic = 'force-dynamic'
 export default async function CajaPage() {
   const cajas = await getCajas()
   
-  // Obtener saldo actual de cada caja
+  // Obtener saldo actual de cada caja y determinar estado real
   const cajasConSaldo = await Promise.all(
     cajas.map(async (caja) => {
       const saldo = await getSaldoActualCaja(caja.id!)
-      return { ...caja, ...saldo }
+      // Estado real basado en si tiene sesión activa
+      const estadoReal = saldo.tiene_sesion_abierta ? 'abierta' : 'cerrada'
+      return { 
+        ...caja, 
+        ...saldo,
+        estado: estadoReal // Sobrescribir estado con el real
+      }
     })
   )
 
