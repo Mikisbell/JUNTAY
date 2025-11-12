@@ -5,7 +5,9 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Upload, X, Loader2, Image as ImageIcon } from 'lucide-react'
 import { supabase } from '@/lib/supabase/client'
+import { getFotosGarantia, subirFotoGarantia, eliminarFotoGarantia, type FotoGarantia } from '@/lib/api/fotos-garantias'
 import Image from 'next/image'
+import { toast } from 'sonner'
 
 interface UploadFotosGarantiaProps {
   garantiaId: string
@@ -14,7 +16,7 @@ interface UploadFotosGarantiaProps {
 
 export function UploadFotosGarantia({ garantiaId, onUploadComplete }: UploadFotosGarantiaProps) {
   const [uploading, setUploading] = useState(false)
-  const [fotos, setFotos] = useState<Array<{ url: string; id: string }>>([])
+  const [fotos, setFotos] = useState<FotoGarantia[]>([])
   const [error, setError] = useState<string | null>(null)
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -25,65 +27,48 @@ export function UploadFotosGarantia({ garantiaId, onUploadComplete }: UploadFoto
     setError(null)
 
     try {
-      const uploadedFotos: Array<{ url: string; id: string }> = []
+      const uploadedFotos: FotoGarantia[] = []
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i]
         
         // Validar tipo de archivo
         if (!file.type.startsWith('image/')) {
-          throw new Error(`${file.name} no es una imagen`)
+          toast.error(`${file.name} no es una imagen válida`)
+          continue
         }
 
-        // Validar tamaño (máx 5MB)
-        if (file.size > 5 * 1024 * 1024) {
-          throw new Error(`${file.name} es muy grande (máx 5MB)`)
+        // Validar tamaño (máx 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+          toast.error(`${file.name} es muy grande (máx 10MB)`)
+          continue
         }
 
-        // Crear nombre único
-        const fileExt = file.name.split('.').pop()
-        const fileName = `${garantiaId}/${Date.now()}-${i}.${fileExt}`
+        // Usar la nueva API para subir
+        const tipoFoto = fotos.length === 0 && i === 0 ? 'principal' : 'detalle'
+        const result = await subirFotoGarantia(
+          garantiaId,
+          file,
+          tipoFoto,
+          `Foto ${fotos.length + i + 1}`
+        )
 
-        // Subir a Supabase Storage
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('garantias')
-          .upload(fileName, file, {
-            cacheControl: '3600',
-            upsert: false
-          })
-
-        if (uploadError) throw uploadError
-
-        // Obtener URL pública
-        const { data: { publicUrl } } = supabase.storage
-          .from('garantias')
-          .getPublicUrl(fileName)
-
-        // Guardar referencia en BD
-        const { data: fotoData, error: fotoError } = await supabase
-          .from('garantia_fotos')
-          .insert([{
-            garantia_id: garantiaId,
-            url: publicUrl,
-            es_principal: fotos.length === 0 && i === 0, // Primera foto es principal
-            orden: fotos.length + i
-          }])
-          .select()
-          .single()
-
-        if (fotoError) throw fotoError
-
-        uploadedFotos.push({
-          url: publicUrl,
-          id: fotoData.id
-        })
+        if (result.success && result.foto) {
+          uploadedFotos.push(result.foto)
+          toast.success(`${file.name} subida correctamente`)
+        } else {
+          toast.error(result.error || `Error al subir ${file.name}`)
+        }
       }
 
-      setFotos([...fotos, ...uploadedFotos])
-      onUploadComplete?.()
+      if (uploadedFotos.length > 0) {
+        setFotos([...fotos, ...uploadedFotos])
+        onUploadComplete?.()
+      }
     } catch (err: any) {
       console.error('Error al subir fotos:', err)
       setError(err.message || 'Error al subir fotos')
+      toast.error('Error al subir fotos')
     } finally {
       setUploading(false)
       // Resetear input
@@ -91,35 +76,22 @@ export function UploadFotosGarantia({ garantiaId, onUploadComplete }: UploadFoto
     }
   }
 
-  async function handleDeleteFoto(fotoId: string, fotoUrl: string) {
+  async function handleDeleteFoto(fotoId: string) {
     try {
-      // Extraer path de la URL
-      const urlParts = fotoUrl.split('/garantias/')
-      if (urlParts.length < 2) throw new Error('URL inválida')
+      const result = await eliminarFotoGarantia(fotoId)
       
-      const filePath = urlParts[1]
-
-      // Eliminar de storage
-      const { error: storageError } = await supabase.storage
-        .from('garantias')
-        .remove([filePath])
-
-      if (storageError) throw storageError
-
-      // Eliminar de BD
-      const { error: dbError } = await supabase
-        .from('garantia_fotos')
-        .delete()
-        .eq('id', fotoId)
-
-      if (dbError) throw dbError
-
-      // Actualizar estado local
-      setFotos(fotos.filter(f => f.id !== fotoId))
-      onUploadComplete?.()
+      if (result.success) {
+        // Actualizar estado local
+        setFotos(fotos.filter(f => f.id !== fotoId))
+        toast.success('Foto eliminada correctamente')
+        onUploadComplete?.()
+      } else {
+        toast.error(result.error || 'Error al eliminar foto')
+      }
     } catch (err: any) {
       console.error('Error al eliminar foto:', err)
       setError(err.message)
+      toast.error('Error al eliminar foto')
     }
   }
 
@@ -178,23 +150,33 @@ export function UploadFotosGarantia({ garantiaId, onUploadComplete }: UploadFoto
             <Card key={foto.id} className="relative group overflow-hidden">
               <div className="aspect-square relative">
                 <Image
-                  src={foto.url}
-                  alt="Foto de garantía"
+                  src={foto.archivo_url}
+                  alt={foto.descripcion || "Foto de garantía"}
                   fill
                   className="object-cover"
                 />
+                {foto.tipo_foto === 'principal' && (
+                  <div className="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                    Principal
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all flex items-center justify-center">
                   <Button
                     type="button"
                     variant="destructive"
                     size="icon"
                     className="opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={() => handleDeleteFoto(foto.id, foto.url)}
+                    onClick={() => handleDeleteFoto(foto.id!)}
                   >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
+              {foto.descripcion && (
+                <div className="p-2">
+                  <p className="text-xs text-gray-600 truncate">{foto.descripcion}</p>
+                </div>
+              )}
             </Card>
           ))}
         </div>
@@ -213,7 +195,7 @@ export function UploadFotosGarantia({ garantiaId, onUploadComplete }: UploadFoto
 
       {/* Info */}
       <p className="text-xs text-gray-500">
-        ℹ️ Máximo 5MB por foto. Formatos: JPG, PNG, WebP
+        ℹ️ Máximo 10MB por foto. Formatos: JPG, PNG, WebP. Primera foto será marcada como principal.
       </p>
     </div>
   )

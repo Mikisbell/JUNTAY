@@ -16,27 +16,45 @@
 **Preguntas Clave:**
 1. **Flujo de Trabajo Diario**
    - ¿Cómo abren la caja cada mañana?
+   Si desde las 9 am el trabajador  el administradir  tiene acceso al sistema a cualquier hroa   lso trabjaodres sera progrmados
    - ¿Cómo registran un nuevo empeño?
+   el clinete trae lo probamos si todo esta bien lo guardamos  siempre idncando si se encontro alguna anomalia
    - ¿Cómo manejan los pagos de clientes?
+   debe haber un campo donde insertaremos el procentaje que debera pagar por el prestamos, por lo general es el 20% por mes
+   hay clientes que pagan diariamente otros que pagan semanalmente por ello el porcentaje debe ajustarse 5% semanal 10% cada 15 dias 15% cada 3 semanas 
+   para ello se le debe dar un ticker  donde se indica que ya pago en su totalidad o parcial y hay caso en los que el cliente no podra hacer el pago mensual asi qeu tien la opcion de renovar siempre en cuando este pague solo  el 20% o lo que corresponda de interes  ese es un ejemplo ya que va a varias segun el procentaje que corresponda de cada mes  asi como el pago pro semana 
    - ¿Cómo cierran la caja al final del día?
+   en eso he tenido porblemas aceptare tus sugernecia profesioanles 
 
 2. **Herramientas Actuales**
    - ¿Qué sistema/software usan ahora?
+   si usamos excel
    - ¿Excel, cuadernos, sistema antiguo?
+   excel
    - ¿Qué les funciona bien?
+   no cumple mis espectavias
    - ¿Cuáles son sus principales frustraciones?
+   autmotizacion y el hecho de no poder interactuar con mis  clientes enviando si estan en mora y cuanto dias de mora tiene que se comuniquen con nosotros al menos de enviar un mensaje de confirmación de pago  el contrrator digtal saludos por sferiados
 
 3. **Volumen de Operaciones**
    - ¿Cuántos empeños procesan por día?
+   10 promedio 
    - ¿Cuánto dinero manejan diariamente?
+   hasta 10 mil soles
    - ¿Cuántas sucursales/cajas tienen?
+   de momoento solo 1 pero se esta pensando en abrir otro 
    - ¿Cuántos empleados usan el sistema?
+   2
 
 4. **Procesos de Garantías**
    - ¿Cómo valúan las prendas?
+   de mooento se hace manualmente, se le envia una foto por watsapp bussines a una persona que se encarga de ello y me da la tasa me gustaria que sea  automatico 
    - ¿Toman fotos? ¿Cómo las almacenan?
+   de momento se toman fotos manualmente y se guardan en un cuaderno con u ticker con un codigo de identificacion me gusatrua que se haga a a partir de la aplicacion  qeu em de un qr para qeu habilite mi  celular para qeu se conecten y 
    - ¿Dónde guardan físicamente las garantías?
+   en un alancen qu etenemso en al oficina 
    - ¿Cómo manejan las prendas vencidas?
+   pues cuando el cliente  no responde en el plazo de 1 semana lo ponemos en venta con un monto mayor al que se le dio 
 
 #### **Sesión 2: Dolores y Necesidades (1.5 horas)**
 **Objetivo:** Identificar problemas críticos a resolver
@@ -44,27 +62,42 @@
 **Áreas de Investigación:**
 1. **Control Financiero**
    - ¿Han tenido problemas de faltante/sobrante de caja?
+   si 
    - ¿Cómo controlan los movimientos de dinero?
+   con excel
    - ¿Necesitan reportes específicos para gerencia?
+   si 
    - ¿Integración con bancos necesaria?
+    no pero si con  la  reniec  para rellenart los datos solo ingresando su dni
 
 2. **Cumplimiento Legal**
    - ¿Qué reportes deben generar para SUNAT?
+   no  de moemnto pero si  es necesario debemos hacerlo
    - ¿Necesitan comprobantes electrónicos?
+   de momoento no  pero si el cliente lo requiere deberia hacerlo 
    - ¿Tienen auditorías regulares?
+   no en un futro sera con sl SBSS
    - ¿Qué documentos legales requieren?
 
 3. **Gestión de Clientes**
    - ¿Cómo se comunican con clientes morosos?
+   a traves de llamadas y whatsapp
    - ¿Usan WhatsApp, llamadas, visitas?
+   si 
    - ¿Qué información necesitan del historial del cliente?
+    todo 
    - ¿Manejan clientes corporativos?
+   no 
 
 4. **Operaciones Críticas**
    - ¿Cuáles son los procesos que NO pueden fallar?
+   todo 
    - ¿Qué pasa si el sistema se cae 1 hora?
+   todo el trabajo de la empresa se detiene
    - ¿Necesitan trabajar offline?
+   si 
    - ¿Requieren backup en tiempo real?
+   si 
 
 #### **Sesión 3: Flujos de Trabajo Detallados (2 horas)**
 **Objetivo:** Mapear cada proceso paso a paso
@@ -73,7 +106,7 @@
 1. **Flujo de Empeño Nuevo**
    ```
    Cliente llega → Evaluación prenda → Valuación → 
-   Negociación → Contrato → Fotos → Almacenamiento → 
+   Negociación → Fotos → Contrato → Almacenamiento → 
    Desembolso → Registro caja
    ```
 
@@ -83,7 +116,6 @@
    Cálculo intereses → Recibo pago → Actualización estado → 
    ¿Desempeña? → Entrega prenda / Continúa empeño
    ```
-
 3. **Flujo de Vencimiento**
    ```
    Detección vencimiento → Notificación cliente → 
@@ -103,22 +135,22 @@
 
 **Temas a Cubrir:**
 1. **Infraestructura**
-   - ¿Tienen internet estable?
-   - ¿Velocidad de conexión?
-   - ¿Equipos disponibles? (PCs, tablets, celulares)
-   - ¿Impresoras térmicas para recibos?
+   - ¿Tienen internet estable? si
+   - ¿Velocidad de conexión? buena
+   - ¿Equipos disponibles? (PCs, tablets, celulares) si
+   - ¿Impresoras térmicas para recibos? impresora canon g4110
 
 2. **Integraciones Deseadas**
-   - ¿WhatsApp Business account?
-   - ¿APIs bancarias específicas?
-   - ¿Sistema contable existente?
-   - ¿Cámaras de seguridad integradas?
+   - ¿WhatsApp Business account? si
+   - ¿APIs bancarias específicas? no
+   - ¿Sistema contable existente? no
+   - ¿Cámaras de seguridad integradas? no
 
 3. **Usuarios del Sistema**
-   - ¿Cuántos usuarios simultáneos?
-   - ¿Diferentes roles? (Admin, cajero, gerente)
-   - ¿Nivel técnico del equipo?
-   - ¿Capacitación requerida?
+   - ¿Cuántos usuarios simultáneos? 4
+   - ¿Diferentes roles? (Admin, cajero, gerente) si
+   - ¿Nivel técnico del equipo? nivel medio
+   - ¿Capacitación requerida? si
 
 ---
 

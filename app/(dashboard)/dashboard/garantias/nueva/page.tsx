@@ -11,12 +11,14 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase/client'
 import { getCurrentUser } from '@/lib/utils/auth'
 import type { CategoriaGarantia } from '@/lib/api/garantias'
+import { UploadFotosGarantia } from '@/components/upload-fotos-garantia'
 
 export default function NuevaGarantiaPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [categorias, setCategorias] = useState<CategoriaGarantia[]>([])
+  const [garantiaCreada, setGarantiaCreada] = useState<{id: string, codigo: string} | null>(null)
 
   const [formData, setFormData] = useState({
     nombre: '',
@@ -89,14 +91,20 @@ export default function NuevaGarantiaPage() {
         credito_id: null
       }
 
-      const { error: supabaseError } = await supabase
+      const { data: garantiaInsertada, error: supabaseError } = await supabase
         .from('garantias')
         .insert([garantiaData])
+        .select()
+        .single()
 
       if (supabaseError) throw supabaseError
 
-      router.push('/dashboard/garantias?success=Garantía registrada exitosamente')
-      router.refresh()
+      // Mostrar sección de fotos
+      setGarantiaCreada({
+        id: garantiaInsertada.id,
+        codigo: garantiaInsertada.codigo
+      })
+      setLoading(false)
     } catch (err: any) {
       setError(err.message || 'Error al registrar la garantía')
       setLoading(false)
@@ -294,25 +302,55 @@ export default function NuevaGarantiaPage() {
         </CardContent>
       </Card>
 
+      {/* Sección de fotos - Solo visible después de crear la garantía */}
+      {garantiaCreada && (
+        <Card>
+          <CardHeader>
+            <CardTitle>📸 Fotos de la Garantía - {garantiaCreada.codigo}</CardTitle>
+            <p className="text-sm text-gray-600">
+              Sube fotos de la prenda para documentar su estado y características
+            </p>
+          </CardHeader>
+          <CardContent>
+            <UploadFotosGarantia 
+              garantiaId={garantiaCreada.id}
+              onUploadComplete={() => {
+                console.log('Fotos subidas correctamente')
+              }}
+            />
+          </CardContent>
+        </Card>
+      )}
+
       <div className="flex items-center justify-end space-x-4 pb-8">
         <Link href="/dashboard/garantias">
           <Button type="button" variant="outline" disabled={loading}>
-            Cancelar
+            {garantiaCreada ? 'Volver a Garantías' : 'Cancelar'}
           </Button>
         </Link>
-        <Button type="submit" disabled={loading}>
-          {loading ? (
-            <>
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Guardando...
-            </>
-          ) : (
-            <>
-              <Save className="h-4 w-4 mr-2" />
-              Registrar Garantía
-            </>
-          )}
-        </Button>
+        
+        {!garantiaCreada ? (
+          <Button type="submit" disabled={loading}>
+            {loading ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Guardando...
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4 mr-2" />
+                Registrar Garantía
+              </>
+            )}
+          </Button>
+        ) : (
+          <Button 
+            type="button" 
+            onClick={() => router.push(`/dashboard/garantias?success=Garantía ${garantiaCreada.codigo} registrada exitosamente`)}
+          >
+            ✅ Finalizar
+          </Button>
+        )}
       </div>
     </form>
   )
