@@ -12,6 +12,7 @@ import { supabase } from '@/lib/supabase/client'
 import { getCurrentUser, getDefaultEmpresaId } from '@/lib/utils/auth'
 import { DNIAutoComplete } from '@/components/dni-autocomplete'
 import { RUCAutoComplete } from '@/components/ruc-autocomplete'
+import { buscarUbigeoPorCodigo } from '@/lib/data/ubigeos'
 
 export default function NuevoClientePage() {
   const router = useRouter()
@@ -73,56 +74,13 @@ export default function NuevoClientePage() {
     let provincia = formData.provincia  
     let distrito = formData.distrito
     
-    // Mapear ubigeos más comunes de Lima
+    // Buscar ubicación por ubigeo usando base de datos inteligente
     if (datos.ubigeo) {
-      const ubigeosLima: Record<string, {dep: string, prov: string, dist: string}> = {
-        '110113': {dep: 'LIMA', prov: 'LIMA', dist: 'SAN JUAN DE LURIGANCHO'},
-        '150101': {dep: 'LIMA', prov: 'LIMA', dist: 'LIMA'},
-        '150103': {dep: 'LIMA', prov: 'LIMA', dist: 'BREÑA'},
-        '150104': {dep: 'LIMA', prov: 'LIMA', dist: 'CARABAYLLO'},
-        '150105': {dep: 'LIMA', prov: 'LIMA', dist: 'CHACLACAYO'},
-        '150106': {dep: 'LIMA', prov: 'LIMA', dist: 'CHORRILLOS'},
-        '150107': {dep: 'LIMA', prov: 'LIMA', dist: 'CIENEGUILLA'},
-        '150108': {dep: 'LIMA', prov: 'LIMA', dist: 'COMAS'},
-        '150109': {dep: 'LIMA', prov: 'LIMA', dist: 'EL AGUSTINO'},
-        '150110': {dep: 'LIMA', prov: 'LIMA', dist: 'INDEPENDENCIA'},
-        '150111': {dep: 'LIMA', prov: 'LIMA', dist: 'JESÚS MARÍA'},
-        '150112': {dep: 'LIMA', prov: 'LIMA', dist: 'LA MOLINA'},
-        '150113': {dep: 'LIMA', prov: 'LIMA', dist: 'LA VICTORIA'},
-        '150114': {dep: 'LIMA', prov: 'LIMA', dist: 'LINCE'},
-        '150115': {dep: 'LIMA', prov: 'LIMA', dist: 'LOS OLIVOS'},
-        '150116': {dep: 'LIMA', prov: 'LIMA', dist: 'LURIGANCHO'},
-        '150117': {dep: 'LIMA', prov: 'LIMA', dist: 'LURÍN'},
-        '150118': {dep: 'LIMA', prov: 'LIMA', dist: 'MAGDALENA DEL MAR'},
-        '150119': {dep: 'LIMA', prov: 'LIMA', dist: 'PUEBLO LIBRE'},
-        '150120': {dep: 'LIMA', prov: 'LIMA', dist: 'MIRAFLORES'},
-        '150121': {dep: 'LIMA', prov: 'LIMA', dist: 'PACHACAMAC'},
-        '150122': {dep: 'LIMA', prov: 'LIMA', dist: 'PUCUSANA'},
-        '150123': {dep: 'LIMA', prov: 'LIMA', dist: 'PUENTE PIEDRA'},
-        '150124': {dep: 'LIMA', prov: 'LIMA', dist: 'PUNTA HERMOSA'},
-        '150125': {dep: 'LIMA', prov: 'LIMA', dist: 'PUNTA NEGRA'},
-        '150126': {dep: 'LIMA', prov: 'LIMA', dist: 'RÍMAC'},
-        '150127': {dep: 'LIMA', prov: 'LIMA', dist: 'SAN BARTOLO'},
-        '150128': {dep: 'LIMA', prov: 'LIMA', dist: 'SAN BORJA'},
-        '150129': {dep: 'LIMA', prov: 'LIMA', dist: 'SAN ISIDRO'},
-        '150130': {dep: 'LIMA', prov: 'LIMA', dist: 'SAN JUAN DE MIRAFLORES'},
-        '150131': {dep: 'LIMA', prov: 'LIMA', dist: 'SAN LUIS'},
-        '150132': {dep: 'LIMA', prov: 'LIMA', dist: 'SAN MARTÍN DE PORRES'},
-        '150133': {dep: 'LIMA', prov: 'LIMA', dist: 'SAN MIGUEL'},
-        '150134': {dep: 'LIMA', prov: 'LIMA', dist: 'SANTA ANITA'},
-        '150135': {dep: 'LIMA', prov: 'LIMA', dist: 'SANTA MARÍA DEL MAR'},
-        '150136': {dep: 'LIMA', prov: 'LIMA', dist: 'SANTA ROSA'},
-        '150137': {dep: 'LIMA', prov: 'LIMA', dist: 'SANTIAGO DE SURCO'},
-        '150138': {dep: 'LIMA', prov: 'LIMA', dist: 'SURQUILLO'},
-        '150139': {dep: 'LIMA', prov: 'LIMA', dist: 'VILLA EL SALVADOR'},
-        '150140': {dep: 'LIMA', prov: 'LIMA', dist: 'VILLA MARÍA DEL TRIUNFO'}
-      }
-      
-      const ubicacion = ubigeosLima[datos.ubigeo]
-      if (ubicacion) {
-        departamento = ubicacion.dep
-        provincia = ubicacion.prov
-        distrito = ubicacion.dist
+      const ubicacionEncontrada = buscarUbigeoPorCodigo(datos.ubigeo)
+      if (ubicacionEncontrada) {
+        departamento = ubicacionEncontrada.departamento
+        provincia = ubicacionEncontrada.provincia
+        distrito = ubicacionEncontrada.distrito
       }
     }
     
@@ -681,6 +639,7 @@ export default function NuevoClientePage() {
                     value={formData.celular}
                     onChange={handleInputChange}
                     placeholder="987654321"
+                    className={getCampoStyle('celular', formData.celular)}
                     required
                   />
                 </div>
@@ -693,6 +652,7 @@ export default function NuevoClientePage() {
                     value={formData.email}
                     onChange={handleInputChange}
                     placeholder="empresa@email.com"
+                    className={getCampoStyle('email', formData.email)}
                   />
                 </div>
               </div>
@@ -705,6 +665,7 @@ export default function NuevoClientePage() {
                   value={formData.direccion}
                   onChange={handleInputChange}
                   placeholder="Dirección de la empresa"
+                  className={getCampoStyle('direccion', formData.direccion)}
                 />
               </div>
             </CardContent>
