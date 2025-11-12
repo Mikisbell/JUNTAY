@@ -30,7 +30,9 @@ export default function LoginPage() {
       if (error) throw error
 
       if (data.session) {
-        // Hacer una redirección completa del navegador
+        // Refrescar la sesión y redirigir
+        router.refresh()
+        // Hacer una redirección completa del navegador para asegurar que las cookies se guarden
         window.location.href = '/dashboard'
       }
     } catch (error: any) {
