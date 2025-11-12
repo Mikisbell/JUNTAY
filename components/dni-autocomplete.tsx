@@ -203,13 +203,19 @@ export function DNIAutoComplete({
                 <h4 className="font-medium text-green-800">
                   Datos RENIEC Obtenidos
                 </h4>
-                <div className="mt-2 text-sm text-green-700">
+                <div className="mt-2 text-sm text-green-700 space-y-1">
                   <p><strong>Nombre:</strong> {consulta.datos.nombre_completo}</p>
                   {consulta.datos.direccion && (
                     <p><strong>Dirección:</strong> {consulta.datos.direccion}</p>
                   )}
                   {consulta.datos.estado_civil && (
                     <p><strong>Estado Civil:</strong> {consulta.datos.estado_civil}</p>
+                  )}
+                  {consulta.datos.fecha_nacimiento && (
+                    <p><strong>Fecha Nacimiento:</strong> {new Date(consulta.datos.fecha_nacimiento).toLocaleDateString('es-PE')}</p>
+                  )}
+                  {consulta.datos.ubigeo && (
+                    <p><strong>Ubigeo:</strong> {consulta.datos.ubigeo}</p>
                   )}
                 </div>
               </div>
