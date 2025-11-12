@@ -70,9 +70,6 @@ const ubigeosMap: Record<string, UbigeoResuelto> = {
   // ICA
   '110101': { codigo: '110101', departamento: 'ICA', provincia: 'ICA', distrito: 'ICA' },
   
-  // HUANCAYO
-  '120101': { codigo: '120101', departamento: 'JUNIN', provincia: 'HUANCAYO', distrito: 'HUANCAYO' },
-  
   // PUNO
   '210101': { codigo: '210101', departamento: 'PUNO', provincia: 'PUNO', distrito: 'PUNO' },
   
