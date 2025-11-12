@@ -76,58 +76,68 @@ export async function POST(request: Request) {
   }
 }
 
-async function consultarAPIRENIEC(dni: string): Promise<RENIECAPIResponse> {
-  try {
-    // MÉTODO 1: API Gratuita (con límites diarios)
-    const url = `https://api.apis.net.pe/v2/reniec/dni?numero=${dni}`
-    const headers = {
-      'Authorization': `Bearer ${process.env.RENIEC_API_TOKEN}`,
-      'Content-Type': 'application/json'
-    }
-
-    // Si no hay token, usar método alternativo o mock
-    if (!process.env.RENIEC_API_TOKEN) {
-      return consultarRENIECMock(dni)
-    }
-
-    const response = await fetch(url, { 
-      headers,
-      method: 'GET'
-    })
-
-    if (!response.ok) {
-      throw new Error(`API RENIEC error: ${response.status}`)
-    }
-
-    const data = await response.json()
-
-    if (data && data.nombres) {
-      return {
-        success: true,
-        data: {
-          dni: data.numeroDocumento || dni,
-          nombres: data.nombres,
-          apellido_paterno: data.apellidoPaterno,
-          apellido_materno: data.apellidoMaterno,
-          nombre_completo: `${data.nombres} ${data.apellidoPaterno} ${data.apellidoMaterno || ''}`.trim(),
-          ubigeo: data.ubigeo,
-          direccion: data.direccion,
-          estado_civil: data.estadoCivil,
-          fecha_nacimiento: data.fechaNacimiento
-        }
+// Función para consultar RENIEC real con consultasperu.com
+async function consultarRENIECReal(dni: string): Promise<ConsultaRENIEC | null> {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const token = process.env.RENIEC_API_TOKEN
+      if (!token) {
+        throw new Error('RENIEC_API_TOKEN no configurado')
       }
-    } else {
-      return {
-        success: false,
-        error: 'DNI no encontrado'
-      }
-    }
 
-  } catch (error) {
-    console.error('Error consultando API RENIEC:', error)
-    
-    // Fallback a método mock para desarrollo/testing
-    return consultarRENIECMock(dni)
+      console.log('Consultando consultasperu.com para DNI:', dni)
+      
+      // API de consultasperu.com
+      const response = await fetch('https://api.consultasperu.com/api/v1/query', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          token: token,
+          type_document: 'dni',
+          document_number: dni
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error(`Error HTTP: ${response.status}`)
+      }
+
+      const result = await response.json()
+      
+      if (!result.success) {
+        throw new Error(result.message || 'No se encontraron datos')
+      }
+
+      const data = result.data
+      
+      // Parsear nombre completo para extraer apellidos
+      const nombreCompleto = data.full_name || ''
+      const nombreSolo = data.name || ''
+      const apellidos = data.surname || ''
+      
+      // Separar apellidos (formato: "APELLIDO1 APELLIDO2")
+      const apellidosArray = apellidos.trim().split(' ')
+      const apellidoPaterno = apellidosArray[0] || ''
+      const apellidoMaterno = apellidosArray.slice(1).join(' ') || ''
+      
+      resolve({
+        dni,
+        nombres: nombreSolo,
+        apellido_paterno: apellidoPaterno,
+        apellido_materno: apellidoMaterno,
+        ubigeo: data.ubigeo || '',
+        direccion: data.address || 'S/N',
+        estado_civil: 'SOLTERO', // No viene en la API
+        fecha_nacimiento: data.date_of_birth || ''
+      })
+
+    } catch (error) {
+      console.error('Error consultando consultasperu.com:', error)
+      resolve(null)
+    }
+  })
   }
 }
 
@@ -156,11 +166,11 @@ function consultarRENIECMock(dni: string): Promise<RENIECAPIResponse> {
           fecha_nacimiento: '1985-12-20'
         },
         '43708661': {
-          nombres: 'MATEO',
-          apellido_paterno: 'USUARIO',
-          apellido_materno: 'JUNTAY',
+          nombres: 'MIGUEL ANGEL',
+          apellido_paterno: 'RIVERA',
+          apellido_materno: 'OSPINA',
           ubigeo: '150101',
-          direccion: 'DIRECCION DE PRUEBA, LIMA, PERU',
+          direccion: 'S/N',
           estado_civil: 'SOLTERO',
           fecha_nacimiento: '1990-01-01'
         }
