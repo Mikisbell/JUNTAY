@@ -95,7 +95,7 @@ export function formatearNombre(consulta: ConsultaRENIEC): string {
 }
 
 // Función para verificar si DNI ya existe en sistema
-export async function verificarDNIExistente(dni: string): Promise<{existe: boolean, cliente_id?: string}> {
+export async function verificarDNIExistente(dni: string): Promise<{existe: boolean, cliente_id?: string, nombre_completo?: string, mensaje?: string}> {
   try {
     const response = await fetch(`/api/clientes/verificar-dni`, {
       method: 'POST',
