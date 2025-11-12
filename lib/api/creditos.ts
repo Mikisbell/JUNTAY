@@ -27,9 +27,21 @@ export interface Credito {
   updated_at?: string
   
   // Relaciones
-  cliente?: any
+  clientes?: {
+    numero_documento?: string
+    nombres?: string
+    apellido_paterno?: string
+    apellido_materno?: string
+    razon_social?: string
+    tipo_persona?: string
+    telefono_principal?: string
+    telefono_secundario?: string
+    email?: string
+  }
+  cliente?: any // Mantener por compatibilidad
   garantias?: any[]
-  cronograma?: CuotaCredito[]
+  cronograma_pagos?: CuotaCredito[]
+  cronograma?: CuotaCredito[] // Alias
 }
 
 export interface CuotaCredito {
@@ -52,7 +64,7 @@ export async function getCreditos() {
   
   const { data, error } = await supabase
     .from('creditos')
-    .select('*, clientes(numero_documento, nombres, apellido_paterno, razon_social)')
+    .select('*, clientes(numero_documento, nombres, apellido_paterno, razon_social, tipo_persona)')
     .order('created_at', { ascending: false })
   
   if (error) {
@@ -66,18 +78,33 @@ export async function getCreditos() {
 export async function getCreditoById(id: string) {
   const supabase = createClient()
   
-  const { data, error } = await supabase
+  // Obtener el crédito con sus relaciones
+  const { data: credito, error: creditoError } = await supabase
     .from('creditos')
-    .select('*, clientes(*), garantias(*), cronograma_pagos(*)')
+    .select('*, clientes(*), cronograma_pagos(*)')
     .eq('id', id)
     .single()
   
-  if (error) {
-    console.error('Error fetching credito:', error)
+  if (creditoError) {
+    console.error('Error fetching credito:', creditoError)
     return null
   }
   
-  return data as Credito
+  // Obtener garantías asociadas al crédito (relación inversa)
+  const { data: garantias, error: garantiasError } = await supabase
+    .from('garantias')
+    .select('*')
+    .eq('credito_id', id)
+  
+  if (garantiasError) {
+    console.error('Error fetching garantias:', garantiasError)
+  }
+  
+  // Combinar los datos
+  return {
+    ...credito,
+    garantias: garantias || []
+  } as Credito
 }
 
 export async function getCreditosStats() {

@@ -81,15 +81,23 @@ export default function RegistrarPagoPage({ params }: { params: { id: string } }
         throw new Error('Ingrese un monto válido')
       }
 
+      // Generar código único para el pago
+      const codigoPago = `PAG-${Date.now().toString().slice(-8)}`
+
       // Registrar el pago
       const { data: pagoData, error: pagoError } = await supabase
         .from('pagos')
         .insert([{
+          codigo: codigoPago,
           credito_id: params.id,
-          monto_pago: montoPago,
-          fecha_pago: formData.fecha_pago,
+          tipo_pago: 'cuota',
           metodo_pago: formData.metodo_pago,
-          numero_recibo: formData.numero_recibo || null,
+          monto_total: montoPago,
+          monto_capital: 0, // Se calculará al aplicar a cuotas
+          monto_interes: 0, // Se calculará al aplicar a cuotas
+          monto_mora: 0,
+          fecha_pago: formData.fecha_pago,
+          numero_operacion: formData.numero_recibo || null,
           observaciones: formData.observaciones || null
         }])
         .select()

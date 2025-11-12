@@ -15,9 +15,9 @@ export default async function CreditoDetallePage({ params }: { params: { id: str
     notFound()
   }
 
-  const nombreCliente = credito.cliente?.tipo_persona === 'natural'
-    ? `${credito.cliente?.nombres} ${credito.cliente?.apellido_paterno}`
-    : credito.cliente?.razon_social
+  const nombreCliente = credito.clientes?.tipo_persona === 'natural'
+    ? `${credito.clientes?.nombres} ${credito.clientes?.apellido_paterno}`
+    : credito.clientes?.razon_social
 
   return (
     <div className="space-y-6 max-w-7xl">
@@ -177,7 +177,7 @@ export default async function CreditoDetallePage({ params }: { params: { id: str
               </Link>
             </CardHeader>
             <CardContent>
-              {credito.cronograma && credito.cronograma.length > 0 ? (
+              {credito.cronograma_pagos && credito.cronograma_pagos.length > 0 ? (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead className="bg-gray-50 border-b">
@@ -192,7 +192,7 @@ export default async function CreditoDetallePage({ params }: { params: { id: str
                       </tr>
                     </thead>
                     <tbody>
-                      {credito.cronograma.sort((a, b) => a.numero_cuota - b.numero_cuota).map((cuota) => (
+                      {credito.cronograma_pagos.sort((a, b) => a.numero_cuota - b.numero_cuota).map((cuota) => (
                         <tr key={cuota.id} className="border-b hover:bg-gray-50">
                           <td className="p-3 font-medium">{cuota.numero_cuota}</td>
                           <td className="p-3">
@@ -265,15 +265,15 @@ export default async function CreditoDetallePage({ params }: { params: { id: str
             </CardHeader>
             <CardContent className="space-y-2">
               <p className="font-medium">{nombreCliente}</p>
-              <p className="text-sm text-gray-600">{credito.cliente?.numero_documento}</p>
-              {credito.cliente?.telefono_secundario && (
+              <p className="text-sm text-gray-600">{credito.clientes?.numero_documento}</p>
+              {credito.clientes?.telefono_secundario && (
                 <p className="text-sm text-gray-600">
-                  📱 {credito.cliente.telefono_secundario}
+                  📱 {credito.clientes.telefono_secundario}
                 </p>
               )}
-              {credito.cliente?.email && (
+              {credito.clientes?.email && (
                 <p className="text-sm text-gray-600">
-                  ✉️ {credito.cliente.email}
+                  ✉️ {credito.clientes.email}
                 </p>
               )}
               <Link href={`/dashboard/clientes/${credito.cliente_id}`}>

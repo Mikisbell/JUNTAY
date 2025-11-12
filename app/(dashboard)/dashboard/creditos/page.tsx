@@ -123,11 +123,11 @@ export default async function CreditosPage() {
                       <td className="p-4 font-mono text-sm">{credito.codigo}</td>
                       <td className="p-4">
                         <p className="font-medium">
-                          {credito.cliente?.tipo_persona === 'natural'
-                            ? `${credito.cliente?.nombres} ${credito.cliente?.apellido_paterno}`
-                            : credito.cliente?.razon_social}
+                          {credito.clientes?.tipo_persona === 'natural'
+                            ? `${credito.clientes?.nombres} ${credito.clientes?.apellido_paterno}`
+                            : credito.clientes?.razon_social}
                         </p>
-                        <p className="text-sm text-gray-600">{credito.cliente?.numero_documento}</p>
+                        <p className="text-sm text-gray-600">{credito.clientes?.numero_documento}</p>
                       </td>
                       <td className="p-4">
                         <p className="font-medium">S/ {credito.monto_prestado.toFixed(2)}</p>
