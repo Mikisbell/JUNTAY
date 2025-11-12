@@ -12,6 +12,7 @@ import { supabase } from '@/lib/supabase/client'
 import { getCurrentUser, getDefaultEmpresaId } from '@/lib/utils/auth'
 import { DNIAutoComplete } from '@/components/dni-autocomplete'
 import { RUCAutoComplete } from '@/components/ruc-autocomplete'
+import { UbicacionSelector } from '@/components/ubicacion-selector'
 import { buscarUbigeoPorCodigo } from '@/lib/data/ubigeos-peru'
 
 export default function NuevoClientePage() {
@@ -179,6 +180,27 @@ export default function NuevoClientePage() {
       // Normal: estado inicial
       return ''
     }
+  }
+
+  // Manejar cambio de ubicación desde el selector
+  const handleUbicacionChange = (ubicacion: {
+    departamento: string
+    provincia: string
+    distrito: string
+  }) => {
+    setFormData({
+      ...formData,
+      departamento: ubicacion.departamento,
+      provincia: ubicacion.provincia,
+      distrito: ubicacion.distrito
+    })
+
+    // Marcar campos como completados manualmente si tienen valor
+    const camposActualizados = new Set(camposCompletadosManualmente)
+    if (ubicacion.departamento) camposActualizados.add('departamento')
+    if (ubicacion.provincia) camposActualizados.add('provincia')  
+    if (ubicacion.distrito) camposActualizados.add('distrito')
+    setCamposCompletadosManualmente(camposActualizados)
   }
 
   const validateForm = () => {
@@ -474,41 +496,14 @@ export default function NuevoClientePage() {
               <CardTitle>Dirección</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <Label htmlFor="departamento">Departamento</Label>
-                  <Input
-                    id="departamento"
-                    name="departamento"
-                    value={formData.departamento}
-                    onChange={handleInputChange}
-                    placeholder="Lima"
-                    className={getCampoStyle('departamento', formData.departamento)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="provincia">Provincia</Label>
-                  <Input
-                    id="provincia"
-                    name="provincia"
-                    value={formData.provincia}
-                    onChange={handleInputChange}
-                    placeholder="Lima"
-                    className={getCampoStyle('provincia', formData.provincia)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="distrito">Distrito</Label>
-                  <Input
-                    id="distrito"
-                    name="distrito"
-                    value={formData.distrito}
-                    onChange={handleInputChange}
-                    placeholder="San Juan de Lurigancho"
-                    className={getCampoStyle('distrito', formData.distrito)}
-                  />
-                </div>
-              </div>
+              <UbicacionSelector
+                departamentoInicial={formData.departamento}
+                provinciaInicial={formData.provincia}
+                distritoInicial={formData.distrito}
+                onUbicacionChange={handleUbicacionChange}
+                getCampoStyle={getCampoStyle}
+                disabled={loading}
+              />
 
               <div>
                 <Label htmlFor="direccion">Dirección Completa</Label>
