@@ -433,6 +433,7 @@ export default function NuevoClientePage() {
                     value={formData.apellido_paterno}
                     onChange={handleInputChange}
                     placeholder="Pérez"
+                    className={getCampoStyle('apellido_paterno', formData.apellido_paterno)}
                     required
                   />
                 </div>
@@ -444,6 +445,7 @@ export default function NuevoClientePage() {
                     value={formData.apellido_materno}
                     onChange={handleInputChange}
                     placeholder="López"
+                    className={getCampoStyle('apellido_materno', formData.apellido_materno)}
                   />
                 </div>
                 <div>
@@ -454,6 +456,7 @@ export default function NuevoClientePage() {
                     type="date"
                     value={formData.fecha_nacimiento}
                     onChange={handleInputChange}
+                    className={getCampoStyle('fecha_nacimiento', formData.fecha_nacimiento)}
                   />
                 </div>
               </div>
@@ -476,6 +479,7 @@ export default function NuevoClientePage() {
                     onChange={handleInputChange}
                     placeholder="987654321"
                     maxLength={9}
+                    className={getCampoStyle('celular', formData.celular)}
                   />
                 </div>
                 <div>
@@ -486,6 +490,7 @@ export default function NuevoClientePage() {
                     value={formData.telefono}
                     onChange={handleInputChange}
                     placeholder="012345678"
+                    className={getCampoStyle('telefono', formData.telefono)}
                   />
                 </div>
               </div>
@@ -499,6 +504,7 @@ export default function NuevoClientePage() {
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="cliente@email.com"
+                  className={getCampoStyle('email', formData.email)}
                 />
               </div>
             </CardContent>
@@ -519,6 +525,7 @@ export default function NuevoClientePage() {
                     value={formData.departamento}
                     onChange={handleInputChange}
                     placeholder="Lima"
+                    className={getCampoStyle('departamento', formData.departamento)}
                   />
                 </div>
                 <div>
@@ -529,6 +536,7 @@ export default function NuevoClientePage() {
                     value={formData.provincia}
                     onChange={handleInputChange}
                     placeholder="Lima"
+                    className={getCampoStyle('provincia', formData.provincia)}
                   />
                 </div>
                 <div>
@@ -539,6 +547,7 @@ export default function NuevoClientePage() {
                     value={formData.distrito}
                     onChange={handleInputChange}
                     placeholder="San Juan de Lurigancho"
+                    className={getCampoStyle('distrito', formData.distrito)}
                   />
                 </div>
               </div>
@@ -551,6 +560,7 @@ export default function NuevoClientePage() {
                   value={formData.direccion}
                   onChange={handleInputChange}
                   placeholder="Av. Principal 123, Urb. Los Jardines"
+                  className={getCampoStyle('direccion', formData.direccion)}
                 />
               </div>
             </CardContent>
@@ -571,6 +581,7 @@ export default function NuevoClientePage() {
                     value={formData.ocupacion}
                     onChange={handleInputChange}
                     placeholder="Comerciante"
+                    className={getCampoStyle('ocupacion', formData.ocupacion)}
                   />
                 </div>
                 <div>
@@ -581,6 +592,7 @@ export default function NuevoClientePage() {
                     value={formData.empresa_trabaja}
                     onChange={handleInputChange}
                     placeholder="Nombre de la empresa"
+                    className={getCampoStyle('empresa_trabaja', formData.empresa_trabaja)}
                   />
                 </div>
               </div>
@@ -595,6 +607,7 @@ export default function NuevoClientePage() {
                   onChange={handleInputChange}
                   placeholder="2500.00"
                   step="0.01"
+                  className={getCampoStyle('ingreso_mensual', formData.ingreso_mensual)}
                 />
               </div>
             </CardContent>
@@ -641,6 +654,7 @@ export default function NuevoClientePage() {
                   value={formData.razon_social}
                   onChange={handleInputChange}
                   placeholder="Empresa SAC"
+                  className={getCampoStyle('razon_social', formData.razon_social)}
                   required
                 />
               </div>
@@ -653,6 +667,7 @@ export default function NuevoClientePage() {
                   value={formData.representante_legal}
                   onChange={handleInputChange}
                   placeholder="Nombre del representante"
+                  className={getCampoStyle('representante_legal', formData.representante_legal)}
                   required
                 />
               </div>
