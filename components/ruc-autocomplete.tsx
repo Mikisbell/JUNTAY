@@ -134,8 +134,33 @@ export function RUCAutoComplete({
 
   const formatearFecha = (fecha: string): string => {
     if (!fecha) return ''
+    
+    // Si ya está en formato DD/MM/YYYY, devolverlo como está
+    if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(fecha)) {
+      return fecha
+    }
+    
     try {
-      return new Date(fecha).toLocaleDateString('es-PE')
+      // Intentar parsear diferentes formatos
+      let fechaObj: Date
+      
+      if (/^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+        // Formato YYYY-MM-DD
+        fechaObj = new Date(fecha)
+      } else if (/^\d{2}\/\d{2}\/\d{4}$/.test(fecha)) {
+        // Formato DD/MM/YYYY
+        const [dia, mes, año] = fecha.split('/')
+        fechaObj = new Date(parseInt(año), parseInt(mes) - 1, parseInt(dia))
+      } else {
+        // Intentar parsearlo directamente
+        fechaObj = new Date(fecha)
+      }
+      
+      if (isNaN(fechaObj.getTime())) {
+        return fecha // Devolver original si no se puede parsear
+      }
+      
+      return fechaObj.toLocaleDateString('es-PE')
     } catch {
       return fecha
     }
@@ -250,14 +275,43 @@ export function RUCAutoComplete({
                       {consulta.datos.estado}
                     </span>
                   </p>
+                  {consulta.datos.condicion_domicilio && (
+                    <p><strong>Condición:</strong> 
+                      <span className={`ml-1 px-2 py-0.5 rounded text-xs ${
+                        consulta.datos.condicion_domicilio === 'HABIDO' 
+                          ? 'bg-green-200 text-green-800' 
+                          : 'bg-yellow-200 text-yellow-800'
+                      }`}>
+                        {consulta.datos.condicion_domicilio}
+                      </span>
+                    </p>
+                  )}
                   {consulta.datos.direccion && (
                     <p><strong>Dirección:</strong> {consulta.datos.direccion}</p>
                   )}
                   {consulta.datos.distrito && (
                     <p><strong>Ubicación:</strong> {consulta.datos.distrito}, {consulta.datos.provincia}, {consulta.datos.departamento}</p>
                   )}
-                  {consulta.datos.actividad_economica && (
-                    <p><strong>Actividad:</strong> {consulta.datos.actividad_economica}</p>
+                  <p><strong>Actividad:</strong> {consulta.datos.actividad_economica || '-'}</p>
+                  {consulta.datos.tipo_persona && (
+                    <p><strong>Tipo Persona:</strong> {consulta.datos.tipo_persona}</p>
+                  )}
+                  {consulta.datos.fecha_inscripcion && (
+                    <p><strong>Fecha Inscripción:</strong> {formatearFecha(consulta.datos.fecha_inscripcion)}</p>
+                  )}
+                  {consulta.datos.es_buen_contribuyente !== undefined && (
+                    <p><strong>Buen Contribuyente:</strong> 
+                      <span className={`ml-1 px-2 py-0.5 rounded text-xs ${
+                        consulta.datos.es_buen_contribuyente 
+                          ? 'bg-green-200 text-green-800' 
+                          : 'bg-gray-200 text-gray-800'
+                      }`}>
+                        {consulta.datos.es_buen_contribuyente ? 'SÍ' : 'NO'}
+                      </span>
+                    </p>
+                  )}
+                  {consulta.datos.ubigeo && (
+                    <p><strong>Ubigeo:</strong> {consulta.datos.ubigeo}</p>
                   )}
                   {consulta.datos.representante_legal && (
                     <div className="mt-3 pt-2 border-t border-green-200">
@@ -269,12 +323,6 @@ export function RUCAutoComplete({
                         <p><strong>Desde:</strong> {formatearFecha(consulta.datos.representante_legal.fecha_desde)}</p>
                       )}
                     </div>
-                  )}
-                  {consulta.datos.fecha_inscripcion && (
-                    <p><strong>Fecha Inscripción:</strong> {formatearFecha(consulta.datos.fecha_inscripcion)}</p>
-                  )}
-                  {consulta.datos.ubigeo && (
-                    <p><strong>Ubigeo:</strong> {consulta.datos.ubigeo}</p>
                   )}
                 </div>
               </div>
