@@ -451,6 +451,8 @@ export async function cerrarCaja(data: {
 export async function getSesionActual(cajaId: string) {
   const supabase = createClient()
   
+  console.log('Buscando sesión actual para caja:', cajaId)
+  
   const { data, error } = await supabase
     .from('sesiones_caja')
     .select('*, caja:cajas(*)')
@@ -460,9 +462,20 @@ export async function getSesionActual(cajaId: string) {
   
   if (error) {
     console.error('Error fetching sesión:', error)
+    
+    // Buscar todas las sesiones para debug
+    const { data: todasSesiones } = await supabase
+      .from('sesiones_caja')
+      .select('*')
+      .eq('caja_id', cajaId)
+      .order('created_at', { ascending: false })
+      .limit(5)
+    
+    console.log('Últimas 5 sesiones para esta caja:', todasSesiones)
     return null
   }
   
+  console.log('Sesión encontrada:', data)
   return data as SesionCaja
 }
 

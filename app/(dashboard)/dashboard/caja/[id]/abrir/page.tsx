@@ -155,9 +155,23 @@ export default function AbrirCajaPage({ params }: { params: { id: string } }) {
         throw new Error(`Error al crear arqueo: ${arqueoError.message}`)
       }
 
-      // Redirigir a la página de caja
-      router.push(`/dashboard/caja/${params.id}`)
-      router.refresh()
+      // Esperar un momento antes de redirigir para asegurar que la transacción se complete
+      console.log('Sesión creada exitosamente:', sesion)
+      
+      // Verificar que la sesión se creó correctamente
+      const { data: verificacion } = await supabase
+        .from('sesiones_caja')
+        .select('*')
+        .eq('id', sesion.id)
+        .single()
+      
+      console.log('Verificación de sesión:', verificacion)
+      
+      // Esperar 1 segundo antes de redirigir
+      setTimeout(() => {
+        router.push(`/dashboard/caja/${params.id}`)
+        router.refresh()
+      }, 1000)
     } catch (err: any) {
       console.error('Error al abrir caja:', err)
       setError(err.message || 'Error al abrir la caja')
