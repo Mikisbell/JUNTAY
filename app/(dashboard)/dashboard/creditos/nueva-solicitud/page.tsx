@@ -529,7 +529,7 @@ export default function NuevaSolicitudPage() {
           disabled={
             loading || 
             !preview || 
-            (permisos && !permisos.puedeCrearCreditos)
+            (permisos && !permisos.puedeCrearCreditos) || false
           }
         >
           {loading ? (
