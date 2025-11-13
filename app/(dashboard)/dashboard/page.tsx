@@ -1,28 +1,14 @@
-import { 
-  CreditCard, 
-  Users, 
-  Package, 
-  TrendingUp,
-  DollarSign,
-  AlertCircle
-} from "lucide-react"
+import { DashboardStatsAvanzadas } from "@/components/dashboard-stats-avanzadas"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { getClientesStats } from "@/lib/api/clientes"
-import { getCreditosStats, getCreditos } from "@/lib/api/creditos"
-import { getGarantiasStats } from "@/lib/api/garantias"
+import { getCreditos } from "@/lib/api/creditos"
+import { AlertCircle } from "lucide-react"
 import Link from "next/link"
 
 export const dynamic = 'force-dynamic'
 
 export default async function DashboardPage() {
-  const [clientesStats, creditosStats, garantiasStats, creditosRecientes] = await Promise.all([
-    getClientesStats(),
-    getCreditosStats(),
-    getGarantiasStats(),
-    getCreditos()
-  ])
-
+  const creditosRecientes = await getCreditos()
   const ultimosCreditos = creditosRecientes.slice(0, 5)
 
   return (
@@ -32,33 +18,8 @@ export default async function DashboardPage() {
         <p className="text-gray-600">Resumen general del negocio</p>
       </div>
       
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatsCard
-          title="Créditos Activos"
-          value={creditosStats.vigentes.toString()}
-          icon={<CreditCard className="h-8 w-8 text-blue-600" />}
-          subtitle={`${creditosStats.enMora} en mora`}
-        />
-        <StatsCard
-          title="Cartera Activa"
-          value={`S/ ${creditosStats.montoCartera.toFixed(0)}`}
-          icon={<DollarSign className="h-8 w-8 text-green-600" />}
-          subtitle={`${creditosStats.total} créditos`}
-        />
-        <StatsCard
-          title="Clientes"
-          value={clientesStats.total.toString()}
-          icon={<Users className="h-8 w-8 text-purple-600" />}
-          subtitle={`${clientesStats.activos} activos`}
-        />
-        <StatsCard
-          title="Garantías"
-          value={garantiasStats.total.toString()}
-          icon={<Package className="h-8 w-8 text-orange-600" />}
-          subtitle={`${garantiasStats.enGarantia} en uso`}
-        />
-      </div>
+      {/* Dashboard Avanzado */}
+      <DashboardStatsAvanzadas />
       
       {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -147,36 +108,6 @@ export default async function DashboardPage() {
   )
 }
 
-function StatsCard({ 
-  title, 
-  value, 
-  icon, 
-  subtitle
-}: { 
-  title: string
-  value: string
-  icon: React.ReactNode
-  subtitle?: string
-}) {
-  return (
-    <Card>
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-gray-600">{title}</p>
-            <p className="text-2xl font-bold mt-2">{value}</p>
-            {subtitle && (
-              <p className="text-sm mt-2 text-gray-500">
-                {subtitle}
-              </p>
-            )}
-          </div>
-          <div>{icon}</div>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
 
 function CreditoItem({
   codigo,
