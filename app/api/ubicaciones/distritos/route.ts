@@ -1,51 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getDistritosPorProvinciaCached } from '@/lib/cache/ubigeo-cache'
 
-// BÚSQUEDA EN DATOS OFICIALES DEL REPOSITORIO
+// BÚSQUEDA OPTIMIZADA CON CACHE LOCAL
 // https://github.com/joseluisq/ubigeos-peru
-async function buscarDistritosEnRepositorioOficial(dept: string, prov: string): Promise<string[]> {
+async function buscarDistritosOptimizado(dept: string, prov: string): Promise<string[]> {
   try {
-    // Primero obtenemos el ID de la provincia
-    const provinciaResponse = await fetch('https://raw.githubusercontent.com/joseluisq/ubigeos-peru/master/json/provincias.json')
-    const provinciasData = await provinciaResponse.json()
+    console.log(`⚡ Búsqueda OPTIMIZADA con cache para: ${prov}`)
     
-    let provinciaId = null
+    // Usar cache local - MUCHO MÁS RÁPIDO
+    const distritos = await getDistritosPorProvinciaCached(prov)
     
-    // Buscar ID de la provincia en el departamento especificado
-    for (const [deptId, provincias] of Object.entries(provinciasData)) {
-      const provinciasList = provincias as any[]
-      const provinciaEncontrada = provinciasList.find((p: any) => 
-        p.nombre_ubigeo.toUpperCase() === prov.toUpperCase()
-      )
-      
-      if (provinciaEncontrada) {
-        provinciaId = provinciaEncontrada.id_ubigeo
-        break
-      }
+    if (distritos.length > 0) {
+      console.log(`✅ Cache HIT: ${distritos.length} distritos para ${prov}`)
+      return distritos
     }
     
-    if (!provinciaId) {
-      console.log(`❌ No se encontró ID para provincia: ${prov}`)
-      return []
-    }
-    
-    // Ahora obtenemos los distritos usando el ID de la provincia
-    const distritosResponse = await fetch('https://raw.githubusercontent.com/joseluisq/ubigeos-peru/master/json/distritos.json')
-    const distritosData = await distritosResponse.json()
-    
-    const distritosArray = distritosData[provinciaId] || []
-    const nombresDistritos = distritosArray.map((d: any) => d.nombre_ubigeo.toUpperCase())
-    
-    console.log(`✅ Encontrados ${nombresDistritos.length} distritos oficiales para ${prov}`)
-    return nombresDistritos.sort()
+    console.log(`⚠️ No se encontraron distritos para: ${prov}`)
+    return []
     
   } catch (error) {
-    console.error('❌ Error consultando repositorio oficial:', error)
-    // Fallback a algunos distritos conocidos
+    console.error('❌ Error en búsqueda optimizada:', error)
+    
+    // Fallback ultrarrápido con distritos principales
     const distritosConocidos: { [key: string]: string[] } = {
-      'CHUPACA': ['CHUPACA', '3 DE DICIEMBRE', 'AHUAC', 'CHONGOS BAJO', 'HUACHAC', 'HUAMANCACA CHICO', 'JARPA', 'SAN JUAN DE YSCOS', 'YANACANCHA'],
+      'CHUPACA': ['CHUPACA', 'AHUAC', 'CHONGOS BAJO', 'HUACHAC', 'JARPA', 'SAN JUAN DE YSCOS', 'YANACANCHA'],
       'ABANCAY': ['ABANCAY', 'CHACOCHE', 'CIRCA', 'CURAHUASI', 'HUANIPACA', 'LAMBRAMA', 'PICHIRHUA', 'SAN PEDRO DE CACHORA', 'TAMBURCO'],
-      'LIMA': ['LIMA', 'ATE', 'BARRANCO', 'BREÑA', 'CARABAYLLO', 'CHACLACAYO', 'CHORRILLOS', 'CIENEGUILLA', 'COMAS', 'EL AGUSTINO', 'INDEPENDENCIA', 'JESUS MARIA', 'LA MOLINA', 'LA VICTORIA', 'LINCE', 'LOS OLIVOS', 'LURIGANCHO', 'LURIN', 'MAGDALENA DEL MAR', 'MAGDALENA VIEJA', 'MIRAFLORES', 'PACHACAMAC', 'PUCUSANA', 'PUEBLO LIBRE', 'PUENTE PIEDRA', 'PUNTA HERMOSA', 'PUNTA NEGRA', 'RIMAC', 'SAN BARTOLO', 'SAN BORJA', 'SAN ISIDRO', 'SAN JUAN DE LURIGANCHO', 'SAN JUAN DE MIRAFLORES', 'SAN LUIS', 'SAN MARTIN DE PORRES', 'SAN MIGUEL', 'SANTA ANITA', 'SANTA MARIA DEL MAR', 'SANTA ROSA', 'SANTIAGO DE SURCO', 'SURQUILLO', 'VILLA EL SALVADOR', 'VILLA MARIA DEL TRIUNFO']
+      'LIMA': ['LIMA', 'ATE', 'BARRANCO', 'BREÑA', 'CHORRILLOS', 'COMAS', 'INDEPENDENCIA', 'JESUS MARIA', 'LA MOLINA', 'LA VICTORIA', 'LINCE', 'LOS OLIVOS', 'MIRAFLORES', 'PUEBLO LIBRE', 'RIMAC', 'SAN BORJA', 'SAN ISIDRO', 'SAN JUAN DE LURIGANCHO', 'SAN MARTIN DE PORRES', 'SAN MIGUEL', 'SANTA ANITA', 'SANTIAGO DE SURCO', 'SURQUILLO', 'VILLA EL SALVADOR'],
+      'AREQUIPA': ['AREQUIPA', 'ALTO SELVA ALEGRE', 'CAYMA', 'CERRO COLORADO', 'CHARACATO', 'CHIGUATA', 'JACOBO HUNTER', 'LA JOYA', 'MARIANO MELGAR', 'MIRAFLORES', 'MOLLEBAYA', 'PAUCARPATA', 'POCSI', 'POLOBAYA', 'QUEQUEÑA', 'SABANDIA', 'SACHACA', 'SAN JUAN DE SIGUAS', 'SAN JUAN DE TARUCANI', 'SANTA ISABEL DE SIGUAS', 'SANTA RITA DE SIGUAS', 'SOCABAYA', 'TIABAYA', 'UCHUMAYO', 'VITOR', 'YANAHUARA', 'YARABAMBA', 'YURA']
     }
+    
+    console.log(`🔄 Fallback usado para ${prov}`)
     return distritosConocidos[prov.toUpperCase()] || []
   }
 }
@@ -63,9 +47,9 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    console.log(`🏘️ Consultando repositorio oficial GitHub para: ${departamento} - ${provincia}`)
+    console.log(`⚡ Consulta OPTIMIZADA con cache para: ${departamento} - ${provincia}`)
 
-    const distritosEncontrados = await buscarDistritosEnRepositorioOficial(departamento, provincia)
+    const distritosEncontrados = await buscarDistritosOptimizado(departamento, provincia)
     
     if (distritosEncontrados.length === 0) {
       return NextResponse.json(
