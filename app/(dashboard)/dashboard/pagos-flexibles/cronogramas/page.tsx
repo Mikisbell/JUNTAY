@@ -368,7 +368,7 @@ export default function CronogramasPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-3">
                       <h4 className="text-lg font-semibold">{cronograma.cliente_nombre}</h4>
-                      <Badge variant={getEstadoBadge(cronograma.estado) as any}>
+                      <Badge variant={getEstadoBadge(cronograma.estado) as "default" | "secondary" | "destructive" | "outline"}>
                         {cronograma.estado}
                       </Badge>
                       <Badge className={getModalidadBadge(cronograma.modalidad_tipo)}>
@@ -467,7 +467,7 @@ export default function CronogramasPage() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Estado</p>
-                  <Badge variant={getEstadoBadge(cronogramaSeleccionado.estado) as any} className="text-sm">
+                  <Badge variant={getEstadoBadge(cronogramaSeleccionado.estado) as "default" | "secondary" | "destructive" | "outline"} className="text-sm">
                     {cronogramaSeleccionado.estado}
                   </Badge>
                 </div>
@@ -497,9 +497,13 @@ export default function CronogramasPage() {
                         <td className="border border-gray-300 px-4 py-2">
                           <Badge 
                             variant={
-                              cuota.estado === 'pagada' ? 'success' :
+                              cuota.estado === 'pagada' ? 'default' :
                               cuota.estado === 'vencida' ? 'destructive' : 'secondary'
-                            } as any
+                            }
+                            className={
+                              cuota.estado === 'pagada' ? 'bg-green-100 text-green-800' :
+                              cuota.estado === 'vencida' ? '' : ''
+                            }
                           >
                             {cuota.estado}
                           </Badge>
