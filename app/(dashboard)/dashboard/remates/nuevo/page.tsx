@@ -18,9 +18,21 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { createRemate } from '@/lib/api/remates'
-import { getGarantias, type Garantia } from '@/lib/api/garantias'
+import { crearRemate } from '@/lib/api/remates'
+import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
+
+interface Garantia {
+  id?: string
+  nombre: string
+  marca: string
+  modelo: string
+  numero_serie?: string
+  estado: string
+  valor_tasacion: number
+  credito_id?: string
+  remate_id?: string
+}
 
 export default function NuevoRematePage() {
   const router = useRouter()
@@ -46,12 +58,16 @@ export default function NuevoRematePage() {
 
   const loadGarantiasVencidas = async () => {
     try {
-      const data = await getGarantias()
-      // Filtrar garantías que pueden ir a remate (vencidas, perdidas, etc.)
-      const garantiasParaRemate = data.filter(g => 
-        ['perdido', 'vencido'].includes(g.estado) && !g.remate_id
-      )
-      setGarantias(garantiasParaRemate)
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('garantias')
+        .select('*')
+        .in('estado', ['perdido', 'vencido'])
+        .is('remate_id', null)
+        
+      if (error) throw error
+      
+      setGarantias(data || [])
     } catch (error) {
       console.error('Error cargando garantías:', error)
       toast.error('Error al cargar garantías disponibles')
@@ -105,7 +121,7 @@ export default function NuevoRematePage() {
         condiciones_especiales: formData.condiciones_especiales
       }
 
-      await createRemate(remateData)
+      await crearRemate(remateData)
       
       toast.success('Remate programado exitosamente')
       router.push('/dashboard/remates')

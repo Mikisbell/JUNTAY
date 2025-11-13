@@ -18,7 +18,24 @@ import {
   Package
 } from 'lucide-react'
 import Link from 'next/link'
-import { getRemates, type Remate } from '@/lib/api/remates'
+import { createClient } from '@/lib/supabase/client'
+
+interface Remate {
+  id?: string
+  numero_remate: string
+  estado: 'programado' | 'en_proceso' | 'vendido' | 'no_vendido' | 'cancelado'
+  precio_base: number
+  precio_final?: number
+  fecha_inicio_remate: string
+  fecha_fin_remate?: string
+  incremento_minimo?: number
+  ganador_nombre?: string
+  created_at?: string
+  updated_at?: string
+  garantias?: {
+    nombre?: string
+  }
+}
 
 export default function RematesPage() {
   const [remates, setRemates] = useState<Remate[]>([])
@@ -33,8 +50,19 @@ export default function RematesPage() {
   const loadRemates = async () => {
     try {
       setLoading(true)
-      const data = await getRemates()
-      setRemates(data)
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('remates')
+        .select(`
+          *,
+          garantias (
+            nombre
+          )
+        `)
+        .order('created_at', { ascending: false })
+        
+      if (error) throw error
+      setRemates(data || [])
     } catch (error) {
       console.error('Error cargando remates:', error)
     } finally {
@@ -52,8 +80,8 @@ export default function RematesPage() {
   const estadosRemate = [
     { value: 'todos', label: 'Todos los Estados', count: remates.length },
     { value: 'programado', label: 'Programados', count: remates.filter(r => r.estado === 'programado').length },
-    { value: 'activo', label: 'Activos', count: remates.filter(r => r.estado === 'activo').length },
-    { value: 'finalizado', label: 'Finalizados', count: remates.filter(r => r.estado === 'finalizado').length },
+    { value: 'en_proceso', label: 'En Proceso', count: remates.filter(r => r.estado === 'en_proceso').length },
+    { value: 'vendido', label: 'Vendidos', count: remates.filter(r => r.estado === 'vendido').length },
     { value: 'cancelado', label: 'Cancelados', count: remates.filter(r => r.estado === 'cancelado').length }
   ]
 
