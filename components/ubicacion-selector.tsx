@@ -10,16 +10,14 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { 
-  obtenerDepartamentos,
+  obtenerDepartamentosCompletos,
   obtenerProvinciasPorDepartamento,
   obtenerDistritosPorProvincia,
   buscarDepartamentoPorNombre,
-  buscarProvinciaPorNombre,
-  buscarDistritoPorNombre,
-  type Departamento,
-  type Provincia,
-  type Distrito
-} from '@/lib/data/ubicaciones-peru'
+  type DepartamentoCompleto,
+  type ProvinciaCompleta,
+  type DistritoCompleto
+} from '@/lib/data/ubigeos-completos'
 
 interface UbicacionSelectorProps {
   departamentoInicial?: string
@@ -46,30 +44,30 @@ export function UbicacionSelector({
   const [provinciaSeleccionada, setProvinciaSeleccionada] = useState('')
   const [distritoSeleccionado, setDistritoSeleccionado] = useState('')
   
-  const [departamentos] = useState<Departamento[]>(obtenerDepartamentos())
-  const [provincias, setProvincias] = useState<Provincia[]>([])
-  const [distritos, setDistritos] = useState<Distrito[]>([])
+  const [departamentos] = useState<DepartamentoCompleto[]>(obtenerDepartamentosCompletos())
+  const [provincias, setProvincias] = useState<ProvinciaCompleta[]>([])
+  const [distritos, setDistritos] = useState<DistritoCompleto[]>([])
 
   // Inicializar con valores iniciales
   useEffect(() => {
     if (departamentoInicial) {
       const dept = buscarDepartamentoPorNombre(departamentoInicial)
       if (dept) {
-        setDepartamentoSeleccionado(dept.codigo)
-        const provinciasDisponibles = obtenerProvinciasPorDepartamento(dept.codigo)
+        setDepartamentoSeleccionado(dept.id)
+        const provinciasDisponibles = obtenerProvinciasPorDepartamento(dept.id)
         setProvincias(provinciasDisponibles)
         
         if (provinciaInicial) {
-          const prov = buscarProvinciaPorNombre(provinciaInicial, dept.codigo)
+          const prov = provinciasDisponibles.find(p => p.nombre.toLowerCase().includes(provinciaInicial.toLowerCase()))
           if (prov) {
-            setProvinciaSeleccionada(prov.codigo)
-            const distritosDisponibles = obtenerDistritosPorProvincia(prov.codigo, dept.codigo)
+            setProvinciaSeleccionada(prov.id)
+            const distritosDisponibles = obtenerDistritosPorProvincia(prov.id)
             setDistritos(distritosDisponibles)
             
             if (distritoInicial) {
-              const dist = buscarDistritoPorNombre(distritoInicial, prov.codigo, dept.codigo)
+              const dist = distritosDisponibles.find(d => d.nombre.toLowerCase().includes(distritoInicial.toLowerCase()))
               if (dist) {
-                setDistritoSeleccionado(dist.codigo)
+                setDistritoSeleccionado(dist.id)
               }
             }
           }
@@ -78,18 +76,18 @@ export function UbicacionSelector({
     }
   }, [departamentoInicial, provinciaInicial, distritoInicial])
 
-  const handleDepartamentoChange = (codigoDepartamento: string) => {
-    setDepartamentoSeleccionado(codigoDepartamento)
+  const handleDepartamentoChange = (departamentoId: string) => {
+    setDepartamentoSeleccionado(departamentoId)
     setProvinciaSeleccionada('')
     setDistritoSeleccionado('')
     
     // Cargar provincias del departamento seleccionado
-    const provinciasDisponibles = obtenerProvinciasPorDepartamento(codigoDepartamento)
+    const provinciasDisponibles = obtenerProvinciasPorDepartamento(departamentoId)
     setProvincias(provinciasDisponibles)
     setDistritos([])
     
     // Obtener nombre del departamento
-    const departamento = departamentos.find(d => d.codigo === codigoDepartamento)
+    const departamento = departamentos.find(d => d.id === departamentoId)
     
     onUbicacionChange({
       departamento: departamento?.nombre || '',
@@ -98,17 +96,17 @@ export function UbicacionSelector({
     })
   }
 
-  const handleProvinciaChange = (codigoProvincia: string) => {
-    setProvinciaSeleccionada(codigoProvincia)
+  const handleProvinciaChange = (provinciaId: string) => {
+    setProvinciaSeleccionada(provinciaId)
     setDistritoSeleccionado('')
     
     // Cargar distritos de la provincia seleccionada
-    const distritosDisponibles = obtenerDistritosPorProvincia(codigoProvincia, departamentoSeleccionado)
+    const distritosDisponibles = obtenerDistritosPorProvincia(provinciaId)
     setDistritos(distritosDisponibles)
     
     // Obtener nombres
-    const departamento = departamentos.find(d => d.codigo === departamentoSeleccionado)
-    const provincia = provincias.find(p => p.codigo === codigoProvincia)
+    const departamento = departamentos.find(d => d.id === departamentoSeleccionado)
+    const provincia = provincias.find(p => p.id === provinciaId)
     
     onUbicacionChange({
       departamento: departamento?.nombre || '',
@@ -117,13 +115,13 @@ export function UbicacionSelector({
     })
   }
 
-  const handleDistritoChange = (codigoDistrito: string) => {
-    setDistritoSeleccionado(codigoDistrito)
+  const handleDistritoChange = (distritoId: string) => {
+    setDistritoSeleccionado(distritoId)
     
     // Obtener nombres completos
-    const departamento = departamentos.find(d => d.codigo === departamentoSeleccionado)
-    const provincia = provincias.find(p => p.codigo === provinciaSeleccionada)
-    const distrito = distritos.find(d => d.codigo === codigoDistrito)
+    const departamento = departamentos.find(d => d.id === departamentoSeleccionado)
+    const provincia = provincias.find(p => p.id === provinciaSeleccionada)
+    const distrito = distritos.find(d => d.id === distritoId)
     
     onUbicacionChange({
       departamento: departamento?.nombre || '',
@@ -144,13 +142,13 @@ export function UbicacionSelector({
         >
           <SelectTrigger 
             className={getCampoStyle ? getCampoStyle('departamento', 
-              departamentos.find(d => d.codigo === departamentoSeleccionado)?.nombre || '') : ''}
+              departamentos.find(d => d.id === departamentoSeleccionado)?.nombre || '') : ''}
           >
             <SelectValue placeholder="Seleccionar departamento" />
           </SelectTrigger>
           <SelectContent>
             {departamentos.map((departamento) => (
-              <SelectItem key={departamento.codigo} value={departamento.codigo}>
+              <SelectItem key={departamento.id} value={departamento.id}>
                 {departamento.nombre}
               </SelectItem>
             ))}
@@ -168,13 +166,13 @@ export function UbicacionSelector({
         >
           <SelectTrigger 
             className={getCampoStyle ? getCampoStyle('provincia',
-              provincias.find(p => p.codigo === provinciaSeleccionada)?.nombre || '') : ''}
+              provincias.find(p => p.id === provinciaSeleccionada)?.nombre || '') : ''}
           >
             <SelectValue placeholder="Seleccionar provincia" />
           </SelectTrigger>
           <SelectContent>
             {provincias.map((provincia) => (
-              <SelectItem key={provincia.codigo} value={provincia.codigo}>
+              <SelectItem key={provincia.id} value={provincia.id}>
                 {provincia.nombre}
               </SelectItem>
             ))}
@@ -192,13 +190,13 @@ export function UbicacionSelector({
         >
           <SelectTrigger 
             className={getCampoStyle ? getCampoStyle('distrito',
-              distritos.find(d => d.codigo === distritoSeleccionado)?.nombre || '') : ''}
+              distritos.find(d => d.id === distritoSeleccionado)?.nombre || '') : ''}
           >
             <SelectValue placeholder="Seleccionar distrito" />
           </SelectTrigger>
           <SelectContent>
             {distritos.map((distrito) => (
-              <SelectItem key={distrito.codigo} value={distrito.codigo}>
+              <SelectItem key={distrito.id} value={distrito.id}>
                 {distrito.nombre}
               </SelectItem>
             ))}
