@@ -25,21 +25,15 @@ export async function GET() {
       throw new Error(result.error || 'Error obteniendo departamentos desde API')
     }
   } catch (error) {
-    console.error('Error obteniendo departamentos:', error)
+    console.error('Error obteniendo departamentos desde API:', error)
     
-    // Fallback a departamentos base si la API falla
-    const departamentosFallback = [
-      'AMAZONAS', 'ANCASH', 'APURIMAC', 'AREQUIPA', 'AYACUCHO', 'CAJAMARCA',
-      'CALLAO', 'CUSCO', 'HUANCAVELICA', 'HUANUCO', 'ICA', 'JUNIN',
-      'LA LIBERTAD', 'LAMBAYEQUE', 'LIMA', 'LORETO', 'MADRE DE DIOS',
-      'MOQUEGUA', 'PASCO', 'PIURA', 'PUNO', 'SAN MARTIN', 'TACNA',
-      'TUMBES', 'UCAYALI'
-    ]
-
-    return NextResponse.json({
-      success: true,
-      data: departamentosFallback.sort(),
-      source: 'fallback'
-    })
+    return NextResponse.json(
+      { 
+        success: false, 
+        error: 'Error obteniendo departamentos desde API consultasperu.com',
+        message: 'No se pudieron cargar los departamentos. Intente nuevamente.' 
+      },
+      { status: 500 }
+    )
   }
 }

@@ -187,5 +187,5 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Exportar el cache para uso interno
-export { ubicacionesCache }
+// Cache disponible internamente en este módulo
+// No se puede exportar desde archivos de rutas en Next.js App Router
