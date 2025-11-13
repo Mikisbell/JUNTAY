@@ -94,7 +94,7 @@ export async function GET(request: NextRequest) {
     console.log(`✅ ${distritos?.length || 0} distritos obtenidos INSTANTÁNEAMENTE`)
 
     // Formatear respuesta para compatibilidad
-    const distritosFormateados = distritos?.map(d => ({
+    const distritosFormateados = distritos?.map((d: any) => ({
       id: d.id,
       codigo: d.codigo,
       nombre: d.nombre,
