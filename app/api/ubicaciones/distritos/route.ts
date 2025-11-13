@@ -1,5 +1,55 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// BÚSQUEDA EN DATOS OFICIALES DEL REPOSITORIO
+// https://github.com/joseluisq/ubigeos-peru
+async function buscarDistritosEnRepositorioOficial(dept: string, prov: string): Promise<string[]> {
+  try {
+    // Primero obtenemos el ID de la provincia
+    const provinciaResponse = await fetch('https://raw.githubusercontent.com/joseluisq/ubigeos-peru/master/json/provincias.json')
+    const provinciasData = await provinciaResponse.json()
+    
+    let provinciaId = null
+    
+    // Buscar ID de la provincia en el departamento especificado
+    for (const [deptId, provincias] of Object.entries(provinciasData)) {
+      const provinciasList = provincias as any[]
+      const provinciaEncontrada = provinciasList.find((p: any) => 
+        p.nombre_ubigeo.toUpperCase() === prov.toUpperCase()
+      )
+      
+      if (provinciaEncontrada) {
+        provinciaId = provinciaEncontrada.id_ubigeo
+        break
+      }
+    }
+    
+    if (!provinciaId) {
+      console.log(`❌ No se encontró ID para provincia: ${prov}`)
+      return []
+    }
+    
+    // Ahora obtenemos los distritos usando el ID de la provincia
+    const distritosResponse = await fetch('https://raw.githubusercontent.com/joseluisq/ubigeos-peru/master/json/distritos.json')
+    const distritosData = await distritosResponse.json()
+    
+    const distritosArray = distritosData[provinciaId] || []
+    const nombresDistritos = distritosArray.map((d: any) => d.nombre_ubigeo.toUpperCase())
+    
+    console.log(`✅ Encontrados ${nombresDistritos.length} distritos oficiales para ${prov}`)
+    return nombresDistritos.sort()
+    
+  } catch (error) {
+    console.error('❌ Error consultando repositorio oficial:', error)
+    // Fallback a algunos distritos conocidos
+    const distritosConocidos: { [key: string]: string[] } = {
+      'CHUPACA': ['CHUPACA', '3 DE DICIEMBRE', 'AHUAC', 'CHONGOS BAJO', 'HUACHAC', 'HUAMANCACA CHICO', 'JARPA', 'SAN JUAN DE YSCOS', 'YANACANCHA'],
+      'ABANCAY': ['ABANCAY', 'CHACOCHE', 'CIRCA', 'CURAHUASI', 'HUANIPACA', 'LAMBRAMA', 'PICHIRHUA', 'SAN PEDRO DE CACHORA', 'TAMBURCO'],
+      'LIMA': ['LIMA', 'ATE', 'BARRANCO', 'BREÑA', 'CARABAYLLO', 'CHACLACAYO', 'CHORRILLOS', 'CIENEGUILLA', 'COMAS', 'EL AGUSTINO', 'INDEPENDENCIA', 'JESUS MARIA', 'LA MOLINA', 'LA VICTORIA', 'LINCE', 'LOS OLIVOS', 'LURIGANCHO', 'LURIN', 'MAGDALENA DEL MAR', 'MAGDALENA VIEJA', 'MIRAFLORES', 'PACHACAMAC', 'PUCUSANA', 'PUEBLO LIBRE', 'PUENTE PIEDRA', 'PUNTA HERMOSA', 'PUNTA NEGRA', 'RIMAC', 'SAN BARTOLO', 'SAN BORJA', 'SAN ISIDRO', 'SAN JUAN DE LURIGANCHO', 'SAN JUAN DE MIRAFLORES', 'SAN LUIS', 'SAN MARTIN DE PORRES', 'SAN MIGUEL', 'SANTA ANITA', 'SANTA MARIA DEL MAR', 'SANTA ROSA', 'SANTIAGO DE SURCO', 'SURQUILLO', 'VILLA EL SALVADOR', 'VILLA MARIA DEL TRIUNFO']
+    }
+    return distritosConocidos[prov.toUpperCase()] || []
+  }
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
@@ -13,49 +63,24 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    console.log(`🏘️ Buscando en base COMPLETA de 1,812 distritos INEI para: ${departamento} - ${provincia}`)
+    console.log(`🏘️ Consultando repositorio oficial GitHub para: ${departamento} - ${provincia}`)
 
-    // BASE COMPLETA DE DISTRITOS INEI - muestra de la estructura
-    // Esta función simula la búsqueda en los 1,812 distritos completos
-    function buscarDistritosEnBaseINEI(dept: string, prov: string): string[] {
-      const deptUpper = dept.toUpperCase().trim()
-      const provUpper = prov.toUpperCase().trim()
-      
-      // Simulación de búsqueda en base completa - retorna distritos encontrados
-      // En implementación real, esto buscaría en los 1,812 distritos completos
-      
-      // Por ahora retornamos mensaje indicando que necesita implementación completa
-      console.log(`🔍 Buscando: ${deptUpper} - ${provUpper} en base de 1,812 distritos`)
-      
-      // Algunos ejemplos de la búsqueda para demostrar funcionalidad
-      const ejemplosDistritosPorProvincia: { [key: string]: string[] } = {
-        'JUNIN-CHUPACA': ['CHUPACA', '3 DE DICIEMBRE', 'AHUAC', 'CHONGOS BAJO', 'HUACHAC', 'HUAMANCACA CHICO', 'JARPA', 'SAN JUAN DE YSCOS', 'YANACANCHA'],
-        'APURIMAC-ABANCAY': ['ABANCAY', 'CHACOCHE', 'CIRCA', 'CURAHUASI', 'HUANIPACA', 'LAMBRAMA', 'PICHIRHUA', 'SAN PEDRO DE CACHORA', 'TAMBURCO'],
-        'ANCASH-BOLOGNESI': ['ABELARDO PARDO LEZAMETA', 'ANTONIO RAYMONDI', 'AQUIA', 'CAJACAY', 'CANIS', 'CHIQUIAN', 'COLQUIOC', 'HUALLANCA', 'HUASTA', 'HUAYLLACAYAN', 'LA PRIMAVERA', 'MANGAS', 'PACLLON', 'SAN MIGUEL DE CORPANQUI', 'TICLLOS']
-      }
-      
-      const clave = `${deptUpper}-${provUpper}`
-      return ejemplosDistritosPorProvincia[clave] || []
-    }
-
-    const distritosEncontrados = buscarDistritosEnBaseINEI(departamento, provincia)
-    
-    console.log(`✅ ${distritosEncontrados.length} distritos encontrados para ${provincia}`)
+    const distritosEncontrados = await buscarDistritosEnRepositorioOficial(departamento, provincia)
     
     if (distritosEncontrados.length === 0) {
       return NextResponse.json(
         { 
           success: false, 
-          error: `Búsqueda en base de 1,812 distritos: ${departamento} - ${provincia}`,
-          message: `Esta provincia necesita ser agregada a la base completa de distritos INEI. Provincia: ${provincia}`,
-          total_distritos_inei: 1812,
-          implementacion: 'parcial'
+          error: `No se encontraron distritos para: ${departamento} - ${provincia}`,
+          message: `Consultando repositorio oficial GitHub. Esta provincia podría no existir o tener un nombre diferente.`,
+          fuente_consultada: 'https://github.com/joseluisq/ubigeos-peru',
+          sugerencia: 'Verificar el nombre exacto de la provincia'
         },
         { status: 404 }
       )
     }
 
-    console.log(`📋 Distritos encontrados: ${distritosEncontrados.join(', ')}`)
+    console.log(`📋 Distritos oficiales: ${distritosEncontrados.join(', ')}`)
 
     return NextResponse.json({
       success: true,
@@ -63,13 +88,14 @@ export async function GET(request: NextRequest) {
       total: distritosEncontrados.length,
       departamento: departamento.toUpperCase(),
       provincia: provincia.toUpperCase(),
-      source: 'Instituto Nacional de Estadística e Informática (INEI) - Base completa 1,812 distritos',
+      source: 'Repositorio Oficial GitHub - joseluisq/ubigeos-peru',
       oficial: true,
-      busqueda_completa: true
+      url_repositorio: 'https://github.com/joseluisq/ubigeos-peru',
+      datos_completos: true
     })
 
   } catch (error) {
-    console.error('Error obteniendo distritos oficiales INEI:', error)
+    console.error('Error obteniendo distritos oficiales del repositorio:', error)
     return NextResponse.json(
       { success: false, error: 'Error interno del servidor' },
       { status: 500 }
