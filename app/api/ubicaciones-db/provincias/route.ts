@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
     console.log(`✅ ${provincias?.length || 0} provincias obtenidas INSTANTÁNEAMENTE`)
 
     // Formatear respuesta para compatibilidad
-    const provinciasFormateadas = provincias?.map(p => ({
+    const provinciasFormateadas = provincias?.map((p: any) => ({
       id: p.id,
       codigo: p.codigo,
       nombre: p.nombre,
