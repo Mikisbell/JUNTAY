@@ -150,13 +150,23 @@ export default function NuevoClientePage() {
     }, 3000)
   }
 
+  // Función para verificar si un campo debe ser readonly (inmutable)
+  const esCampoInmutable = (nombreCampo: string) => {
+    const camposInmutablesDNI = ['nombres', 'apellido_paterno', 'apellido_materno', 'fecha_nacimiento']
+    return camposInmutablesDNI.includes(nombreCampo) && camposAutoRellenados.has(nombreCampo)
+  }
+
   // Función para obtener el estilo del campo según su estado
   const getCampoStyle = (nombreCampo: string, valor: string) => {
     const tieneValor = valor && valor.trim()
     const esAutoRellenado = camposAutoRellenados.has(nombreCampo)
     const esCompletadoManualmente = camposCompletadosManualmente.has(nombreCampo)
+    const esInmutable = esCampoInmutable(nombreCampo)
     
-    if (esAutoRellenado || (tieneValor && esCompletadoManualmente)) {
+    if (esInmutable) {
+      // Campos inmutables de RENIEC: Verde más intenso con cursor no permitido
+      return 'border-green-600 bg-green-100 text-green-800 cursor-not-allowed font-medium'
+    } else if (esAutoRellenado || (tieneValor && esCompletadoManualmente)) {
       // Verde: auto-rellenado o completado manualmente
       return 'border-green-500 bg-green-50 focus:border-green-600 focus:ring-green-500'
     } else if (!tieneValor && (camposAutoRellenados.size > 0 || camposCompletadosManualmente.size > 0)) {
@@ -380,7 +390,14 @@ export default function NuevoClientePage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
-                  <Label htmlFor="nombres">Nombres *</Label>
+                  <Label htmlFor="nombres">
+                    Nombres * 
+                    {esCampoInmutable('nombres') && (
+                      <span className="text-xs text-green-600 ml-2 font-medium">
+                        (Obtenido de RENIEC - No editable)
+                      </span>
+                    )}
+                  </Label>
                   <Input
                     id="nombres"
                     name="nombres"
@@ -388,11 +405,19 @@ export default function NuevoClientePage() {
                     onChange={handleInputChange}
                     placeholder="Juan Carlos"
                     className={getCampoStyle('nombres', formData.nombres)}
+                    readOnly={esCampoInmutable('nombres')}
                     required
                   />
                 </div>
                 <div>
-                  <Label htmlFor="apellido_paterno">Apellido Paterno *</Label>
+                  <Label htmlFor="apellido_paterno">
+                    Apellido Paterno *
+                    {esCampoInmutable('apellido_paterno') && (
+                      <span className="text-xs text-green-600 ml-2 font-medium">
+                        (Obtenido de RENIEC - No editable)
+                      </span>
+                    )}
+                  </Label>
                   <Input
                     id="apellido_paterno"
                     name="apellido_paterno"
@@ -400,11 +425,19 @@ export default function NuevoClientePage() {
                     onChange={handleInputChange}
                     placeholder="Pérez"
                     className={getCampoStyle('apellido_paterno', formData.apellido_paterno)}
+                    readOnly={esCampoInmutable('apellido_paterno')}
                     required
                   />
                 </div>
                 <div>
-                  <Label htmlFor="apellido_materno">Apellido Materno</Label>
+                  <Label htmlFor="apellido_materno">
+                    Apellido Materno
+                    {esCampoInmutable('apellido_materno') && (
+                      <span className="text-xs text-green-600 ml-2 font-medium">
+                        (Obtenido de RENIEC - No editable)
+                      </span>
+                    )}
+                  </Label>
                   <Input
                     id="apellido_materno"
                     name="apellido_materno"
@@ -412,10 +445,18 @@ export default function NuevoClientePage() {
                     onChange={handleInputChange}
                     placeholder="López"
                     className={getCampoStyle('apellido_materno', formData.apellido_materno)}
+                    readOnly={esCampoInmutable('apellido_materno')}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="fecha_nacimiento">Fecha de Nacimiento</Label>
+                  <Label htmlFor="fecha_nacimiento">
+                    Fecha de Nacimiento
+                    {esCampoInmutable('fecha_nacimiento') && (
+                      <span className="text-xs text-green-600 ml-2 font-medium">
+                        (Obtenido de RENIEC - No editable)
+                      </span>
+                    )}
+                  </Label>
                   <Input
                     id="fecha_nacimiento"
                     name="fecha_nacimiento"
@@ -423,6 +464,7 @@ export default function NuevoClientePage() {
                     value={formData.fecha_nacimiento}
                     onChange={handleInputChange}
                     className={getCampoStyle('fecha_nacimiento', formData.fecha_nacimiento)}
+                    readOnly={esCampoInmutable('fecha_nacimiento')}
                   />
                 </div>
               </div>
