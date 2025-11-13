@@ -1,0 +1,8 @@
+# Ignorar la carpeta de documentación en el build principal
+docs/
+juntay-docs/
+
+# Archivos de configuración
+docs-setup.md
+*.log
+.DS_Store
