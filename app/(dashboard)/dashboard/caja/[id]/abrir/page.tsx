@@ -167,11 +167,11 @@ export default function AbrirCajaPage({ params }: { params: { id: string } }) {
       
       console.log('Verificación de sesión:', verificacion)
       
-      // Esperar 1 segundo antes de redirigir
+      // Esperar 2 segundos y usar window.location para forzar recarga completa
+      console.log('✅ Proceso completado, redirigiendo...')
       setTimeout(() => {
-        router.push(`/dashboard/caja/${params.id}`)
-        router.refresh()
-      }, 1000)
+        window.location.href = `/dashboard/caja/${params.id}`
+      }, 2000)
     } catch (err: any) {
       console.error('Error al abrir caja:', err)
       setError(err.message || 'Error al abrir la caja')

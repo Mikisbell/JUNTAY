@@ -448,10 +448,10 @@ export async function cerrarCaja(data: {
   }
 }
 
-export async function getSesionActual(cajaId: string) {
+export async function getSesionActual(cajaId: string, retry = 0): Promise<SesionCaja | null> {
   const supabase = createClient()
   
-  console.log('Buscando sesión actual para caja:', cajaId)
+  console.log(`Buscando sesión actual para caja: ${cajaId} (intento ${retry + 1})`)
   
   const { data, error } = await supabase
     .from('sesiones_caja')
@@ -472,6 +472,14 @@ export async function getSesionActual(cajaId: string) {
       .limit(5)
     
     console.log('Últimas 5 sesiones para esta caja:', todasSesiones)
+    
+    // Si no encontró sesión y es el primer intento, esperar y reintentar
+    if (error.code === 'PGRST116' && retry < 2) {
+      console.log('No se encontró sesión, reintentando en 1 segundo...')
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      return getSesionActual(cajaId, retry + 1)
+    }
+    
     return null
   }
   
