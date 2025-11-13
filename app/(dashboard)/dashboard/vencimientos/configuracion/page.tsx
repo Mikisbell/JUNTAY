@@ -356,7 +356,7 @@ export default function ConfiguracionVencimientosPage() {
               </div>
               <Switch
                 checked={config.automatizar_proceso}
-                onCheckedChange={(checked) => updateConfig('automatizar_proceso', checked)}
+                onCheckedChange={(checked: boolean) => updateConfig('automatizar_proceso', checked)}
               />
             </div>
             
@@ -367,7 +367,7 @@ export default function ConfiguracionVencimientosPage() {
               </div>
               <Switch
                 checked={config.crear_remates_automatico}
-                onCheckedChange={(checked) => updateConfig('crear_remates_automatico', checked)}
+                onCheckedChange={(checked: boolean) => updateConfig('crear_remates_automatico', checked)}
               />
             </div>
             
@@ -378,7 +378,7 @@ export default function ConfiguracionVencimientosPage() {
               </div>
               <Switch
                 checked={config.enviar_notificaciones_automatico}
-                onCheckedChange={(checked) => updateConfig('enviar_notificaciones_automatico', checked)}
+                onCheckedChange={(checked: boolean) => updateConfig('enviar_notificaciones_automatico', checked)}
               />
             </div>
           </CardContent>
@@ -400,7 +400,7 @@ export default function ConfiguracionVencimientosPage() {
               </div>
               <Switch
                 checked={config.canales_activos.whatsapp}
-                onCheckedChange={(checked) => updateNestedConfig('canales_activos', 'whatsapp', checked)}
+                onCheckedChange={(checked: boolean) => updateNestedConfig('canales_activos', 'whatsapp', checked)}
               />
             </div>
             
@@ -411,7 +411,7 @@ export default function ConfiguracionVencimientosPage() {
               </div>
               <Switch
                 checked={config.canales_activos.sms}
-                onCheckedChange={(checked) => updateNestedConfig('canales_activos', 'sms', checked)}
+                onCheckedChange={(checked: boolean) => updateNestedConfig('canales_activos', 'sms', checked)}
               />
             </div>
             
@@ -422,7 +422,7 @@ export default function ConfiguracionVencimientosPage() {
               </div>
               <Switch
                 checked={config.canales_activos.email}
-                onCheckedChange={(checked) => updateNestedConfig('canales_activos', 'email', checked)}
+                onCheckedChange={(checked: boolean) => updateNestedConfig('canales_activos', 'email', checked)}
               />
             </div>
             
@@ -433,7 +433,7 @@ export default function ConfiguracionVencimientosPage() {
               </div>
               <Switch
                 checked={config.canales_activos.llamada}
-                onCheckedChange={(checked) => updateNestedConfig('canales_activos', 'llamada', checked)}
+                onCheckedChange={(checked: boolean) => updateNestedConfig('canales_activos', 'llamada', checked)}
               />
             </div>
           </CardContent>
@@ -476,7 +476,7 @@ export default function ConfiguracionVencimientosPage() {
               </div>
               <Switch
                 checked={config.dias_laborables_solo}
-                onCheckedChange={(checked) => updateConfig('dias_laborables_solo', checked)}
+                onCheckedChange={(checked: boolean) => updateConfig('dias_laborables_solo', checked)}
               />
             </div>
           </CardContent>
@@ -498,7 +498,7 @@ export default function ConfiguracionVencimientosPage() {
               </div>
               <Switch
                 checked={config.priorizar_por_monto}
-                onCheckedChange={(checked) => updateConfig('priorizar_por_monto', checked)}
+                onCheckedChange={(checked: boolean) => updateConfig('priorizar_por_monto', checked)}
               />
             </div>
             
@@ -523,7 +523,7 @@ export default function ConfiguracionVencimientosPage() {
               </div>
               <Switch
                 checked={config.priorizar_por_historial}
-                onCheckedChange={(checked) => updateConfig('priorizar_por_historial', checked)}
+                onCheckedChange={(checked: boolean) => updateConfig('priorizar_por_historial', checked)}
               />
             </div>
           </CardContent>
@@ -597,7 +597,7 @@ export default function ConfiguracionVencimientosPage() {
               </div>
               <Switch
                 checked={config.alertas_diarias}
-                onCheckedChange={(checked) => updateConfig('alertas_diarias', checked)}
+                onCheckedChange={(checked: boolean) => updateConfig('alertas_diarias', checked)}
               />
             </div>
             
@@ -608,7 +608,7 @@ export default function ConfiguracionVencimientosPage() {
               </div>
               <Switch
                 checked={config.reporte_semanal}
-                onCheckedChange={(checked) => updateConfig('reporte_semanal', checked)}
+                onCheckedChange={(checked: boolean) => updateConfig('reporte_semanal', checked)}
               />
             </div>
             
@@ -619,7 +619,7 @@ export default function ConfiguracionVencimientosPage() {
               </div>
               <Switch
                 checked={config.notificar_gerencia}
-                onCheckedChange={(checked) => updateConfig('notificar_gerencia', checked)}
+                onCheckedChange={(checked: boolean) => updateConfig('notificar_gerencia', checked)}
               />
             </div>
           </div>

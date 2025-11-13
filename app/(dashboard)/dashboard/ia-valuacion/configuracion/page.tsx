@@ -391,7 +391,7 @@ export default function ConfiguracionIAPage() {
               </div>
               <Switch
                 checked={config.modelos_activos.joyas}
-                onCheckedChange={(checked) => updateNestedConfig('modelos_activos', 'joyas', checked)}
+                onCheckedChange={(checked: boolean) => updateNestedConfig('modelos_activos', 'joyas', checked)}
               />
             </div>
             
@@ -402,7 +402,7 @@ export default function ConfiguracionIAPage() {
               </div>
               <Switch
                 checked={config.modelos_activos.electronicos}
-                onCheckedChange={(checked) => updateNestedConfig('modelos_activos', 'electronicos', checked)}
+                onCheckedChange={(checked: boolean) => updateNestedConfig('modelos_activos', 'electronicos', checked)}
               />
             </div>
             
@@ -413,7 +413,7 @@ export default function ConfiguracionIAPage() {
               </div>
               <Switch
                 checked={config.modelos_activos.vehiculos}
-                onCheckedChange={(checked) => updateNestedConfig('modelos_activos', 'vehiculos', checked)}
+                onCheckedChange={(checked: boolean) => updateNestedConfig('modelos_activos', 'vehiculos', checked)}
               />
             </div>
             
@@ -424,7 +424,7 @@ export default function ConfiguracionIAPage() {
               </div>
               <Switch
                 checked={config.modelos_activos.general}
-                onCheckedChange={(checked) => updateNestedConfig('modelos_activos', 'general', checked)}
+                onCheckedChange={(checked: boolean) => updateNestedConfig('modelos_activos', 'general', checked)}
               />
             </div>
           </CardContent>
@@ -446,7 +446,7 @@ export default function ConfiguracionIAPage() {
               </div>
               <Switch
                 checked={config.analisis_automatico}
-                onCheckedChange={(checked) => updateConfig('analisis_automatico', checked)}
+                onCheckedChange={(checked: boolean) => updateConfig('analisis_automatico', checked)}
               />
             </div>
             
@@ -457,7 +457,7 @@ export default function ConfiguracionIAPage() {
               </div>
               <Switch
                 checked={config.revision_manual_requerida}
-                onCheckedChange={(checked) => updateConfig('revision_manual_requerida', checked)}
+                onCheckedChange={(checked: boolean) => updateConfig('revision_manual_requerida', checked)}
               />
             </div>
             
@@ -619,7 +619,7 @@ export default function ConfiguracionIAPage() {
               </div>
               <Switch
                 checked={config.notificar_baja_confianza}
-                onCheckedChange={(checked) => updateConfig('notificar_baja_confianza', checked)}
+                onCheckedChange={(checked: boolean) => updateConfig('notificar_baja_confianza', checked)}
               />
             </div>
             
@@ -630,7 +630,7 @@ export default function ConfiguracionIAPage() {
               </div>
               <Switch
                 checked={config.notificar_entrenamiento_completado}
-                onCheckedChange={(checked) => updateConfig('notificar_entrenamiento_completado', checked)}
+                onCheckedChange={(checked: boolean) => updateConfig('notificar_entrenamiento_completado', checked)}
               />
             </div>
             
@@ -641,7 +641,7 @@ export default function ConfiguracionIAPage() {
               </div>
               <Switch
                 checked={config.notificar_errores}
-                onCheckedChange={(checked) => updateConfig('notificar_errores', checked)}
+                onCheckedChange={(checked: boolean) => updateConfig('notificar_errores', checked)}
               />
             </div>
             
@@ -652,7 +652,7 @@ export default function ConfiguracionIAPage() {
               </div>
               <Switch
                 checked={config.backup_automatico}
-                onCheckedChange={(checked) => updateConfig('backup_automatico', checked)}
+                onCheckedChange={(checked: boolean) => updateConfig('backup_automatico', checked)}
               />
             </div>
             
@@ -663,7 +663,7 @@ export default function ConfiguracionIAPage() {
               </div>
               <Switch
                 checked={config.logs_detallados}
-                onCheckedChange={(checked) => updateConfig('logs_detallados', checked)}
+                onCheckedChange={(checked: boolean) => updateConfig('logs_detallados', checked)}
               />
             </div>
             
@@ -674,7 +674,7 @@ export default function ConfiguracionIAPage() {
               </div>
               <Switch
                 checked={config.auditoria_decisiones}
-                onCheckedChange={(checked) => updateConfig('auditoria_decisiones', checked)}
+                onCheckedChange={(checked: boolean) => updateConfig('auditoria_decisiones', checked)}
               />
             </div>
           </CardContent>

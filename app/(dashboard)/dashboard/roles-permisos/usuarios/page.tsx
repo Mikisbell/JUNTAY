@@ -678,7 +678,7 @@ export default function GestionUsuariosPage() {
                     <Switch
                       id="cambiar_password"
                       checked={formData.configuracion?.cambiar_password || false}
-                      onCheckedChange={(checked) => setFormData(prev => ({
+                      onCheckedChange={(checked: boolean) => setFormData(prev => ({
                         ...prev,
                         configuracion: { ...prev.configuracion, cambiar_password: checked }
                       }))}
@@ -689,7 +689,7 @@ export default function GestionUsuariosPage() {
                     <Switch
                       id="acceso_remoto"
                       checked={formData.configuracion?.acceso_remoto || false}
-                      onCheckedChange={(checked) => setFormData(prev => ({
+                      onCheckedChange={(checked: boolean) => setFormData(prev => ({
                         ...prev,
                         configuracion: { ...prev.configuracion, acceso_remoto: checked }
                       }))}
@@ -700,7 +700,7 @@ export default function GestionUsuariosPage() {
                     <Switch
                       id="notificaciones_email"
                       checked={formData.configuracion?.notificaciones_email || false}
-                      onCheckedChange={(checked) => setFormData(prev => ({
+                      onCheckedChange={(checked: boolean) => setFormData(prev => ({
                         ...prev,
                         configuracion: { ...prev.configuracion, notificaciones_email: checked }
                       }))}
@@ -711,7 +711,7 @@ export default function GestionUsuariosPage() {
                     <Switch
                       id="sesion_multiple"
                       checked={formData.configuracion?.sesion_multiple || false}
-                      onCheckedChange={(checked) => setFormData(prev => ({
+                      onCheckedChange={(checked: boolean) => setFormData(prev => ({
                         ...prev,
                         configuracion: { ...prev.configuracion, sesion_multiple: checked }
                       }))}
