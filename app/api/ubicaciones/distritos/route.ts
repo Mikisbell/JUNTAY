@@ -1,0 +1,78 @@
+import { NextRequest, NextResponse } from 'next/server'
+
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const departamento = searchParams.get('departamento')
+    const provincia = searchParams.get('provincia')
+
+    if (!departamento || !provincia) {
+      return NextResponse.json(
+        { success: false, error: 'Departamento y provincia requeridos' },
+        { status: 400 }
+      )
+    }
+
+    // Usar la misma API de consultasperu.com
+    const token = process.env.RENIEC_API_TOKEN
+    if (!token) {
+      return NextResponse.json(
+        { success: false, error: 'Token no configurado' },
+        { status: 500 }
+      )
+    }
+
+    // Por ahora usamos datos base, pero la estructura está lista para la API real
+    const distritosPorProvincia: Record<string, string[]> = {
+      'LIMA-LIMA': [
+        'LIMA', 'ANCON', 'ATE', 'BARRANCO', 'BREÑA', 'CARABAYLLO', 'CHACLACAYO',
+        'CHORRILLOS', 'CIENEGUILLA', 'COMAS', 'EL AGUSTINO', 'INDEPENDENCIA',
+        'JESUS MARIA', 'LA MOLINA', 'LA VICTORIA', 'LINCE', 'LOS OLIVOS',
+        'LURIGANCHO', 'LURIN', 'MAGDALENA DEL MAR', 'MIRAFLORES', 'PACHACAMAC',
+        'PUCUSANA', 'PUEBLO LIBRE', 'PUENTE PIEDRA', 'PUNTA HERMOSA', 'PUNTA NEGRA',
+        'RIMAC', 'SAN BARTOLO', 'SAN BORJA', 'SAN ISIDRO', 'SAN JUAN DE LURIGANCHO',
+        'SAN JUAN DE MIRAFLORES', 'SAN LUIS', 'SAN MARTIN DE PORRES', 'SAN MIGUEL',
+        'SANTA ANITA', 'SANTA MARIA DEL MAR', 'SANTA ROSA', 'SANTIAGO DE SURCO',
+        'SURQUILLO', 'VILLA EL SALVADOR', 'VILLA MARIA DEL TRIUNFO'
+      ],
+      'JUNIN-HUANCAYO': [
+        'HUANCAYO', 'CARHUACALLANGA', 'CHACAPAMPA', 'CHICCHE', 'CHILCA',
+        'CHONGOS ALTO', 'CHUPURO', 'COLCA', 'CULLHUAS', 'EL TAMBO',
+        'HUACRAPUQUIO', 'HUALHUAS', 'HUANCAN', 'HUAYUCACHI', 'INGENIO',
+        'PARIAHUANCA', 'PILCOMAYO', 'PUCARA', 'QUICHUAY', 'QUILCAS',
+        'SAN AGUSTIN', 'SAN JERONIMO DE TUNAN', 'SAÑO', 'SAPALLANGA',
+        'SICAYA', 'SANTO DOMINGO DE ACOBAMBA', 'VIQUES', 'HUACHAC'
+      ],
+      'CALLAO-CALLAO': ['CALLAO', 'BELLAVISTA', 'CARMEN DE LA LEGUA REYNOSO', 'LA PERLA', 'LA PUNTA', 'VENTANILLA'],
+      'AREQUIPA-AREQUIPA': [
+        'AREQUIPA', 'ALTO SELVA ALEGRE', 'CAYMA', 'CERRO COLORADO', 'CHARACATO', 
+        'CHIGUATA', 'JACOBO HUNTER', 'LA JOYA', 'MARIANO MELGAR', 'MIRAFLORES', 
+        'MOLLEBAYA', 'PAUCARPATA', 'POCSI', 'POLOBAYA', 'QUEQUEÑA', 'SABANDIA', 
+        'SACHACA', 'SAN JUAN DE SIGUAS', 'SAN JUAN DE TARUCANI', 'SANTA ISABEL DE SIGUAS', 
+        'SANTA RITA DE SIGUAS', 'SOCABAYA', 'TIABAYA', 'UCHUMAYO', 'VITOR', 
+        'YANAHUARA', 'YARABAMBA', 'YURA', 'JOSE LUIS BUSTAMANTE Y RIVERO'
+      ],
+      'CUSCO-CUSCO': ['CUSCO', 'CCORCA', 'POROY', 'SAN JERONIMO', 'SAN SEBASTIAN', 'SANTIAGO', 'SAYLLA', 'WANCHAQ'],
+      'PIURA-PIURA': ['PIURA', 'CASTILLA', 'CATACAOS', 'CURA MORI', 'EL TALLAN', 'LA ARENA', 'LA UNION', 'LAS LOMAS', 'TAMBO GRANDE'],
+      'LA LIBERTAD-TRUJILLO': ['TRUJILLO', 'EL PORVENIR', 'FLORENCIA DE MORA', 'HUANCHACO', 'LA ESPERANZA', 'LAREDO', 'MOCHE', 'POROTO', 'SALAVERRY', 'SIMBAL', 'VICTOR LARCO HERRERA'],
+      'LAMBAYEQUE-CHICLAYO': ['CHICLAYO', 'CHONGOYAPE', 'ETEN', 'ETEN PUERTO', 'JOSE LEONARDO ORTIZ', 'LA VICTORIA', 'LAGUNAS', 'MONSEFU', 'NUEVA ARICA', 'OYOTUN', 'PICSI', 'PIMENTEL', 'REQUE', 'SANTA ROSA', 'SAÑA', 'CAYALTI', 'PATAPO', 'POMALCA', 'PUCALA', 'TUMAN'],
+      'ICA-ICA': ['ICA', 'LA TINGUIÑA', 'LOS AQUIJES', 'OCUCAJE', 'PACHACUTEC', 'PARCONA', 'PUEBLO NUEVO', 'SALAS', 'SAN JOSE DE LOS MOLINOS', 'SAN JUAN BAUTISTA', 'SANTIAGO', 'SUBTANJALLA', 'TATE', 'YAUCA DEL ROSARIO'],
+      'PUNO-PUNO': ['PUNO', 'ACORA', 'AMANTANI', 'ATUNCOLLA', 'CAPACHICA', 'CHUCUITO', 'COATA', 'HUATA', 'MAÑAZO', 'PAUCARCOLLA', 'PICHACANI', 'PLATERIA', 'SAN ANTONIO', 'TIQUILLACA', 'VILQUE']
+    }
+
+    const clave = `${departamento.toUpperCase()}-${provincia.toUpperCase()}`
+    const distritos = distritosPorProvincia[clave] || []
+
+    return NextResponse.json({
+      success: true,
+      data: distritos.sort()
+    })
+
+  } catch (error) {
+    console.error('Error obteniendo distritos:', error)
+    return NextResponse.json(
+      { success: false, error: 'Error interno del servidor' },
+      { status: 500 }
+    )
+  }
+}
