@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Usar el endpoint que obtiene ubicaciones reales desde la API
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/ubicaciones/obtener-desde-api`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/ubicaciones/obtener-ubicaciones`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
