@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
+import { Switch } from '../../../../components/ui/switch'
 import { 
   ArrowLeft, 
   Users, 
@@ -680,7 +680,7 @@ export default function GestionUsuariosPage() {
                       checked={formData.configuracion?.cambiar_password || false}
                       onCheckedChange={(checked) => setFormData(prev => ({
                         ...prev,
-                        configuracion: { ...prev.configuracion, cambiar_password: checked } as any
+                        configuracion: { ...prev.configuracion, cambiar_password: checked }
                       }))}
                     />
                   </div>
@@ -691,7 +691,7 @@ export default function GestionUsuariosPage() {
                       checked={formData.configuracion?.acceso_remoto || false}
                       onCheckedChange={(checked) => setFormData(prev => ({
                         ...prev,
-                        configuracion: { ...prev.configuracion, acceso_remoto: checked } as any
+                        configuracion: { ...prev.configuracion, acceso_remoto: checked }
                       }))}
                     />
                   </div>
@@ -702,7 +702,7 @@ export default function GestionUsuariosPage() {
                       checked={formData.configuracion?.notificaciones_email || false}
                       onCheckedChange={(checked) => setFormData(prev => ({
                         ...prev,
-                        configuracion: { ...prev.configuracion, notificaciones_email: checked } as any
+                        configuracion: { ...prev.configuracion, notificaciones_email: checked }
                       }))}
                     />
                   </div>
@@ -713,7 +713,7 @@ export default function GestionUsuariosPage() {
                       checked={formData.configuracion?.sesion_multiple || false}
                       onCheckedChange={(checked) => setFormData(prev => ({
                         ...prev,
-                        configuracion: { ...prev.configuracion, sesion_multiple: checked } as any
+                        configuracion: { ...prev.configuracion, sesion_multiple: checked }
                       }))}
                     />
                   </div>
