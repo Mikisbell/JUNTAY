@@ -1,92 +1,78 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 
-// Llamada directa a la API - sin fetch interno
 export async function GET() {
   try {
     const token = process.env.RENIEC_API_TOKEN
     if (!token) {
-      throw new Error('RENIEC_API_TOKEN no configurado')
-    }
-    
-    console.log('🔄 Obteniendo departamentos directamente desde consultasperu.com...')
-    console.log('🔑 Token length:', token.length)
-    
-    // Usar el MISMO endpoint que DNI/RUC - sabemos que funciona
-    const response = await fetch('https://api.consultasperu.com/api/v1/query', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        token: token,
-        type_document: 'ruc',
-        document_number: '20100070970' // Supermercados Peruanos
-      })
-    })
-
-    console.log(`📡 Response status: ${response.status}`)
-    
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.status}`)
+      return NextResponse.json(
+        { success: false, error: 'Token no configurado' },
+        { status: 500 }
+      )
     }
 
-    const result = await response.json()
-    console.log('📊 API Result:', result.success, result.data?.length || 0, 'establecimientos')
+    console.log('🔄 Consultando múltiples RUCs para departamentos...')
 
-    // Extraer departamento del RUC consultado
+    // Lista de RUCs de empresas grandes en diferentes departamentos
+    const rucsEmpresasGrandes = [
+      '20100070970', // Supermercados Peruanos - Lima
+      '20131312955', // Saga Falabella - Lima/Nacional
+      '20100047218', // Banco de Crédito BCP - Nacional  
+      '20325117835', // Corporación Lindley - Lima
+      '20159473148', // Plaza Vea - Nacional
+      '20546618671', // Ripley Peru - Nacional
+      '20100255771', // Telefónica del Perú - Lima
+      '20131380021', // Cineplanet - Nacional
+      '20100017491', // Cervecería San Juan - Nacional
+      '20100128056'  // Tiendas EFE - Nacional
+    ]
+
     const departamentos = new Set<string>()
-    
-    if (result.success && result.data) {
-      const data = result.data
-      if (data.department) {
-        departamentos.add(data.department.toUpperCase().trim())
-        console.log(`📍 Departamento encontrado: ${data.department}`)
-        console.log(`📍 Provincia encontrada: ${data.province}`)
-        console.log(`📍 Distrito encontrado: ${data.district}`)
-      }
-      
-      // Agregar más departamentos consultando otros RUCs conocidos
-      const otrosRucs = ['20131312955', '20100047218'] // Saga Falabella, BCP
-      
-      for (const ruc of otrosRucs) {
-        try {
-          const respuesta = await fetch('https://api.consultasperu.com/api/v1/query', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token: token, type_document: 'ruc', document_number: ruc })
+
+    // Consultar cada RUC para obtener su ubicación
+    for (const ruc of rucsEmpresasGrandes) {
+      try {
+        const response = await fetch('https://api.consultasperu.com/api/v1/query', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            token: token,
+            type_document: 'ruc',
+            document_number: ruc
           })
-          
-          if (respuesta.ok) {
-            const resultado = await respuesta.json()
-            if (resultado.success && resultado.data?.department) {
-              departamentos.add(resultado.data.department.toUpperCase().trim())
-              console.log(`📍 Departamento adicional: ${resultado.data.department}`)
-            }
+        })
+
+        if (response.ok) {
+          const result = await response.json()
+          if (result.success && result.data?.department) {
+            const dept = result.data.department.toUpperCase().trim()
+            departamentos.add(dept)
+            console.log(`📍 ${ruc}: ${dept}`)
           }
-        } catch (e) {
-          console.log(`❌ Error con RUC ${ruc}:`, e)
         }
+      } catch (error) {
+        console.log(`❌ Error RUC ${ruc}:`, error)
+        continue
       }
     }
 
     const departamentosArray = Array.from(departamentos).sort()
-    console.log(`🎉 Departamentos finales: ${departamentosArray.length}`, departamentosArray)
+    console.log(`🎉 Total departamentos encontrados: ${departamentosArray.length}`)
 
     return NextResponse.json({
       success: true,
       data: departamentosArray,
-      source: 'API consultasperu.com directo',
-      total: departamentosArray.length
+      total: departamentosArray.length,
+      source: 'API consultasperu.com'
     })
 
   } catch (error) {
-    console.error('❌ Error obteniendo departamentos:', error)
-    
+    console.error('Error obteniendo departamentos:', error)
     return NextResponse.json(
       { 
         success: false, 
-        error: error instanceof Error ? error.message : String(error),
-        message: 'Error consultando API de ubicaciones' 
+        error: 'Error interno del servidor' 
       },
       { status: 500 }
     )
