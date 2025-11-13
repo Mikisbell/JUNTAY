@@ -3,9 +3,13 @@ import { NextRequest, NextResponse } from 'next/server'
 // Llamada directa a la API - sin fetch interno
 export async function GET() {
   try {
-    const token = '6d189ad58ba715e8198161a3cce4f26290a0d795fe8a72fae046801764a6d6d8'
+    const token = process.env.RENIEC_API_TOKEN
+    if (!token) {
+      throw new Error('RENIEC_API_TOKEN no configurado')
+    }
     
     console.log('🔄 Obteniendo departamentos directamente desde consultasperu.com...')
+    console.log('🔑 Token length:', token.length)
     
     // Consultar 1 RUC para obtener ubicaciones
     const response = await fetch('https://api.consultasperu.com/api/v1/query/ruc-anexos', {
