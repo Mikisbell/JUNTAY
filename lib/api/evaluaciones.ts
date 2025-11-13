@@ -286,9 +286,11 @@ export async function getEvaluacionesStats() {
     .select('score_calculado')
     .not('score_calculado', 'is', null)
   
-  const scorePromedio = scoresData?.length > 0 
-    ? Math.round(scoresData.reduce((sum, e) => sum + (e.score_calculado || 0), 0) / scoresData.length)
-    : 0
+  let scorePromedio = 0
+  if (scoresData && scoresData.length > 0) {
+    const suma = scoresData.reduce((sum, e) => sum + (e.score_calculado || 0), 0)
+    scorePromedio = Math.round(suma / scoresData.length)
+  }
   
   return {
     total: total.count || 0,
