@@ -55,9 +55,10 @@ export async function GET() {
 
   } catch (error) {
     console.error('🧪 ERROR en test:', error)
+    const errorMessage = error instanceof Error ? error.message : String(error)
     return NextResponse.json({
       success: false,
-      error: error.message,
+      error: errorMessage,
       message: 'Error en el test de API'
     }, { status: 500 })
   }
