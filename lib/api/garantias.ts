@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 export interface Garantia {
   id?: string
   codigo?: string
+  numero_boleta?: string
   credito_id?: string
   categoria_id?: string
   nombre: string
@@ -12,14 +13,25 @@ export interface Garantia {
   numero_serie?: string
   valor_comercial: number
   valor_tasacion: number
+  valor_prestamo_maximo?: number
   porcentaje_prestamo?: number
-  estado: 'en_garantia' | 'recuperado' | 'vendido' | 'perdido'
+  estado: 'disponible' | 'en_prenda' | 'liberado' | 'vendido' | 'perdido' | 'evaluacion'
   estado_conservacion?: 'nuevo' | 'muy_bueno' | 'bueno' | 'regular' | 'malo'
   fecha_registro?: string
   fecha_recuperacion?: string
   fecha_venta?: string
-  observaciones?: string
+  fecha_vencimiento_legal?: string
+  fecha_tasacion?: string
+  periodo_gracia_dias?: number
   ubicacion_fisica?: string
+  ubicacion_estante?: string
+  peso?: number
+  dimensiones?: string
+  material?: string
+  color?: string
+  requiere_evaluacion_especial?: boolean
+  notas_tasador?: string
+  observaciones?: string
   tasado_por?: string
   created_at?: string
   updated_at?: string
@@ -92,8 +104,8 @@ export async function getGarantiasStats() {
   
   const [total, enGarantia, recuperadas, vendidas] = await Promise.all([
     supabase.from('garantias').select('id', { count: 'exact', head: true }),
-    supabase.from('garantias').select('id', { count: 'exact', head: true }).eq('estado', 'en_garantia'),
-    supabase.from('garantias').select('id', { count: 'exact', head: true }).eq('estado', 'recuperado'),
+    supabase.from('garantias').select('id', { count: 'exact', head: true }).eq('estado', 'en_prenda'),
+    supabase.from('garantias').select('id', { count: 'exact', head: true }).eq('estado', 'liberado'),
     supabase.from('garantias').select('id', { count: 'exact', head: true }).eq('estado', 'vendido')
   ])
   

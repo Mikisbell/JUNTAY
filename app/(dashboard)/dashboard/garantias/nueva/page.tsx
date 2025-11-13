@@ -29,8 +29,16 @@ export default function NuevaGarantiaPage() {
     numero_serie: '',
     valor_comercial: '',
     valor_tasacion: '',
+    valor_prestamo_maximo: '',
     estado_conservacion: 'bueno',
     ubicacion_fisica: '',
+    ubicacion_estante: '',
+    peso: '',
+    dimensiones: '',
+    material: '',
+    color: '',
+    requiere_evaluacion_especial: false,
+    notas_tasador: '',
     observaciones: ''
   })
 
@@ -83,7 +91,16 @@ export default function NuevaGarantiaPage() {
         numero_serie: formData.numero_serie || null,
         valor_comercial: parseFloat(formData.valor_comercial) || parseFloat(formData.valor_tasacion),
         valor_tasacion: parseFloat(formData.valor_tasacion),
-        estado: 'en_garantia',
+        valor_prestamo_maximo: parseFloat(formData.valor_prestamo_maximo) || parseFloat(formData.valor_tasacion) * 0.8,
+        peso: parseFloat(formData.peso) || null,
+        dimensiones: formData.dimensiones || null,
+        material: formData.material || null,
+        color: formData.color || null,
+        ubicacion_estante: formData.ubicacion_estante || null,
+        requiere_evaluacion_especial: formData.requiere_evaluacion_especial,
+        notas_tasador: formData.notas_tasador || null,
+        fecha_tasacion: new Date().toISOString().split('T')[0],
+        estado: 'disponible',
         estado_conservacion: formData.estado_conservacion,
         ubicacion_fisica: formData.ubicacion_fisica || null,
         observaciones: formData.observaciones || null,
@@ -268,28 +285,136 @@ export default function NuevaGarantiaPage() {
               />
               <p className="text-xs text-gray-600 mt-1">Valor para el préstamo</p>
             </div>
+
+            <div>
+              <Label htmlFor="valor_prestamo_maximo">Valor Máximo Préstamo (S/)</Label>
+              <Input
+                id="valor_prestamo_maximo"
+                name="valor_prestamo_maximo"
+                type="number"
+                value={formData.valor_prestamo_maximo}
+                onChange={handleInputChange}
+                placeholder="2000.00"
+                step="0.01"
+              />
+              <p className="text-xs text-gray-600 mt-1">Máximo a prestar (80% por defecto)</p>
+            </div>
           </div>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Información Adicional</CardTitle>
+          <CardTitle>Características Físicas</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="peso">Peso (kg)</Label>
+              <Input
+                id="peso"
+                name="peso"
+                type="number"
+                value={formData.peso}
+                onChange={handleInputChange}
+                placeholder="0.240"
+                step="0.001"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="dimensiones">Dimensiones</Label>
+              <Input
+                id="dimensiones"
+                name="dimensiones"
+                value={formData.dimensiones}
+                onChange={handleInputChange}
+                placeholder="15.7 x 7.65 x 0.76 cm"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="material">Material</Label>
+              <Input
+                id="material"
+                name="material"
+                value={formData.material}
+                onChange={handleInputChange}
+                placeholder="Aluminio, Vidrio"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="color">Color</Label>
+              <Input
+                id="color"
+                name="color"
+                value={formData.color}
+                onChange={handleInputChange}
+                placeholder="Azul Sierra"
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Ubicación y Control</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="ubicacion_fisica">Ubicación Física</Label>
+              <Input
+                id="ubicacion_fisica"
+                name="ubicacion_fisica"
+                value={formData.ubicacion_fisica}
+                onChange={handleInputChange}
+                placeholder="Almacén Principal"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="ubicacion_estante">Estante Específico</Label>
+              <Input
+                id="ubicacion_estante"
+                name="ubicacion_estante"
+                value={formData.ubicacion_estante}
+                onChange={handleInputChange}
+                placeholder="A3-C5"
+              />
+            </div>
+          </div>
+
           <div>
-            <Label htmlFor="ubicacion_fisica">Ubicación Física</Label>
-            <Input
-              id="ubicacion_fisica"
-              name="ubicacion_fisica"
-              value={formData.ubicacion_fisica}
+            <Label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                name="requiere_evaluacion_especial"
+                checked={formData.requiere_evaluacion_especial}
+                onChange={(e) => setFormData({...formData, requiere_evaluacion_especial: e.target.checked})}
+                className="rounded border-gray-300"
+              />
+              <span>Requiere evaluación especial</span>
+            </Label>
+            <p className="text-xs text-gray-600 mt-1">Para joyas, arte, antigüedades, etc.</p>
+          </div>
+
+          <div>
+            <Label htmlFor="notas_tasador">Notas del Tasador</Label>
+            <textarea
+              id="notas_tasador"
+              name="notas_tasador"
+              value={formData.notas_tasador}
               onChange={handleInputChange}
-              placeholder="Estante A3, Caja 5"
+              className="w-full min-h-[80px] px-3 py-2 rounded-md border border-input bg-background"
+              placeholder="Observaciones técnicas del tasador..."
             />
           </div>
 
           <div>
-            <Label htmlFor="observaciones">Observaciones</Label>
+            <Label htmlFor="observaciones">Observaciones Generales</Label>
             <textarea
               id="observaciones"
               name="observaciones"

@@ -11,6 +11,7 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase/client'
 import { calcularCronograma } from '@/lib/utils/calculos'
 import { getCurrentUser, getDefaultEmpresaId } from '@/lib/utils/auth'
+import { obtenerPermisosCompletos, requiereAprobacion, type PermisosUsuario } from '@/lib/utils/permissions'
 import type { Cliente } from '@/lib/api/clientes'
 import type { Garantia } from '@/lib/api/garantias'
 
@@ -21,6 +22,8 @@ export default function NuevaSolicitudPage() {
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [garantias, setGarantias] = useState<Garantia[]>([])
   const [garantiasDisponibles, setGarantiasDisponibles] = useState<Garantia[]>([])
+  const [permisos, setPermisos] = useState<PermisosUsuario | null>(null)
+  const [necesitaAprobacion, setNecesitaAprobacion] = useState(false)
   
   const [formData, setFormData] = useState({
     cliente_id: '',
@@ -40,15 +43,35 @@ export default function NuevaSolicitudPage() {
   } | null>(null)
 
   useEffect(() => {
+    loadPermisos()
     loadClientes()
     loadGarantias()
   }, [])
 
+  const loadPermisos = async () => {
+    const permisosUsuario = await obtenerPermisosCompletos()
+    setPermisos(permisosUsuario)
+    
+    // Verificar si el usuario puede crear créditos
+    if (!permisosUsuario.puedeCrearCreditos) {
+      setError('No tienes permisos para crear créditos. Contacta al administrador.')
+    }
+  }
+
   useEffect(() => {
     if (formData.monto_prestado && formData.numero_cuotas) {
       calcularPreview()
+      verificarAprobacion()
     }
   }, [formData.monto_prestado, formData.tasa_interes_mensual, formData.numero_cuotas, formData.frecuencia_pago])
+
+  const verificarAprobacion = async () => {
+    if (formData.monto_prestado) {
+      const monto = parseFloat(formData.monto_prestado)
+      const necesita = await requiereAprobacion(monto)
+      setNecesitaAprobacion(necesita)
+    }
+  }
 
   const loadClientes = async () => {
     const { data } = await supabase
@@ -61,12 +84,15 @@ export default function NuevaSolicitudPage() {
   }
 
   const loadGarantias = async () => {
-    const { data } = await supabase
+    // Cargar todas las garantías disponibles (sin crédito asignado)
+    const { data, error } = await supabase
       .from('garantias')
       .select('*')
-      .eq('estado', 'en_garantia')
+      .in('estado', ['disponible'])
       .is('credito_id', null)
       .order('created_at', { ascending: false })
+    
+    console.log('Garantías cargadas:', data, 'Error:', error)
     
     if (data) {
       setGarantias(data)
@@ -121,6 +147,10 @@ export default function NuevaSolicitudPage() {
       // Obtener usuario y empresa
       const user = await getCurrentUser()
       const empresaId = await getDefaultEmpresaId()
+      
+      if (!user) {
+        throw new Error('Usuario no autenticado')
+      }
 
       const monto = parseFloat(formData.monto_prestado)
       const tasa = parseFloat(formData.tasa_interes_mensual)
@@ -165,7 +195,7 @@ export default function NuevaSolicitudPage() {
         empresa_id: empresaId,
         solicitud_id: null,
         tipo_credito_id: null,
-        desembolsado_por: user?.id || null
+        desembolsado_por: user.id
       }
       
       // Insertar crédito
@@ -227,6 +257,27 @@ export default function NuevaSolicitudPage() {
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md">
           {error}
+        </div>
+      )}
+
+      {permisos && !permisos.puedeCrearCreditos && (
+        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md">
+          <p className="font-medium">⚠️ Sin permisos para crear créditos</p>
+          <p className="text-sm">Contacta al administrador para obtener el rol de "Asesor de Crédito" o superior.</p>
+        </div>
+      )}
+
+      {necesitaAprobacion && (
+        <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-md">
+          <p className="font-medium">⚠️ Este crédito requiere aprobación</p>
+          <p className="text-sm">
+            El monto excede tu límite individual o tu rol requiere aprobación para todos los créditos.
+            {permisos?.limites && (
+              <span className="block mt-1">
+                Límite individual: S/ {permisos.limites.limite_credito_individual.toFixed(2)}
+              </span>
+            )}
+          </p>
         </div>
       )}
 
@@ -352,7 +403,14 @@ export default function NuevaSolicitudPage() {
           {/* Garantía */}
           <Card>
             <CardHeader>
-              <CardTitle>Garantía (Opcional)</CardTitle>
+              <CardTitle className="flex items-center justify-between">
+                Garantía (Opcional)
+                <Link href="/dashboard/garantias/nueva" target="_blank">
+                  <Button type="button" variant="outline" size="sm">
+                    + Nueva Garantía
+                  </Button>
+                </Link>
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <Label htmlFor="garantia_id">Seleccionar Garantía</Label>
@@ -366,10 +424,21 @@ export default function NuevaSolicitudPage() {
                 <option value="">Sin garantía específica</option>
                 {garantiasDisponibles.map((garantia) => (
                   <option key={garantia.id} value={garantia.id}>
-                    {garantia.nombre} - S/ {garantia.valor_tasacion.toFixed(2)}
+                    {garantia.nombre} - S/ {garantia.valor_tasacion.toFixed(2)} ({garantia.estado})
                   </option>
                 ))}
               </select>
+              
+              {garantiasDisponibles.length === 0 && (
+                <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                  <p className="text-sm text-yellow-800">
+                    No hay garantías disponibles. 
+                    <Link href="/dashboard/garantias/nueva" className="ml-1 underline font-medium">
+                      Crear una nueva garantía
+                    </Link>
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -455,11 +524,23 @@ export default function NuevaSolicitudPage() {
             Cancelar
           </Button>
         </Link>
-        <Button type="submit" disabled={loading || !preview}>
+        <Button 
+          type="submit" 
+          disabled={
+            loading || 
+            !preview || 
+            (permisos && !permisos.puedeCrearCreditos)
+          }
+        >
           {loading ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
               Creando...
+            </>
+          ) : necesitaAprobacion ? (
+            <>
+              <Save className="h-4 w-4 mr-2" />
+              Crear Crédito (Requiere Aprobación)
             </>
           ) : (
             <>
