@@ -31,24 +31,40 @@ export default function TransferirCajaPage({ params }: { params: { id: string } 
 
   async function cargarDatos() {
     try {
+      console.log('🔍 Cargando cajas...')
+      
       // Obtener caja origen
-      const { data: cajaData } = await supabase
+      const { data: cajaData, error: cajaError } = await supabase
         .from('cajas')
         .select('*')
         .eq('id', params.id)
         .single()
 
+      if (cajaError) {
+        console.error('❌ Error caja origen:', cajaError)
+        throw cajaError
+      }
+
+      console.log('✅ Caja origen:', cajaData)
       setCajaOrigen(cajaData)
 
-      // Obtener otras cajas disponibles
-      const { data: cajasData } = await supabase
+      // Obtener otras cajas disponibles (sin filtro de activa primero)
+      const { data: cajasData, error: cajasError } = await supabase
         .from('cajas')
         .select('*')
         .neq('id', params.id)
-        .eq('activa', true)
 
+      if (cajasError) {
+        console.error('❌ Error cajas destino:', cajasError)
+        throw cajasError
+      }
+
+      console.log('📦 Cajas disponibles:', cajasData)
+      console.log('📊 Total cajas encontradas:', cajasData?.length || 0)
+      
       setCajasDestino(cajasData || [])
     } catch (err: any) {
+      console.error('💥 Error general:', err)
       setError(err.message)
     } finally {
       setLoading(false)
@@ -236,13 +252,24 @@ export default function TransferirCajaPage({ params }: { params: { id: string } 
                     <SelectValue placeholder="Seleccionar caja destino" />
                   </SelectTrigger>
                   <SelectContent>
-                    {cajasDestino.map((caja) => (
-                      <SelectItem key={caja.id} value={caja.id}>
-                        {caja.nombre} - {caja.codigo}
-                      </SelectItem>
-                    ))}
+                    {cajasDestino.length === 0 ? (
+                      <div className="px-2 py-3 text-sm text-gray-500 text-center">
+                        No hay otras cajas disponibles
+                      </div>
+                    ) : (
+                      cajasDestino.map((caja) => (
+                        <SelectItem key={caja.id} value={caja.id}>
+                          {caja.nombre} - {caja.codigo}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
+                {cajasDestino.length === 0 && (
+                  <p className="text-sm text-amber-600 mt-1">
+                    ⚠️ Necesitas crear más cajas para realizar transferencias
+                  </p>
+                )}
               </div>
 
               <div>
