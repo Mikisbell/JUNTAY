@@ -120,8 +120,8 @@ export default function AuditoriaPage() {
       const resultado = resultados[Math.floor(Math.random() * resultados.length)]
       
       // Más probabilidad de éxito
-      const resultadoFinal = Math.random() < 0.85 ? 'exitoso' : 
-                           Math.random() < 0.9 ? 'fallido' : 'bloqueado'
+      const resultadoFinal = Math.random() < 0.85 ? 'exitoso' as const : 
+                           Math.random() < 0.9 ? 'fallido' as const : 'bloqueado' as const
       
       const fechaHora = new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000)
       
@@ -270,7 +270,7 @@ export default function AuditoriaPage() {
   }
 
   const getModulosUnicos = () => {
-    const modulos = [...new Set(registros.map(r => r.modulo))]
+    const modulos = Array.from(new Set(registros.map(r => r.modulo)))
     return modulos.sort()
   }
 

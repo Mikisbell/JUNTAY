@@ -233,7 +233,7 @@ export default function GestionRolesPage() {
   const guardarRol = async () => {
     try {
       if (!formData.nombre || !formData.descripcion) {
-        toast.error('Nombre y descripción son obligatorios')
+        toast.error('Nombre y descripcion son obligatorios')
         return
       }
 

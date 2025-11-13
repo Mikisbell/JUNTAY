@@ -191,7 +191,7 @@ export default function ReportesGerencialesPage() {
       {
         id: 'ia-semanal',
         titulo: 'Reporte de IA y Automatización',
-        descripción: 'Performance de modelos IA y procesos automatizados',
+        descripcion: 'Performance de modelos IA y procesos automatizados',
         tipo: 'operativo',
         frecuencia: 'semanal',
         ultima_actualizacion: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),

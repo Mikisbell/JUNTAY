@@ -313,7 +313,7 @@ export default function IAValuacionPage() {
   }
 
   const getCategorias = () => {
-    const categorias = [...new Set(valuaciones.map(v => v.categoria))]
+    const categorias = Array.from(new Set(valuaciones.map(v => v.categoria)))
     return categorias.sort()
   }
 

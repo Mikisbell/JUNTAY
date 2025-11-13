@@ -351,7 +351,7 @@ export default function CreditosEnGraciaPage() {
             <option value="todos">Todas las Urgencias</option>
             <option value="critico">Crítico (≤1 día)</option>
             <option value="urgente">Urgente (≤3 días)</option>
-            <option value="moderado">Moderado (>3 días)</option>
+            <option value="moderado">Moderado (&gt;3 días)</option>
           </select>
           
           <select

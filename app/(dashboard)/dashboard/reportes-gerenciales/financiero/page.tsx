@@ -545,7 +545,7 @@ export default function ReportesFinancierosPage() {
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm">ROI superior al objetivo</span>
-                <Badge className="bg-green-100 text-green-800">18.5% > 15%</Badge>
+                <Badge className="bg-green-100 text-green-800">18.5% &gt; 15%</Badge>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm">Margen de utilidad saludable</span>

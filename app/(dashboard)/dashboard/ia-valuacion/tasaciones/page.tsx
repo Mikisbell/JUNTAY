@@ -230,7 +230,7 @@ export default function TasacionesIAPage() {
   }
 
   const getCategorias = () => {
-    const categorias = [...new Set(tasaciones.map(t => t.categoria))]
+    const categorias = Array.from(new Set(tasaciones.map(t => t.categoria)))
     return categorias.sort()
   }
 
