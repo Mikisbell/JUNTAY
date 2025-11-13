@@ -10,7 +10,14 @@ import {
   Menu,
   Wallet,
   Calculator,
-  BarChart3
+  BarChart3,
+  Gavel,
+  Bell,
+  Clock,
+  Brain,
+  Shield,
+  TrendingUp,
+  Banknote
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { LogoutButton } from "@/components/logout-button"
@@ -60,12 +67,45 @@ export default function DashboardLayout({
             <NavItem href="/dashboard/caja" icon={<Wallet size={20} />}>
               Control de Caja
             </NavItem>
+            <NavItem href="/dashboard/pagos-flexibles" icon={<Banknote size={20} />}>
+              Pagos Flexibles
+            </NavItem>
+          </div>
+          
+          <div className="pt-4">
+            <p className="text-xs font-semibold text-gray-400 uppercase mb-2">
+              Procesos Críticos
+            </p>
+            <NavItem href="/dashboard/vencimientos" icon={<Clock size={20} />}>
+              Vencimientos
+            </NavItem>
+            <NavItem href="/dashboard/remates" icon={<Gavel size={20} />}>
+              Remates
+            </NavItem>
+            <NavItem href="/dashboard/notificaciones" icon={<Bell size={20} />}>
+              Notificaciones
+            </NavItem>
+          </div>
+          
+          <div className="pt-4">
+            <p className="text-xs font-semibold text-gray-400 uppercase mb-2">
+              Inteligencia
+            </p>
+            <NavItem href="/dashboard/ia-valuacion" icon={<Brain size={20} />}>
+              IA Valuación
+            </NavItem>
+            <NavItem href="/dashboard/reportes-gerenciales" icon={<TrendingUp size={20} />}>
+              Reportes Gerenciales
+            </NavItem>
           </div>
           
           <div className="pt-4">
             <p className="text-xs font-semibold text-gray-400 uppercase mb-2">
               Administración
             </p>
+            <NavItem href="/dashboard/roles-permisos" icon={<Shield size={20} />}>
+              Roles y Permisos
+            </NavItem>
             <NavItem href="/dashboard/reportes" icon={<BarChart3 size={20} />}>
               Reportes
             </NavItem>
