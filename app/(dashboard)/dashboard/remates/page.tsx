@@ -88,8 +88,9 @@ export default function RematesPage() {
   const getEstadoBadge = (estado: string) => {
     const variants = {
       'programado': 'secondary',
-      'activo': 'default',
-      'finalizado': 'success',
+      'en_proceso': 'default',
+      'vendido': 'success',
+      'no_vendido': 'outline',
       'cancelado': 'destructive'
     }
     return variants[estado as keyof typeof variants] || 'secondary'
@@ -160,9 +161,9 @@ export default function RematesPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Activos</p>
+                <p className="text-sm text-gray-600">En Proceso</p>
                 <p className="text-2xl font-bold text-green-600">
-                  {remates.filter(r => r.estado === 'activo').length}
+                  {remates.filter(r => r.estado === 'en_proceso').length}
                 </p>
               </div>
               <Clock className="h-8 w-8 text-green-600" />
@@ -191,7 +192,7 @@ export default function RematesPage() {
                 <p className="text-sm text-gray-600">Ingresos Total</p>
                 <p className="text-2xl font-bold text-purple-600">
                   S/ {remates
-                    .filter(r => r.estado === 'finalizado' && r.precio_final)
+                    .filter(r => r.estado === 'vendido' && r.precio_final)
                     .reduce((sum, r) => sum + (r.precio_final || 0), 0)
                     .toFixed(0)
                   }
@@ -302,7 +303,7 @@ export default function RematesPage() {
                       Ver Detalle
                     </Button>
                   </Link>
-                  {remate.estado === 'activo' && (
+                  {remate.estado === 'en_proceso' && (
                     <Link href={`/dashboard/remates/${remate.id}/ofertas`} className="flex-1">
                       <Button size="sm" className="w-full">
                         <Gavel className="h-4 w-4 mr-2" />
