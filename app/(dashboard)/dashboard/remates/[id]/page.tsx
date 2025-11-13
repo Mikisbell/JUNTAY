@@ -22,7 +22,34 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
-import { getRemate, updateRemate, deleteRemate, type Remate } from '@/lib/api/remates'
+import { createClient } from '@/lib/supabase/client'
+
+interface Remate {
+  id?: string
+  numero_remate: string
+  estado: string
+  precio_base: number
+  precio_final?: number
+  fecha_inicio_remate: string
+  fecha_fin_remate?: string
+  incremento_minimo?: number
+  ganador_nombre?: string
+  descripcion?: string
+  condiciones_especiales?: string
+  created_at?: string
+  updated_at?: string
+  garantias?: {
+    id?: string
+    nombre?: string
+    marca?: string
+    modelo?: string
+    numero_serie?: string
+    estado_conservacion?: string
+    valor_tasacion: number
+    valor_comercial: number
+    descripcion?: string
+  }
+}
 import { toast } from 'sonner'
 
 export default function RemateDetallePage() {
@@ -41,7 +68,27 @@ export default function RemateDetallePage() {
   const loadRemate = async (id: string) => {
     try {
       setLoading(true)
-      const data = await getRemate(id)
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('remates')
+        .select(`
+          *,
+          garantias (
+            id,
+            nombre,
+            marca,
+            modelo,
+            numero_serie,
+            estado_conservacion,
+            valor_tasacion,
+            valor_comercial,
+            descripcion
+          )
+        `)
+        .eq('id', id)
+        .single()
+        
+      if (error) throw error
       setRemate(data)
     } catch (error) {
       console.error('Error cargando remate:', error)
@@ -56,7 +103,13 @@ export default function RemateDetallePage() {
 
     try {
       setActionLoading(true)
-      await updateRemate(remate.id!, { estado: nuevoEstado })
+      const supabase = createClient()
+      const { error } = await supabase
+        .from('remates')
+        .update({ estado: nuevoEstado })
+        .eq('id', remate.id!)
+        
+      if (error) throw error
       setRemate(prev => prev ? { ...prev, estado: nuevoEstado } : null)
       toast.success(`Remate ${nuevoEstado} exitosamente`)
     } catch (error) {
@@ -76,7 +129,13 @@ export default function RemateDetallePage() {
 
     try {
       setActionLoading(true)
-      await deleteRemate(remate.id!)
+      const supabase = createClient()
+      const { error } = await supabase
+        .from('remates')
+        .delete()
+        .eq('id', remate.id!)
+        
+      if (error) throw error
       toast.success('Remate eliminado exitosamente')
       router.push('/dashboard/remates')
     } catch (error) {
