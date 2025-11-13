@@ -132,9 +132,10 @@ export default async function GarantiasPage() {
                       <td className="p-4">
                         <Badge 
                           variant={
-                            garantia.estado === 'en_garantia' ? 'default' : 
-                            garantia.estado === 'recuperado' ? 'secondary' : 
+                            garantia.estado === 'disponible' ? 'default' : 
+                            garantia.estado === 'liberado' ? 'secondary' : 
                             garantia.estado === 'vendido' ? 'default' :
+                            garantia.estado === 'en_prenda' ? 'outline' :
                             'destructive'
                           }
                         >
