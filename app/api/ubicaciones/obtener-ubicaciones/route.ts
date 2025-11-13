@@ -107,8 +107,13 @@ async function obtenerUbicacionesDesdeAPI(action: string, params?: any) {
   const needsUpdate = Date.now() - ubicacionesCache.lastUpdate > CACHE_DURATION || 
                      ubicacionesCache.departamentos.size === 0
 
+  console.log(`🔍 Cache status: needsUpdate=${needsUpdate}, lastUpdate=${ubicacionesCache.lastUpdate}, departamentos=${ubicacionesCache.departamentos.size}`)
+
   if (needsUpdate) {
+    console.log('🔄 Actualizando cache desde API...')
     await consultarUbicacionesAPI()
+  } else {
+    console.log('✅ Usando cache existente')
   }
 
   switch (action) {
@@ -140,10 +145,12 @@ export async function POST(request: NextRequest) {
 
     const data = await obtenerUbicacionesDesdeAPI(action, { departamento, provincia })
 
+    console.log(`🔍 DEBUG: Action=${action}, Data length=${data.length}`)
+    
     return NextResponse.json({
       success: true,
       data: data,
-      source: 'Ubicaciones base + API extensible'
+      source: 'API consultasperu.com RUC-ANEXOS'
     })
 
   } catch (error) {
