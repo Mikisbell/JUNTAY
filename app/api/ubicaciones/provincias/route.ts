@@ -12,16 +12,29 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Usar la misma API de consultasperu.com
-    const token = process.env.RENIEC_API_TOKEN
-    if (!token) {
-      return NextResponse.json(
-        { success: false, error: 'Token no configurado' },
-        { status: 500 }
-      )
+    // Usar el endpoint que obtiene ubicaciones reales desde la API
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/ubicaciones/obtener-desde-api`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        action: 'provincias',
+        departamento: departamento
+      })
+    })
+
+    const result = await response.json()
+
+    if (result.success && result.data.length > 0) {
+      return NextResponse.json({
+        success: true,
+        data: result.data,
+        source: 'API consultasperu.com'
+      })
     }
 
-    // Por ahora usamos datos base, pero la estructura está lista para la API real
+    // Fallback a datos base si la API no tiene datos para este departamento
     const provinciasPorDepartamento: Record<string, string[]> = {
       'LIMA': ['LIMA', 'BARRANCA', 'CAJATAMBO', 'CANTA', 'CAÑETE', 'HUARAL', 'HUAROCHIRI', 'HUAURA', 'OYON', 'YAUYOS'],
       'JUNIN': ['HUANCAYO', 'CONCEPCION', 'CHANCHAMAYO', 'JAUJA', 'JUNIN', 'SATIPO', 'TARMA', 'YAULI', 'CHUPACA'],
@@ -54,7 +67,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: provincias.sort()
+      data: provincias.sort(),
+      source: 'fallback'
     })
 
   } catch (error) {
