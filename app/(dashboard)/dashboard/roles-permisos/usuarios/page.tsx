@@ -680,7 +680,13 @@ export default function GestionUsuariosPage() {
                       checked={formData.configuracion?.cambiar_password || false}
                       onCheckedChange={(checked: boolean) => setFormData(prev => ({
                         ...prev,
-                        configuracion: { ...prev.configuracion, cambiar_password: checked }
+                        configuracion: { 
+                          acceso_remoto: false,
+                          notificaciones_email: false,
+                          sesion_multiple: false,
+                          ...prev.configuracion, 
+                          cambiar_password: checked 
+                        }
                       }))}
                     />
                   </div>
@@ -691,7 +697,13 @@ export default function GestionUsuariosPage() {
                       checked={formData.configuracion?.acceso_remoto || false}
                       onCheckedChange={(checked: boolean) => setFormData(prev => ({
                         ...prev,
-                        configuracion: { ...prev.configuracion, acceso_remoto: checked }
+                        configuracion: { 
+                          cambiar_password: false,
+                          notificaciones_email: false,
+                          sesion_multiple: false,
+                          ...prev.configuracion, 
+                          acceso_remoto: checked 
+                        }
                       }))}
                     />
                   </div>
@@ -702,7 +714,13 @@ export default function GestionUsuariosPage() {
                       checked={formData.configuracion?.notificaciones_email || false}
                       onCheckedChange={(checked: boolean) => setFormData(prev => ({
                         ...prev,
-                        configuracion: { ...prev.configuracion, notificaciones_email: checked }
+                        configuracion: { 
+                          cambiar_password: false,
+                          acceso_remoto: false,
+                          sesion_multiple: false,
+                          ...prev.configuracion, 
+                          notificaciones_email: checked 
+                        }
                       }))}
                     />
                   </div>
@@ -713,7 +731,13 @@ export default function GestionUsuariosPage() {
                       checked={formData.configuracion?.sesion_multiple || false}
                       onCheckedChange={(checked: boolean) => setFormData(prev => ({
                         ...prev,
-                        configuracion: { ...prev.configuracion, sesion_multiple: checked }
+                        configuracion: { 
+                          cambiar_password: false,
+                          acceso_remoto: false,
+                          notificaciones_email: false,
+                          ...prev.configuracion, 
+                          sesion_multiple: checked 
+                        }
                       }))}
                     />
                   </div>
