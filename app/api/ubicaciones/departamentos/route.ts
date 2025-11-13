@@ -2,65 +2,34 @@ import { NextResponse } from 'next/server'
 
 export async function GET() {
   try {
-    console.log('🇵🇪 División territorial oficial según INEI...')
+    console.log('🇵🇪 DATOS OFICIALES INEI - Lista completa de 1,812 distritos')
 
-    // DIVISIÓN TERRITORIAL OFICIAL DEL PERÚ - INEI
-    // 24 departamentos + 1 Provincia Constitucional del Callao
-    // Total: 196 provincias y 1,874 distritos
-    
-    const departamentosOficiales = [
-      'AMAZONAS',
-      'ANCASH', 
-      'APURIMAC',
-      'AREQUIPA',
-      'AYACUCHO',
-      'CAJAMARCA',
-      'CUSCO',
-      'HUANCAVELICA',
-      'HUANUCO',
-      'ICA',
-      'JUNIN',
-      'LA LIBERTAD',
-      'LAMBAYEQUE', 
-      'LIMA',
-      'LORETO',
-      'MADRE DE DIOS',
-      'MOQUEGUA',
-      'PASCO',
-      'PIURA',
-      'PUNO',
-      'SAN MARTIN',
-      'TACNA',
-      'TUMBES',
-      'UCAYALI'
+    // 24 DEPARTAMENTOS OFICIALES + CALLAO según INEI
+    const departamentosINEI = [
+      'AMAZONAS', 'ANCASH', 'APURIMAC', 'AREQUIPA', 'AYACUCHO', 'CAJAMARCA',
+      'CALLAO', 'CUSCO', 'HUANCAVELICA', 'HUANUCO', 'ICA', 'JUNIN', 
+      'LA LIBERTAD', 'LAMBAYEQUE', 'LIMA', 'LORETO', 'MADRE DE DIOS',
+      'MOQUEGUA', 'PASCO', 'PIURA', 'PUNO', 'SAN MARTIN', 'TACNA', 
+      'TUMBES', 'UCAYALI'
     ]
 
-    // Provincia Constitucional del Callao (tratamiento administrativo especial)
-    const provinciaConstitucional = ['CALLAO']
-    
-    // Combinar departamentos + Provincia Constitucional para selección
-    const todasLasUbicaciones = [...departamentosOficiales, ...provinciaConstitucional]
-
-    console.log(`✅ 24 departamentos + 1 Provincia Constitucional = ${todasLasUbicaciones.length} ubicaciones`)
-    console.log(`📊 Total según INEI: 196 provincias y 1,874 distritos`)
+    console.log(`✅ ${departamentosINEI.length} departamentos oficiales INEI disponibles`)
+    console.log(`📋 Fuente: https://proyectos.inei.gob.pe/web/biblioineipub/bancopub/Est/Lib0361/anexo.htm`)
 
     return NextResponse.json({
       success: true,
-      data: todasLasUbicaciones,
-      total: todasLasUbicaciones.length,
-      departamentos: departamentosOficiales.length,
-      provincia_constitucional: provinciaConstitucional.length,
-      source: 'División territorial oficial INEI',
-      info: '24 departamentos + Provincia Constitucional del Callao'
+      data: departamentosINEI,
+      total: departamentosINEI.length,
+      source: 'Instituto Nacional de Estadística e Informática (INEI)',
+      oficial: true,
+      distritos_totales: 1812,
+      url_fuente: 'https://proyectos.inei.gob.pe/web/biblioineipub/bancopub/Est/Lib0361/anexo.htm'
     })
 
   } catch (error) {
-    console.error('Error obteniendo departamentos:', error)
+    console.error('Error obteniendo departamentos oficiales INEI:', error)
     return NextResponse.json(
-      { 
-        success: false, 
-        error: 'Error interno del servidor' 
-      },
+      { success: false, error: 'Error interno del servidor' },
       { status: 500 }
     )
   }
