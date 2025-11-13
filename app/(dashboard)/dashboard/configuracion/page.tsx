@@ -1,6 +1,12 @@
+import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Settings, Users, CreditCard, Building, Percent, Bell, Shield } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { 
+  Settings, Users, CreditCard, Building, Percent, Bell, Shield,
+  Landmark, Package, Plug, Database, Activity, FileText, Archive,
+  Smartphone, Globe, Coins, BarChart3, AlertTriangle, Clock
+} from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -10,13 +16,72 @@ export default function ConfiguracionPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Configuración</h1>
-          <p className="text-gray-600">Configuración del sistema y parámetros de negocio</p>
+          <h1 className="text-3xl font-bold text-gray-900">⚙️ Panel de Control y Configuración</h1>
+          <p className="text-gray-600 mt-2">Centro de Administración del Sistema JUNTAY</p>
         </div>
+        <Badge variant="outline" className="text-lg px-4 py-2">
+          v1.0.0 • Producción
+        </Badge>
       </div>
 
-      {/* Secciones de Configuración */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Métricas Rápidas del Sistema */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-blue-700 font-medium">Uptime</p>
+                <p className="text-2xl font-bold text-blue-900">99.9%</p>
+              </div>
+              <Activity className="h-8 w-8 text-blue-600" />
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-green-700 font-medium">BD Status</p>
+                <p className="text-2xl font-bold text-green-900">Activa</p>
+              </div>
+              <Database className="h-8 w-8 text-green-600" />
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-purple-700 font-medium">Usuarios</p>
+                <p className="text-2xl font-bold text-purple-900">5</p>
+              </div>
+              <Users className="h-8 w-8 text-purple-600" />
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-orange-700 font-medium">Último Backup</p>
+                <p className="text-2xl font-bold text-orange-900">Hoy</p>
+              </div>
+              <Archive className="h-8 w-8 text-orange-600" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* SECCIÓN 1: ADMINISTRACIÓN OPERATIVA */}
+      <div>
+        <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+          <Landmark className="h-5 w-5 mr-2 text-blue-600" />
+          Administración Operativa
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Configuración de Empresa */}
         <Card className="hover:shadow-lg transition-shadow cursor-pointer">
           <CardHeader>
