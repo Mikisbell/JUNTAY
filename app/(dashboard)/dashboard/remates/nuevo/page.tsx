@@ -18,7 +18,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { crearRemate } from '@/lib/api/remates'
+// Removido import de crearRemate para evitar error next/headers
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 
@@ -121,7 +121,12 @@ export default function NuevoRematePage() {
         condiciones_especiales: formData.condiciones_especiales
       }
 
-      await crearRemate(remateData)
+      const supabase = createClient()
+      const { error } = await supabase
+        .from('remates')
+        .insert([remateData])
+        
+      if (error) throw error
       
       toast.success('Remate programado exitosamente')
       router.push('/dashboard/remates')
