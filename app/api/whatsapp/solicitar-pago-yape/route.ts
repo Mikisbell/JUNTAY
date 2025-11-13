@@ -62,7 +62,7 @@ export async function POST(request: Request) {
     const resultado = await enviarMensajeWhatsApp({
       cliente_id: credito.clientes.id,
       telefono: credito.clientes.telefono,
-      tipo_mensaje: 'pago',
+      tipo_mensaje: 'notificacion',
       plantilla_id: 'solicitud_pago_yape',
       mensaje: '', // Se genera automáticamente desde la plantilla
       variables: variables,

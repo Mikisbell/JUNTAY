@@ -128,7 +128,7 @@ Tu cuota vence *HOY*:
   {
     id: 'solicitud_pago_yape',
     nombre: 'Solicitud Pago YAPE',
-    tipo: 'pago',
+    tipo: 'notificacion',
     template: `💳 *PAGO FÁCIL CON YAPE - JUNTAY*
 
 Hola {{nombre_cliente}},

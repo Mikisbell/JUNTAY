@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS mensajes_whatsapp (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     cliente_id UUID REFERENCES clientes(id) ON DELETE CASCADE,
     telefono VARCHAR(20) NOT NULL,
-    tipo_mensaje VARCHAR(20) NOT NULL CHECK (tipo_mensaje IN ('confirmacion', 'recordatorio', 'saludo', 'notificacion')),
+    tipo_mensaje VARCHAR(20) NOT NULL CHECK (tipo_mensaje IN ('confirmacion', 'recordatorio', 'saludo', 'notificacion', 'pago')),
     plantilla_id VARCHAR(50) NOT NULL,
     mensaje TEXT NOT NULL,
     variables JSONB DEFAULT '{}',
