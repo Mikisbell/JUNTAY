@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { getCajaById, getSesionActual, getMovimientosSesion } from '@/lib/api/cajas'
+import { createClient } from '@/lib/supabase/client'
 import { ArrowLeft, DollarSign, TrendingUp, TrendingDown } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
@@ -15,7 +16,32 @@ export default async function CajaDetallePage({ params }: { params: { id: string
     redirect('/dashboard/caja')
   }
 
-  const sesion = await getSesionActual(params.id)
+  // Intentar obtener sesión con múltiples métodos
+  let sesion = await getSesionActual(params.id)
+  
+  // Si no encuentra sesión, buscar la más reciente creada
+  if (!sesion) {
+    console.log('No se encontró sesión activa, buscando sesiones recientes...')
+    const supabase = createClient()
+    const { data: sesionesRecientes } = await supabase
+      .from('sesiones_caja')
+      .select('*')
+      .eq('caja_id', params.id)
+      .order('created_at', { ascending: false })
+      .limit(3)
+    
+    console.log('Sesiones recientes encontradas:', sesionesRecientes)
+    
+    // Buscar si hay alguna con estado 'abierta'
+    if (sesionesRecientes && sesionesRecientes.length > 0) {
+      const sesionAbierta = sesionesRecientes.find((s: any) => s.estado === 'abierta')
+      if (sesionAbierta) {
+        console.log('Encontrada sesión abierta en búsqueda manual:', sesionAbierta)
+        sesion = sesionAbierta
+      }
+    }
+  }
+  
   const movimientos = sesion ? await getMovimientosSesion(sesion.id!) : []
 
   // Determinar estado real (basado en sesión, no en tabla cajas)
