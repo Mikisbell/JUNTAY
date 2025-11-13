@@ -257,7 +257,7 @@ export function RUCAutoComplete({
       {consulta.estado === 'completado' && consulta.datos && (
         <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 border border-green-200 rounded-md px-3 py-2">
           <Building className="h-4 w-4" />
-          <span>Empresa Existente - Campos rellenados automáticamente</span>
+          <span>Empresa Existente</span>
         </div>
       )}
 
