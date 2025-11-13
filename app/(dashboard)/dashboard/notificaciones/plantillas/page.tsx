@@ -205,7 +205,12 @@ export default function PlantillasPage() {
       const supabase = createClient()
       
       // Extraer variables del contenido
-      const variables = [...formData.contenido.matchAll(/\{(\w+)\}/g)].map(match => match[1])
+      const variables: string[] = []
+      const regex = /\{(\w+)\}/g
+      let match
+      while ((match = regex.exec(formData.contenido)) !== null) {
+        variables.push(match[1])
+      }
       
       const plantillaData = {
         nombre: formData.nombre.trim(),
