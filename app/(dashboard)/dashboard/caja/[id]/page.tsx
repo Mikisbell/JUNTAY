@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { getCajaById, getSesionActual, getMovimientosSesion } from '@/lib/api/cajas'
 import { createClient } from '@/lib/supabase/client'
-import { ArrowLeft, DollarSign, TrendingUp, TrendingDown } from 'lucide-react'
+import { ArrowLeft, DollarSign, TrendingUp, TrendingDown, ArrowRightLeft, PlusCircle } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -90,11 +90,25 @@ export default async function CajaDetallePage({ params }: { params: { id: string
               </Button>
             </Link>
           ) : (
-            <Link href={`/dashboard/caja/${params.id}/cerrar`}>
-              <Button variant="destructive">
-                Cerrar Caja
-              </Button>
-            </Link>
+            <>
+              <Link href={`/dashboard/caja/${params.id}/transferir`}>
+                <Button variant="outline" size="sm">
+                  <ArrowRightLeft className="h-4 w-4 mr-2" />
+                  Transferir
+                </Button>
+              </Link>
+              <Link href={`/dashboard/caja/${params.id}/reposicion`}>
+                <Button variant="outline" size="sm">
+                  <PlusCircle className="h-4 w-4 mr-2" />
+                  Reponer
+                </Button>
+              </Link>
+              <Link href={`/dashboard/caja/${params.id}/cerrar`}>
+                <Button variant="destructive" size="sm">
+                  Cerrar Caja
+                </Button>
+              </Link>
+            </>
           )}
         </div>
       </div>
