@@ -1,0 +1,211 @@
+# 🔄 Transferencias entre Cajas
+
+Las **transferencias entre cajas** permiten mover efectivo de manera segura entre diferentes cajas operativas, manteniendo la trazabilidad completa del proceso.
+
+## 🎯 ¿Cuándo usar Transferencias?
+
+### Casos de Uso Comunes
+- 📈 **Caja con exceso** necesita enviar efectivo a caja con poco saldo
+- 🏪 **Cambio de turno** entre cajeros de diferentes cajas
+- 🔄 **Balanceo de cargas** para distribuir efectivo uniformemente
+- 🆘 **Emergencias** cuando una caja se queda sin fondos
+
+### Tipos de Transferencia
+- **Operativa** - Transferencias rutinarias del día a día
+- **Reposición** - Para reponer fondos en caja con saldo bajo
+- **Ajuste** - Correcciones de saldos entre cajas
+- **Emergencia** - Transferencias urgentes fuera de horario
+
+## 🚀 Proceso Paso a Paso
+
+### Prerrequisitos
+- ✅ **Caja origen** debe estar abierta
+- ✅ **Caja destino** debe estar abierta
+- ✅ **Saldo suficiente** en caja origen
+- ✅ **Usuario autorizado** para realizar transferencias
+
+### Paso 1: Acceder a Transferencias
+1. Ve a la **página de detalle** de la caja origen
+2. Haz clic en el botón **"Transferir"**
+3. Se abrirá el formulario de transferencia
+
+### Paso 2: Configurar la Transferencia
+```
+┌─────────────────────────────────────┐
+│ 🔄 Transferencia de Efectivo        │
+├─────────────────────────────────────┤
+│ Caja Origen: CAJA-01 (Abierta)     │
+│ Saldo Disponible: S/ 5,250.00      │
+├─────────────────────────────────────┤
+│ Caja Destino: [Seleccionar ▼]      │
+│ Tipo: [Operativa ▼]                │
+│ Monto: S/ [_______]                 │
+│ Concepto: [________________]        │
+│ Observaciones: [_____________]      │
+└─────────────────────────────────────┘
+```
+
+### Paso 3: Validaciones Automáticas
+El sistema verifica automáticamente:
+- 🔍 **Saldo suficiente** en caja origen
+- 🔍 **Caja destino abierta** y disponible
+- 🔍 **Monto válido** (mayor a 0)
+- 🔍 **Límites de transferencia** si están configurados
+
+### Paso 4: Confirmación y Procesamiento
+Al confirmar, el sistema:
+1. **Crea movimiento de salida** en caja origen
+2. **Crea movimiento de entrada** en caja destino
+3. **Actualiza saldos** de ambas cajas automáticamente
+4. **Genera referencia única** (ej: `TRANS-1699901234`)
+5. **Registra auditoría** con usuario, fecha y hora
+
+## 📊 Ejemplo Práctico
+
+### Situación Inicial
+```
+CAJA-01 (Principal)     CAJA-02 (Operativa)
+├─ Saldo: S/ 8,500      ├─ Saldo: S/ 450
+├─ Estado: Abierta      ├─ Estado: Abierta
+└─ Cajero: Juan P.      └─ Cajero: María G.
+```
+
+### Transferencia Realizada
+```
+Transferir S/ 2,000 de CAJA-01 → CAJA-02
+Tipo: Reposición
+Concepto: Reponer fondos para operaciones
+```
+
+### Resultado Final
+```
+CAJA-01 (Principal)     CAJA-02 (Operativa)
+├─ Saldo: S/ 6,500      ├─ Saldo: S/ 2,450
+├─ Movimiento: -S/ 2,000 ├─ Movimiento: +S/ 2,000
+└─ Ref: TRANS-1699901234 └─ Ref: TRANS-1699901234
+```
+
+## 🔐 Seguridad y Trazabilidad
+
+### Registro de Movimientos
+Cada transferencia genera **dos movimientos** automáticamente:
+
+#### Movimiento en Caja Origen (Salida)
+```json
+{
+  "tipo": "transferencia_salida",
+  "concepto": "transferencia_entre_cajas",
+  "monto": 2000.00,
+  "saldo_anterior": 8500.00,
+  "saldo_nuevo": 6500.00,
+  "descripcion": "Transferencia a CAJA-02. Reponer fondos para operaciones",
+  "referencia_codigo": "TRANS-1699901234",
+  "usuario_id": "juan.perez@juntay.com",
+  "fecha": "2025-11-13T23:17:00Z"
+}
+```
+
+#### Movimiento en Caja Destino (Entrada)
+```json
+{
+  "tipo": "transferencia_entrada", 
+  "concepto": "transferencia_entre_cajas",
+  "monto": 2000.00,
+  "saldo_anterior": 450.00,
+  "saldo_nuevo": 2450.00,
+  "descripcion": "Transferencia desde CAJA-01. Reponer fondos para operaciones",
+  "referencia_codigo": "TRANS-1699901234",
+  "usuario_id": "juan.perez@juntay.com",
+  "fecha": "2025-11-13T23:17:00Z"
+}
+```
+
+### Auditoría Completa
+- 👤 **Usuario que realizó** la transferencia
+- 🕐 **Fecha y hora exacta** del movimiento
+- 🔗 **Referencia única** para vincular ambos movimientos
+- 📝 **Observaciones** y motivo de la transferencia
+- 💰 **Saldos antes y después** en ambas cajas
+
+## ⚠️ Validaciones y Restricciones
+
+### Validaciones del Sistema
+- ❌ **No se puede transferir** a la misma caja
+- ❌ **No se puede transferir** monto mayor al saldo disponible
+- ❌ **No se puede transferir** si caja destino está cerrada
+- ❌ **No se puede transferir** monto negativo o cero
+
+### Límites Configurables (Opcional)
+```sql
+-- Ejemplo de configuración de límites
+UPDATE jerarquia_cajas 
+SET limite_transferencia_diario = 10000,
+    requiere_autorizacion_sobre = 5000
+WHERE caja_id = 'caja-01';
+```
+
+## 🔄 Flujo de Trabajo Recomendado
+
+### 1. Planificación Diaria
+- 📊 **Revisar saldos** de todas las cajas al inicio del día
+- 📈 **Identificar necesidades** de transferencia
+- 📋 **Planificar movimientos** para balancear cargas
+
+### 2. Durante Operaciones
+- 🔍 **Monitorear saldos** constantemente
+- ⚡ **Realizar transferencias** cuando sea necesario
+- 📝 **Documentar motivos** en observaciones
+
+### 3. Fin del Día
+- 📊 **Consolidar saldos** finales
+- 🔄 **Transferir excedentes** a caja principal
+- 📋 **Revisar movimientos** del día
+
+## 🆘 Problemas Comunes y Soluciones
+
+### ❌ "Caja destino debe estar abierta"
+**Causa:** La caja seleccionada como destino no tiene sesión activa
+**Solución:** 
+1. Ir a la caja destino
+2. Realizar apertura de caja
+3. Volver a intentar la transferencia
+
+### ❌ "Saldo insuficiente"
+**Causa:** El monto a transferir es mayor al saldo disponible
+**Solución:**
+1. Verificar saldo actual de la caja origen
+2. Reducir el monto de transferencia
+3. O realizar reposición en caja origen primero
+
+### ❌ "Error al procesar transferencia"
+**Causa:** Problema de conectividad o base de datos
+**Solución:**
+1. Verificar conexión a internet
+2. Intentar nuevamente en unos segundos
+3. Si persiste, contactar soporte técnico
+
+## 📱 Interfaz de Usuario
+
+### Botón de Transferencia
+El botón **"Transferir"** aparece solo cuando:
+- ✅ La caja está **abierta**
+- ✅ El usuario tiene **permisos** de transferencia
+- ✅ Hay **otras cajas disponibles** como destino
+
+### Formulario Intuitivo
+- 🎯 **Selección clara** de caja destino
+- 💰 **Validación en tiempo real** del monto
+- 📝 **Campos opcionales** para documentación
+- ✅ **Confirmación visual** antes de procesar
+
+### Feedback Inmediato
+- ✅ **Mensaje de éxito** al completar transferencia
+- 🔄 **Actualización automática** de saldos
+- 📋 **Redirección** a página de detalle actualizada
+
+## 📚 Guías Relacionadas
+
+- [Control de Caja - Overview](/modules/caja/overview) - Visión general del sistema
+- [Reposición de Efectivo](/modules/caja/replenishment) - Cómo reponer desde fuentes externas
+- [Apertura de Caja](/modules/caja/opening) - Proceso de apertura
+- [Cierre y Arqueo](/modules/caja/closing) - Finalizar sesión correctamente

@@ -1,0 +1,152 @@
+# 🏦 Control de Caja - Overview
+
+El **Sistema de Control de Caja** de JUNTAY está diseñado siguiendo las mejores prácticas bancarias profesionales, proporcionando un control total del efectivo con trazabilidad completa.
+
+## 🎯 Características Principales
+
+### ✅ Operaciones Básicas
+- **Apertura de Caja** - Con desglose detallado por denominaciones
+- **Cierre de Caja** - Arqueo automático con cálculo de diferencias
+- **Cuadre en Tiempo Real** - Saldo actualizado automáticamente
+
+### 🔄 Operaciones Avanzadas
+- **Transferencias entre Cajas** - Movimiento de efectivo entre cajas operativas
+- **Reposición de Efectivo** - Desde caja principal, banco o cuenta corriente
+- **Arqueos Intermedios** - Verificaciones durante el día
+
+### 📊 Control y Auditoría
+- **16 Tipos de Movimientos** - Clasificación profesional completa
+- **Trazabilidad Total** - Cada movimiento con usuario, fecha y referencia
+- **Reportes Automáticos** - Resúmenes diarios y arqueos
+
+## 🏗️ Arquitectura del Sistema
+
+### Jerarquía de Cajas
+```
+🏢 Empresa
+├── 🏦 Caja Principal (Nivel 3)
+│   ├── 💰 Caja Operativa 1 (Nivel 1)
+│   ├── 💰 Caja Operativa 2 (Nivel 1)
+│   └── 💰 Caja Operativa N (Nivel 1)
+└── 🏛️ Cuenta Corriente Banco
+```
+
+### Tipos de Movimientos
+
+| Tipo | Descripción | Uso |
+|------|-------------|-----|
+| `apertura` | Apertura de sesión | Inicio de turno |
+| `cierre` | Cierre de sesión | Fin de turno |
+| `ingreso_operacion` | Ingreso operativo | Pagos de clientes |
+| `egreso_operacion` | Egreso operativo | Préstamos otorgados |
+| `transferencia_entrada` | Recepción de transferencia | Entre cajas |
+| `transferencia_salida` | Envío de transferencia | Entre cajas |
+| `reposicion_entrada` | Reposición recibida | Desde caja principal |
+| `deposito_banco` | Depósito al banco | Excedentes |
+| `ajuste_positivo` | Ajuste a favor | Correcciones |
+| `ajuste_negativo` | Ajuste en contra | Correcciones |
+
+## 🔐 Seguridad y Validaciones
+
+### Controles Automáticos
+- ✅ **Una sesión por caja** - Imposible abrir múltiples sesiones
+- ✅ **Validación de saldos** - No permite egresos sin fondos
+- ✅ **Autorización por montos** - Límites configurables
+- ✅ **Auditoría completa** - Registro de todos los cambios
+
+### Políticas de Seguridad
+- 🔒 **Row Level Security (RLS)** - Acceso solo a datos autorizados
+- 👤 **Control por usuario** - Cada acción registra quién la realizó
+- 🕐 **Timestamps automáticos** - Fecha y hora exacta de cada movimiento
+- 📝 **Referencias únicas** - Códigos automáticos para trazabilidad
+
+## 📱 Interfaz de Usuario
+
+### Dashboard Principal
+- **Estado en tiempo real** de todas las cajas
+- **Saldos actualizados** automáticamente
+- **Botones dinámicos** según el estado de cada caja
+- **Resumen del día** con totales consolidados
+
+### Operaciones Disponibles
+
+#### Cuando la Caja está Cerrada
+- 🔓 **Abrir Caja** - Iniciar nueva sesión
+
+#### Cuando la Caja está Abierta
+- 🔄 **Transferir** - Enviar efectivo a otra caja
+- 💰 **Reponer** - Recibir efectivo de fuentes externas
+- 🔒 **Cerrar Caja** - Finalizar sesión con arqueo
+
+## 🚀 Flujo de Trabajo Diario
+
+### 1. Inicio de Turno (Apertura)
+1. **Seleccionar caja** a abrir
+2. **Contar efectivo inicial** por denominaciones
+3. **Registrar observaciones** si es necesario
+4. **Confirmar apertura** - Sistema crea sesión automáticamente
+
+### 2. Durante el Día (Operaciones)
+- **Registrar ingresos** - Pagos de clientes
+- **Registrar egresos** - Préstamos otorgados
+- **Realizar transferencias** - Si es necesario
+- **Reponer efectivo** - Cuando se requiera
+
+### 3. Fin de Turno (Cierre)
+1. **Contar efectivo final** por denominaciones
+2. **Comparar con sistema** - Cálculo automático de diferencias
+3. **Registrar observaciones** sobre diferencias
+4. **Confirmar cierre** - Arqueo final guardado
+
+## 📊 Reportes y Métricas
+
+### Información en Tiempo Real
+- **Saldo actual** de cada caja
+- **Total de ingresos** del día
+- **Total de egresos** del día
+- **Número de movimientos** realizados
+
+### Reportes Disponibles
+- 📋 **Arqueo de apertura** - Detalle del efectivo inicial
+- 📋 **Movimientos del día** - Lista completa de transacciones
+- 📋 **Arqueo de cierre** - Comparación sistema vs físico
+- 📋 **Resumen consolidado** - Todas las cajas del día
+
+## 🔧 Configuración Avanzada
+
+### Límites por Caja
+```sql
+-- Configuración de límites (ejemplo)
+INSERT INTO jerarquia_cajas (caja_id, nivel, limite_maximo, limite_minimo) 
+VALUES 
+  ('caja-01', 1, 20000, 500),  -- Caja operativa
+  ('caja-02', 2, 100000, 5000), -- Caja principal
+  ('caja-03', 3, 500000, 10000); -- Bóveda banco
+```
+
+### Tipos de Reposición
+- **Caja Principal** - Transferencia interna
+- **Cuenta Corriente** - Retiro bancario
+- **Bóveda del Banco** - Efectivo de bóveda
+- **Transferencia Sucursal** - Entre sucursales
+
+## 🆘 Problemas Comunes
+
+### ❌ "Ya existe una sesión abierta"
+**Causa:** Intento de abrir caja que ya está abierta
+**Solución:** Cerrar la sesión actual primero
+
+### ❌ "Saldo insuficiente"
+**Causa:** Intento de egreso mayor al saldo disponible
+**Solución:** Verificar saldo o realizar reposición
+
+### ❌ "Caja destino debe estar abierta"
+**Causa:** Transferencia a caja cerrada
+**Solución:** Abrir la caja destino primero
+
+## 📚 Guías Relacionadas
+
+- [Apertura de Caja](/modules/caja/opening) - Proceso detallado paso a paso
+- [Transferencias](/modules/caja/transfers) - Cómo transferir entre cajas
+- [Reposición](/modules/caja/replenishment) - Reponer efectivo
+- [Cierre y Arqueo](/modules/caja/closing) - Finalizar sesión correctamente
