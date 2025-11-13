@@ -2,9 +2,12 @@ import { NextResponse } from 'next/server'
 
 export async function GET() {
   try {
-    console.log('🇵🇪 Retornando TODOS los 25 departamentos oficiales del Perú...')
+    console.log('🇵🇪 División territorial oficial según INEI...')
 
-    // TODOS los 25 departamentos oficiales del Perú - para libre elección
+    // DIVISIÓN TERRITORIAL OFICIAL DEL PERÚ - INEI
+    // 24 departamentos + 1 Provincia Constitucional del Callao
+    // Total: 196 provincias y 1,874 distritos
+    
     const departamentosOficiales = [
       'AMAZONAS',
       'ANCASH', 
@@ -12,7 +15,6 @@ export async function GET() {
       'AREQUIPA',
       'AYACUCHO',
       'CAJAMARCA',
-      'CALLAO',
       'CUSCO',
       'HUANCAVELICA',
       'HUANUCO',
@@ -33,13 +35,23 @@ export async function GET() {
       'UCAYALI'
     ]
 
-    console.log(`✅ ${departamentosOficiales.length} departamentos disponibles para selección`)
+    // Provincia Constitucional del Callao (tratamiento administrativo especial)
+    const provinciaConstitucional = ['CALLAO']
+    
+    // Combinar departamentos + Provincia Constitucional para selección
+    const todasLasUbicaciones = [...departamentosOficiales, ...provinciaConstitucional]
+
+    console.log(`✅ 24 departamentos + 1 Provincia Constitucional = ${todasLasUbicaciones.length} ubicaciones`)
+    console.log(`📊 Total según INEI: 196 provincias y 1,874 distritos`)
 
     return NextResponse.json({
       success: true,
-      data: departamentosOficiales,
-      total: departamentosOficiales.length,
-      source: 'Departamentos oficiales del Perú'
+      data: todasLasUbicaciones,
+      total: todasLasUbicaciones.length,
+      departamentos: departamentosOficiales.length,
+      provincia_constitucional: provinciaConstitucional.length,
+      source: 'División territorial oficial INEI',
+      info: '24 departamentos + Provincia Constitucional del Callao'
     })
 
   } catch (error) {
