@@ -60,6 +60,18 @@ export default function AbrirCajaPage({ params }: { params: { id: string } }) {
         throw new Error('El monto inicial debe ser mayor a 0')
       }
 
+      // Verificar que no haya sesión abierta PRIMERO
+      const { data: sesionAbierta, error: checkError } = await supabase
+        .from('sesiones_caja')
+        .select('id, estado')
+        .eq('caja_id', params.id)
+        .eq('estado', 'abierta')
+        .single()
+      
+      if (sesionAbierta && !checkError) {
+        throw new Error('Ya existe una sesión abierta para esta caja. Ciérrala primero.')
+      }
+
       // Obtener último número de sesión
       const { data: ultimaSesion } = await supabase
         .from('sesiones_caja')
