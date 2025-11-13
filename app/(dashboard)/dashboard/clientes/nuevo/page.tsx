@@ -12,7 +12,7 @@ import { supabase } from '@/lib/supabase/client'
 import { getCurrentUser, getDefaultEmpresaId } from '@/lib/utils/auth'
 import { DNIAutoComplete } from '@/components/dni-autocomplete'
 import { RUCAutoComplete } from '@/components/ruc-autocomplete'
-import { UbicacionSelectorDinamico } from '@/components/ubicacion-selector-dinamico'
+import { UbicacionSelectorSimple } from '@/components/ubicacion-selector-simple'
 
 export default function NuevoClientePage() {
   const router = useRouter()
@@ -482,7 +482,7 @@ export default function NuevoClientePage() {
               <CardTitle>Dirección</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <UbicacionSelectorDinamico
+              <UbicacionSelectorSimple
                 departamentoInicial={formData.departamento}
                 provinciaInicial={formData.provincia}
                 distritoInicial={formData.distrito}
@@ -640,7 +640,7 @@ export default function NuevoClientePage() {
 
               {/* Ubicación de la Empresa */}
               <div className="space-y-4">
-                <UbicacionSelectorDinamico
+                <UbicacionSelectorSimple
                   departamentoInicial={formData.departamento}
                   provinciaInicial={formData.provincia}
                   distritoInicial={formData.distrito}
