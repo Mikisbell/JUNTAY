@@ -124,6 +124,59 @@ Tu cuota vence *HOY*:
     lenguaje: 'es'
   },
 
+  // Plantilla para pagos YAPE
+  {
+    id: 'solicitud_pago_yape',
+    nombre: 'Solicitud Pago YAPE',
+    tipo: 'pago',
+    template: `💳 *PAGO FÁCIL CON YAPE - JUNTAY*
+
+Hola {{nombre_cliente}},
+
+Para pagar tu cuota de manera rápida y segura:
+
+💰 *Monto a pagar:* S/ {{monto_cuota}}
+📱 *YAPE al número:* {{numero_yape}}
+🔢 *Código de referencia:* {{codigo_credito}}
+
+📋 *INSTRUCCIONES:*
+1️⃣ Abre tu app YAPE
+2️⃣ Envía S/ {{monto_cuota}} al {{numero_yape}}
+3️⃣ En concepto escribe: {{codigo_credito}}
+4️⃣ Envíanos el screenshot del pago
+
+✅ *Confirmaremos tu pago automáticamente*
+
+*JUNTOS AVANZAMOS* 🤝`,
+    variables_requeridas: ['nombre_cliente', 'monto_cuota', 'numero_yape', 'codigo_credito'],
+    activo: true,
+    lenguaje: 'es'
+  },
+
+  // Confirmación pago YAPE recibido
+  {
+    id: 'confirmacion_pago_yape',
+    nombre: 'Confirmación Pago YAPE',
+    tipo: 'confirmacion',
+    template: `✅ *PAGO YAPE CONFIRMADO - JUNTAY*
+
+Hola {{nombre_cliente}},
+
+¡Perfecto! Hemos confirmado tu pago:
+
+💳 Crédito: {{codigo_credito}}
+💰 Monto recibido: S/ {{monto_pago}}
+📱 Operación YAPE: {{numero_operacion}}
+💳 Saldo pendiente: S/ {{saldo_pendiente}}
+
+Gracias por pagar puntualmente.
+
+*JUNTOS AVANZAMOS* 🤝`,
+    variables_requeridas: ['nombre_cliente', 'codigo_credito', 'monto_pago', 'numero_operacion', 'saldo_pendiente'],
+    activo: true,
+    lenguaje: 'es'
+  },
+
   // Vencimiento con gracia
   {
     id: 'vencido_gracia',

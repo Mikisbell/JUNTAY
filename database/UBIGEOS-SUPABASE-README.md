@@ -33,16 +33,34 @@ Sistema completo de departamentos, provincias y distritos del Perú integrado co
 
 1. **Ir a Supabase Dashboard** → Tu proyecto → SQL Editor
 
-2. **Ejecutar Script 1** - Crear tablas:
+2. **Ejecutar Script 1** - Crear tablas base:
    ```sql
    -- Copiar y pegar el contenido de:
-   -- database/migrations/001_create_ubigeo_tables.sql
+   -- SUPABASE-SETUP-COMPLETO.sql (tablas principales)
    ```
 
-3. **Ejecutar Script 2** - Insertar provincias:
+3. **Ejecutar Script 2** - Insertar departamentos:
    ```sql
    -- Copiar y pegar el contenido de:
-   -- database/migrations/002_insert_provincias.sql
+   -- database/001_insert_departamentos.sql
+   ```
+
+4. **Ejecutar Script 3** - Insertar provincias:
+   ```sql
+   -- Copiar y pegar el contenido de:
+   -- database/002_insert_provincias.sql
+   ```
+
+5. **Ejecutar Script 4** - Insertar distritos base:
+   ```sql
+   -- Copiar y pegar el contenido de:
+   -- database/003_insert_distritos.sql
+   ```
+
+6. **Ejecutar Script 5** - Crear tabla WhatsApp:
+   ```sql
+   -- Copiar y pegar el contenido de:
+   -- database/004_create_whatsapp_table.sql
    ```
 
 ### **Paso 2: Configurar Variables de Entorno**
