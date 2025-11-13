@@ -11,15 +11,16 @@ export async function GET() {
     console.log('🔄 Obteniendo departamentos directamente desde consultasperu.com...')
     console.log('🔑 Token length:', token.length)
     
-    // Consultar 1 RUC para obtener ubicaciones
-    const response = await fetch('https://api.consultasperu.com/api/v1/query/ruc-anexos', {
+    // Usar el MISMO endpoint que DNI/RUC - sabemos que funciona
+    const response = await fetch('https://api.consultasperu.com/api/v1/query', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         token: token,
-        ruc: '20100070970' // Supermercados Peruanos
+        type_document: 'ruc',
+        document_number: '20100070970' // Supermercados Peruanos
       })
     })
 
@@ -32,16 +33,40 @@ export async function GET() {
     const result = await response.json()
     console.log('📊 API Result:', result.success, result.data?.length || 0, 'establecimientos')
 
-    // Extraer departamentos únicos
+    // Extraer departamento del RUC consultado
     const departamentos = new Set<string>()
     
-    if (result.success && result.data && Array.isArray(result.data)) {
-      result.data.forEach((establecimiento: any) => {
-        if (establecimiento.departamento) {
-          departamentos.add(establecimiento.departamento.toUpperCase().trim())
-          console.log(`📍 Departamento encontrado: ${establecimiento.departamento}`)
+    if (result.success && result.data) {
+      const data = result.data
+      if (data.department) {
+        departamentos.add(data.department.toUpperCase().trim())
+        console.log(`📍 Departamento encontrado: ${data.department}`)
+        console.log(`📍 Provincia encontrada: ${data.province}`)
+        console.log(`📍 Distrito encontrado: ${data.district}`)
+      }
+      
+      // Agregar más departamentos consultando otros RUCs conocidos
+      const otrosRucs = ['20131312955', '20100047218'] // Saga Falabella, BCP
+      
+      for (const ruc of otrosRucs) {
+        try {
+          const respuesta = await fetch('https://api.consultasperu.com/api/v1/query', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: token, type_document: 'ruc', document_number: ruc })
+          })
+          
+          if (respuesta.ok) {
+            const resultado = await respuesta.json()
+            if (resultado.success && resultado.data?.department) {
+              departamentos.add(resultado.data.department.toUpperCase().trim())
+              console.log(`📍 Departamento adicional: ${resultado.data.department}`)
+            }
+          }
+        } catch (e) {
+          console.log(`❌ Error con RUC ${ruc}:`, e)
         }
-      })
+      }
     }
 
     const departamentosArray = Array.from(departamentos).sort()
