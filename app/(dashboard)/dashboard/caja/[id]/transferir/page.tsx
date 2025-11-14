@@ -195,11 +195,88 @@ export default function TransferirCajaPage({ params }: { params: { id: string } 
         })
         .eq('id', cajaDestinoId)
 
+      // 5. Registrar movimientos en las sesiones (si existen)
+      // Buscar sesión activa de caja origen
+      const { data: sesionOrigen } = await supabase
+        .from('sesiones_caja')
+        .select('*')
+        .eq('caja_id', params.id)
+        .eq('estado', 'abierta')
+        .single()
+
+      if (sesionOrigen) {
+        // Registrar movimiento de salida en caja origen
+        await supabase
+          .from('movimientos_caja')
+          .insert([{
+            sesion_id: sesionOrigen.id,
+            caja_id: params.id,
+            tipo: 'egreso',
+            concepto: 'transferencia_salida',
+            monto: montoNum,
+            saldo_anterior: saldoOrigen,
+            saldo_nuevo: nuevoSaldoOrigen,
+            descripcion: `Transferencia a ${cajaDestinoData.nombre}. ${observaciones || ''}`,
+            referencia_codigo: referenciaTransferencia,
+            usuario_id: user?.id,
+            fecha: new Date().toISOString()
+          }])
+
+        // Actualizar totales de sesión origen
+        await supabase
+          .from('sesiones_caja')
+          .update({
+            total_egresos: (sesionOrigen.total_egresos || 0) + montoNum,
+            total_movimientos: (sesionOrigen.total_movimientos || 0) + 1
+          })
+          .eq('id', sesionOrigen.id)
+      }
+
+      // Buscar sesión activa de caja destino
+      const { data: sesionDestino } = await supabase
+        .from('sesiones_caja')
+        .select('*')
+        .eq('caja_id', cajaDestinoId)
+        .eq('estado', 'abierta')
+        .single()
+
+      if (sesionDestino) {
+        // Registrar movimiento de entrada en caja destino
+        await supabase
+          .from('movimientos_caja')
+          .insert([{
+            sesion_id: sesionDestino.id,
+            caja_id: cajaDestinoId,
+            tipo: 'ingreso',
+            concepto: 'transferencia_entrada',
+            monto: montoNum,
+            saldo_anterior: saldoDestinoActual,
+            saldo_nuevo: nuevoSaldoDestino,
+            descripcion: `Transferencia desde ${cajaOrigenData.nombre}. ${observaciones || ''}`,
+            referencia_codigo: referenciaTransferencia,
+            usuario_id: user?.id,
+            fecha: new Date().toISOString()
+          }])
+
+        // Actualizar totales de sesión destino
+        await supabase
+          .from('sesiones_caja')
+          .update({
+            total_ingresos: (sesionDestino.total_ingresos || 0) + montoNum,
+            total_movimientos: (sesionDestino.total_movimientos || 0) + 1
+          })
+          .eq('id', sesionDestino.id)
+      }
+
       console.log('✅ Transferencia REAL completada:', {
         desde: `${cajaOrigenData.nombre} (S/ ${saldoOrigen} → S/ ${nuevoSaldoOrigen})`,
         hacia: `${cajaDestinoData.nombre} (S/ ${saldoDestinoActual} → S/ ${nuevoSaldoDestino})`,
         monto: montoNum,
-        referencia: referenciaTransferencia
+        referencia: referenciaTransferencia,
+        movimientos_registrados: {
+          sesion_origen: !!sesionOrigen,
+          sesion_destino: !!sesionDestino
+        }
       })
 
       // Redirigir con éxito
