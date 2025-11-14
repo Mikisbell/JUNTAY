@@ -17,7 +17,7 @@ import {
   Clock
 } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 // Removido import de crearRemate para evitar error next/headers
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
@@ -36,6 +36,8 @@ interface Garantia {
 
 export default function NuevoRematePage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const contratoDesdeVencimiento = searchParams.get('contrato') || ''
   const [loading, setLoading] = useState(false)
   const [garantias, setGarantias] = useState<Garantia[]>([])
   const [garantiaSeleccionada, setGarantiaSeleccionada] = useState<Garantia | null>(null)
@@ -86,7 +88,9 @@ export default function NuevoRematePage() {
       garantia_id: garantia.id!,
       credito_id: garantia.credito_id || '',
       precio_base: garantia.valor_tasacion * 0.7, // 70% del valor de tasación como base
-      descripcion: `Remate de ${garantia.nombre} - ${garantia.marca} ${garantia.modelo}`
+      descripcion: contratoDesdeVencimiento
+        ? `Remate de ${garantia.nombre} - ${garantia.marca} ${garantia.modelo} (Contrato ${contratoDesdeVencimiento})`
+        : `Remate de ${garantia.nombre} - ${garantia.marca} ${garantia.modelo}`
     }))
     setSearchGarantia('')
   }
@@ -157,6 +161,11 @@ export default function NuevoRematePage() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Programar Nuevo Remate</h1>
           <p className="text-gray-600">Configure los detalles del remate de garantía</p>
+          {contratoDesdeVencimiento && (
+            <p className="text-xs text-blue-700 mt-1">
+              Origen: contrato {contratoDesdeVencimiento}
+            </p>
+          )}
         </div>
       </div>
 

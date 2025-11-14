@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -58,6 +59,7 @@ interface EstadisticasVencimientos {
 }
 
 export default function VencimientosPage() {
+  const router = useRouter()
   const [creditos, setCreditos] = useState<CreditoVencimiento[]>([])
   const [estadisticas, setEstadisticas] = useState<EstadisticasVencimientos | null>(null)
   const [loading, setLoading] = useState(true)
@@ -223,9 +225,10 @@ export default function VencimientosPage() {
     // Aquí iría la integración con el módulo de notificaciones
   }
 
-  const procesarRemate = async (creditoId: string) => {
+  const procesarRemate = async (credito: CreditoVencimiento) => {
     toast.success('Crédito enviado al proceso de remate')
     // Aquí iría la integración con el módulo de remates
+    router.push(`/dashboard/remates/nuevo?contrato=${encodeURIComponent(credito.numero_contrato)}`)
   }
 
   const formatFecha = (fecha: string) => {
@@ -519,7 +522,7 @@ export default function VencimientosPage() {
                       <Button 
                         variant="destructive" 
                         size="sm" 
-                        onClick={() => procesarRemate(credito.id!)}
+                        onClick={() => procesarRemate(credito)}
                         className="w-full"
                       >
                         <Gavel className="h-4 w-4 mr-2" />
