@@ -11,16 +11,16 @@ export default function NuevoPrestamoPage() {
       {/* Header */}
       <div className="flex items-center gap-4">
         <div className="p-3 bg-blue-100 rounded-xl">
-          <DollarSign className="h-8 w-8 text-blue-600" />
+          <DollarSign className="h-7 w-7 text-blue-600" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Nuevo Préstamo Prendario</h1>
-          <p className="text-gray-600">Proceso guiado para otorgar crédito con garantía</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Nuevo Préstamo Prendario</h1>
+          <p className="text-sm text-gray-600">Proceso guiado para otorgar crédito con garantía</p>
         </div>
       </div>
 
       {/* Wizard de Proceso */}
-      <Card className="border-2 border-blue-200">
+      <Card className="border border-blue-100">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-blue-800">
             <Building2 className="h-5 w-5" />
@@ -30,7 +30,7 @@ export default function NuevoPrestamoPage() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Paso 1: Cliente */}
-            <div className="text-center p-4 border-2 border-dashed border-blue-200 rounded-lg bg-blue-50">
+            <div className="text-center p-4 border border-blue-200 rounded-lg bg-blue-50">
               <div className="p-3 bg-blue-100 rounded-full mx-auto mb-3 w-fit">
                 <User className="h-6 w-6 text-blue-600" />
               </div>
@@ -42,7 +42,7 @@ export default function NuevoPrestamoPage() {
             </div>
 
             {/* Paso 2: Prenda */}
-            <div className="text-center p-4 border-2 border-dashed border-gray-200 rounded-lg">
+            <div className="text-center p-4 border border-gray-200 rounded-lg">
               <div className="p-3 bg-gray-100 rounded-full mx-auto mb-3 w-fit">
                 <Gem className="h-6 w-6 text-gray-400" />
               </div>
@@ -81,7 +81,12 @@ export default function NuevoPrestamoPage() {
       </Card>
 
       {/* Formulario de Búsqueda de Cliente */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-xs font-semibold tracking-wide text-gray-700 uppercase">Paso 1 · Cliente</h2>
+          <p className="text-xs text-gray-500">Primero identifica o registra al cliente antes de continuar con la prenda y el préstamo.</p>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -146,12 +151,13 @@ export default function NuevoPrestamoPage() {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
 
       {/* Información Importante */}
-      <Card className="bg-yellow-50 border-yellow-200">
+      <Card className="border border-yellow-100 bg-white">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-yellow-800">
+          <CardTitle className="flex items-center gap-2 text-yellow-800 text-sm">
             <AlertCircle className="h-5 w-5" />
             Información Importante
           </CardTitle>
@@ -159,8 +165,8 @@ export default function NuevoPrestamoPage() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h4 className="font-semibold text-yellow-800 mb-2">Tasas Vigentes</h4>
-              <ul className="text-sm text-yellow-700 space-y-1">
+              <h4 className="font-semibold text-yellow-800 mb-2 text-sm">Tasas Vigentes</h4>
+              <ul className="text-xs text-yellow-700 space-y-1">
                 <li>• Tasa mensual: 10%</li>
                 <li>• Plazo mínimo: 30 días</li>
                 <li>• Plazo máximo: 120 días</li>
@@ -168,8 +174,8 @@ export default function NuevoPrestamoPage() {
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold text-yellow-800 mb-2">Límites de Préstamo</h4>
-              <ul className="text-sm text-yellow-700 space-y-1">
+              <h4 className="font-semibold text-yellow-800 mb-2 text-sm">Límites de Préstamo</h4>
+              <ul className="text-xs text-yellow-700 space-y-1">
                 <li>• Mínimo: S/ 50.00</li>
                 <li>• Máximo: S/ 50,000.00</li>
                 <li>• Basado en valuación de prenda</li>

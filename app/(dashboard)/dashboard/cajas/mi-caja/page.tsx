@@ -58,10 +58,10 @@ export default async function MiCajaPage() {
       </div>
 
       {/* Estado de la Caja */}
-      <Card className={`border-2 ${
+      <Card className={`border ${
         estaAbierta 
-          ? 'border-green-200 bg-gradient-to-r from-green-50 to-emerald-50' 
-          : 'border-gray-200 bg-gradient-to-r from-gray-50 to-slate-50'
+          ? 'border-green-100 bg-white' 
+          : 'border-gray-200 bg-white'
       }`}>
         <CardHeader>
           <CardTitle className={`flex items-center gap-2 ${
@@ -81,7 +81,7 @@ export default async function MiCajaPage() {
                   estaAbierta ? 'bg-green-500' : 'bg-gray-400'
                 }`}></div>
               </div>
-              <p className={`text-3xl font-bold mb-1 ${
+              <p className={`text-2xl md:text-3xl font-bold mb-1 ${
                 estaAbierta ? 'text-green-700' : 'text-gray-600'
               }`}>
                 S/ {saldoCaja.saldo.toLocaleString('es-PE', { minimumFractionDigits: 2 })}
@@ -95,7 +95,7 @@ export default async function MiCajaPage() {
                 <h3 className="text-sm font-medium text-gray-600">📈 Ingresos</h3>
                 <TrendingUp className="h-4 w-4 text-green-500" />
               </div>
-              <p className="text-3xl font-bold text-green-700 mb-1">
+              <p className="text-2xl md:text-3xl font-bold text-green-700 mb-1">
                 S/ {(saldoCaja.total_ingresos || 0).toLocaleString('es-PE', { minimumFractionDigits: 2 })}
               </p>
               <p className="text-xs text-gray-500">Hoy</p>
@@ -107,7 +107,7 @@ export default async function MiCajaPage() {
                 <h3 className="text-sm font-medium text-gray-600">📉 Egresos</h3>
                 <TrendingDown className="h-4 w-4 text-red-500" />
               </div>
-              <p className="text-3xl font-bold text-red-700 mb-1">
+              <p className="text-2xl md:text-3xl font-bold text-red-700 mb-1">
                 S/ {(saldoCaja.total_egresos || 0).toLocaleString('es-PE', { minimumFractionDigits: 2 })}
               </p>
               <p className="text-xs text-gray-500">Hoy</p>
@@ -162,22 +162,22 @@ export default async function MiCajaPage() {
               <>
                 <Link href="/dashboard/operaciones/nuevo-prestamo">
                   <Button variant="outline" className="w-full justify-start">
-                    💰 Nuevo Préstamo
+                    Nuevo Préstamo
                   </Button>
                 </Link>
                 <Link href="/dashboard/operaciones/pagar-interes">
                   <Button variant="outline" className="w-full justify-start">
-                    📈 Pagar Interés
+                    Pagar Interés
                   </Button>
                 </Link>
                 <Link href="/dashboard/operaciones/desempenar">
                   <Button variant="outline" className="w-full justify-start">
-                    🔄 Desempeñar Prenda
+                    Desempeñar Prenda
                   </Button>
                 </Link>
                 <Link href="/dashboard/operaciones/consultas">
                   <Button variant="outline" className="w-full justify-start">
-                    🔍 Consultar Contrato
+                    Consultar Contrato
                   </Button>
                 </Link>
               </>

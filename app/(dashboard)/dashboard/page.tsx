@@ -14,8 +14,8 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600">Resumen general del negocio</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Dashboard</h1>
+        <p className="text-sm text-gray-600">Resumen general del negocio</p>
       </div>
       
       {/* Dashboard Avanzado */}
@@ -174,9 +174,9 @@ function QuickAction({
   return (
     <a 
       href={href}
-      className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors text-center"
+      className="p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors text-center"
     >
-      <p className="font-medium text-gray-700">{title}</p>
+      <p className="text-sm font-medium text-gray-700">{title}</p>
     </a>
   )
 }
