@@ -177,10 +177,10 @@ IMPORTANTE:
             )}
             <Button 
               onClick={handleStartSetup} 
-              loading={loading}
+              disabled={loading}
               className="flex-1"
             >
-              Configurar 2FA
+              {loading ? 'Configurando...' : 'Configurar 2FA'}
             </Button>
           </div>
         </CardContent>
@@ -288,11 +288,10 @@ IMPORTANTE:
             </Button>
             <Button 
               onClick={handleVerifySetup}
-              loading={loading}
-              disabled={verificationCode.length !== 6}
+              disabled={loading || verificationCode.length !== 6}
               className="flex-1"
             >
-              Verificar
+              {loading ? 'Verificando...' : 'Verificar'}
             </Button>
           </div>
         </CardContent>
