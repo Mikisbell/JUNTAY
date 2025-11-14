@@ -16,31 +16,18 @@ export default async function CajaDetallePage({ params }: { params: { id: string
     redirect('/dashboard/caja')
   }
 
-  // Intentar obtener sesión con múltiples métodos
-  let sesion = await getSesionActual(params.id)
+  // Obtener sesión directamente de Supabase para datos más frescos
+  const supabase = createClient()
+  const { data: sesion } = await supabase
+    .from('sesiones_caja')
+    .select('*')
+    .eq('caja_id', params.id)
+    .eq('estado', 'abierta')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .single()
   
-  // Si no encuentra sesión, buscar la más reciente creada
-  if (!sesion) {
-    console.log('No se encontró sesión activa, buscando sesiones recientes...')
-    const supabase = createClient()
-    const { data: sesionesRecientes } = await supabase
-      .from('sesiones_caja')
-      .select('*')
-      .eq('caja_id', params.id)
-      .order('created_at', { ascending: false })
-      .limit(3)
-    
-    console.log('Sesiones recientes encontradas:', sesionesRecientes)
-    
-    // Buscar si hay alguna con estado 'abierta'
-    if (sesionesRecientes && sesionesRecientes.length > 0) {
-      const sesionAbierta = sesionesRecientes.find((s: any) => s.estado === 'abierta')
-      if (sesionAbierta) {
-        console.log('Encontrada sesión abierta en búsqueda manual:', sesionAbierta)
-        sesion = sesionAbierta
-      }
-    }
-  }
+  console.log('🔄 Sesión obtenida directamente:', sesion)
   
   const movimientos = sesion ? await getMovimientosSesion(sesion.id!) : []
 
