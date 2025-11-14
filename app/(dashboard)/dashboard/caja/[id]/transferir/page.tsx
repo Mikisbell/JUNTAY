@@ -56,7 +56,7 @@ export default function TransferirCajaPage({ params }: { params: { id: string } 
         .select('*')
         .neq('id', params.id)
         .eq('activa', true)
-        .eq('estado', 'abierta')
+        .in('estado', ['abierta', 'ABIERTA', 'Abierta'])
 
       if (cajasError) {
         console.error('❌ Error cajas destino:', cajasError)
@@ -65,6 +65,14 @@ export default function TransferirCajaPage({ params }: { params: { id: string } 
 
       console.log('📦 Cajas abiertas encontradas:', cajasData)
       console.log('📊 Total cajas abiertas:', cajasData?.length || 0)
+      console.log('🎯 Cajas que deberían aparecer:', cajasData?.map(c => `${c.codigo} - ${c.nombre} (${c.estado})`))
+      
+      // Verificación específica: si estamos en CAJA-01, debería mostrar CAJA-04
+      if (cajasData && cajasData.length > 0) {
+        console.log('✅ ¡ENCONTRADAS! Las cajas destino están disponibles')
+      } else {
+        console.log('❌ NO ENCONTRADAS - Verificando por qué...')
+      }
       
       // Si no hay cajas con estado 'abierta', intentar con todas las activas para debug
       if (!cajasData || cajasData.length === 0) {
