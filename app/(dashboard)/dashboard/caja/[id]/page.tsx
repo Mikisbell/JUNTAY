@@ -16,9 +16,11 @@ export default async function CajaDetallePage({ params }: { params: { id: string
     redirect('/dashboard/caja')
   }
 
-  // Obtener sesión directamente de Supabase para datos más frescos
+  // Obtener sesión con múltiples intentos para datos más frescos
   const supabase = createClient()
-  const { data: sesion } = await supabase
+  
+  // Primer intento: buscar sesión abierta
+  let { data: sesion, error: sesionError } = await supabase
     .from('sesiones_caja')
     .select('*')
     .eq('caja_id', params.id)
@@ -27,7 +29,25 @@ export default async function CajaDetallePage({ params }: { params: { id: string
     .limit(1)
     .single()
   
-  console.log('🔄 Sesión obtenida directamente:', sesion)
+  // Si no encuentra sesión abierta, buscar la más reciente
+  if (sesionError || !sesion) {
+    console.log('❌ No se encontró sesión abierta, buscando más reciente...', sesionError)
+    
+    const { data: sesionReciente } = await supabase
+      .from('sesiones_caja')
+      .select('*')
+      .eq('caja_id', params.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single()
+    
+    if (sesionReciente) {
+      console.log('📋 Sesión más reciente encontrada:', sesionReciente)
+      sesion = sesionReciente
+    }
+  }
+  
+  console.log('🔄 Sesión final obtenida:', sesion)
   
   const movimientos = sesion ? await getMovimientosSesion(sesion.id!) : []
 
