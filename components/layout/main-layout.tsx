@@ -219,14 +219,14 @@ export default function MainLayout({ children }: MainLayoutProps) {
       } fixed inset-y-0 right-0 z-50 w-80 bg-white border-l border-gray-200 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0`}>
         
         {/* Header del Sidebar */}
-        <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Building2 className="h-6 w-6 text-blue-600" />
+        <div className="flex items-center justify-between h-14 px-5 border-b border-gray-100">
+          <div className="flex items-center gap-2.5">
+            <div className="p-1.5 bg-blue-50 rounded-md">
+              <Building2 className="h-5 w-5 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-gray-900">JUNTAY</h1>
-              <p className="text-xs text-gray-500">Casa de Empeño</p>
+              <h1 className="text-base font-semibold tracking-tight text-gray-900">JUNTAY</h1>
+              <p className="text-[11px] text-gray-500">Casa de Empeño</p>
             </div>
           </div>
           <Button
@@ -240,7 +240,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
         </div>
 
         {/* Navegación Principal */}
-        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+        <nav className="flex-1 px-4 py-4 space-y-1.5 overflow-y-auto">
           {visibleSections.map((section) => {
             const isActive = activeSection?.id === section.id
             
@@ -248,15 +248,15 @@ export default function MainLayout({ children }: MainLayoutProps) {
               <Link
                 key={section.id}
                 href={section.href}
-                className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
+                className={`flex items-center justify-between p-2.5 rounded-lg transition-colors ${
                   isActive 
-                    ? 'bg-blue-50 border border-blue-200 text-blue-700' 
-                    : 'hover:bg-gray-50 text-gray-700'
+                    ? 'bg-blue-50 border border-blue-200 text-blue-800' 
+                    : 'hover:bg-gray-50 text-gray-600'
                 }`}
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
                   {section.icon}
-                  <span className="text-sm font-medium truncate">{section.title}</span>
+                  <span className="text-[13px] font-medium truncate">{section.title}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <ChevronRight className={`h-4 w-4 transition-transform ${
@@ -270,13 +270,13 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
         {/* Footer del Sidebar */}
         <div className="p-4 border-t border-gray-200">
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+          <div className="flex items-center gap-2.5 p-2.5 bg-gray-50 rounded-lg">
             <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-              <span className="text-white text-sm font-medium">JP</span>
+              <span className="text-white text-xs font-medium">JP</span>
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-gray-900">Juan Pérez</p>
-              <p className="text-xs text-gray-500">Cajero Principal</p>
+              <p className="text-[13px] font-medium text-gray-900">Juan Pérez</p>
+              <p className="text-[11px] tracking-wide text-gray-500 uppercase">Cajero Principal</p>
             </div>
           </div>
         </div>
@@ -285,8 +285,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
       {/* Contenido Principal */}
       <div className="flex-1 flex flex-col lg:mr-80">
         {/* Header Superior con Sub-navegación */}
-        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
-          <div className="flex items-center gap-6">
+        <header className="h-14 bg-white border-b border-gray-100 flex items-center justify-between px-5">
+          <div className="flex items-center gap-5">
             <Button
               variant="ghost"
               size="sm"
@@ -297,7 +297,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
             </Button>
             
             {/* Sub-navegación horizontal (una sola línea, con scroll si es necesario) */}
-            <nav className="hidden md:flex items-center gap-1 max-w-[60vw] overflow-x-auto">
+            <nav className="hidden md:flex items-center gap-1.5 max-w-[60vw] overflow-x-auto">
               {activeSection?.subsections.map((subsection) => {
                 const isSubActive = pathname === subsection.href
                 
@@ -305,10 +305,10 @@ export default function MainLayout({ children }: MainLayoutProps) {
                   <Link
                     key={subsection.id}
                     href={subsection.href}
-                    className={`px-3 py-1.5 rounded-md text-xs md:text-sm font-medium whitespace-nowrap transition-colors ${
+                    className={`px-2.5 py-1.5 rounded-md text-[11px] md:text-xs font-medium whitespace-nowrap transition-colors ${
                       isSubActive
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                        ? 'bg-blue-50 text-blue-800 border border-blue-200'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                     }`}
                   >
                     {subsection.title}
@@ -319,11 +319,11 @@ export default function MainLayout({ children }: MainLayoutProps) {
           </div>
 
           {/* Indicadores de Estado */}
-          <div className="flex items-center gap-4">
-            <Badge variant="outline" className="text-green-600 border-green-200">
-              🟢 Caja Abierta
+          <div className="flex items-center gap-3">
+            <Badge variant="outline" className="text-xs font-medium text-green-700 border-green-200 bg-green-50">
+              Caja abierta
             </Badge>
-            <Badge variant="outline">
+            <Badge variant="outline" className="text-xs font-medium text-gray-700 border-gray-200 bg-gray-50">
               S/ 15,420.00
             </Badge>
           </div>
