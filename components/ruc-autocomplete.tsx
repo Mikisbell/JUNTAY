@@ -170,7 +170,10 @@ export function RUCAutoComplete({
     <div className="space-y-4">
       {/* Input y botones */}
       <div>
-        <Label htmlFor="ruc_input">RUC *</Label>
+        <Label htmlFor="ruc_input">RUC (SUNAT) *</Label>
+        <p className="text-xs text-gray-500 mb-1">
+          Se consultará SUNAT y el sistema JUNTAY para autocompletar los datos de la empresa. Solo RUC peruano de 11 dígitos.
+        </p>
         <div className="flex gap-2">
           <div className="relative flex-1">
             <Input
@@ -253,15 +256,17 @@ export function RUCAutoComplete({
         </Card>
       )}
 
-      {/* Mensaje de éxito simple */}
+      {/* Mensaje de éxito simple (datos desde SUNAT) */}
       {consulta.estado === 'completado' && consulta.datos && (
         <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 border border-green-200 rounded-md px-3 py-2">
           <Building className="h-4 w-4" />
-          <span>Empresa Existente</span>
+          <span>
+            Datos obtenidos de SUNAT para: <strong>{consulta.datos.razon_social}</strong>
+          </span>
         </div>
       )}
 
-      {/* Empresa existente */}
+      {/* Empresa existente en JUNTAY */}
       {consulta.estado === 'existente' && consulta.empresaExistente && (
         <Card className="border-yellow-200 bg-yellow-50">
           <CardContent className="pt-4">

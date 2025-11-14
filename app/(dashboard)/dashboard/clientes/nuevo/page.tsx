@@ -286,7 +286,7 @@ export default function NuevoClientePage() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl">
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto">
       {/* Header */}
       <div className="flex items-center space-x-4">
         <Link href="/dashboard/clientes">
@@ -295,8 +295,8 @@ export default function NuevoClientePage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Nuevo Cliente</h1>
-          <p className="text-gray-600">Registra un nuevo cliente en el sistema</p>
+          <h1 className="text-2xl md:text-3xl font-semibold text-gray-900">Nuevo Cliente</h1>
+          <p className="text-sm text-gray-600">Registra un nuevo cliente en el sistema</p>
         </div>
       </div>
 

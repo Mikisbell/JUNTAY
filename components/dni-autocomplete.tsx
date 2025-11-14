@@ -56,7 +56,7 @@ export function DNIAutoComplete({
 
   const consultarDNI = async () => {
     if (!validarFormatoDNI(dni)) {
-      toast.error('DNI debe tener exactamente 8 dígitos')
+      toast.error('El DNI debe tener exactamente 8 dígitos numéricos')
       return
     }
 
@@ -75,7 +75,7 @@ export function DNIAutoComplete({
           }
         })
         
-        toast.warning(`Cliente ya registrado: ${verificacion.nombre_completo}`)
+        toast.warning(`Cliente ya registrado en el sistema: ${verificacion.nombre_completo}`)
         onClienteExistente?.(verificacion.cliente_id, verificacion.nombre_completo || '')
         return
       }
@@ -89,7 +89,7 @@ export function DNIAutoComplete({
           datos: response.data
         })
         
-        toast.success(`Datos obtenidos: ${response.data.nombre_completo}`)
+        toast.success(`Datos obtenidos de RENIEC para: ${response.data.nombre_completo}`)
         onDatosObtenidos?.(response.data)
       } else {
         setConsulta({
@@ -139,7 +139,10 @@ export function DNIAutoComplete({
     <div className={`space-y-4 ${className}`}>
       {/* Input DNI */}
       <div className="space-y-2">
-        <Label htmlFor="dni">DNI</Label>
+        <Label htmlFor="dni">DNI (RENIEC)</Label>
+        <p className="text-xs text-gray-500">
+          Se consultará RENIEC para autocompletar los datos del cliente. Solo DNI peruano de 8 dígitos.
+        </p>
         <div className="flex gap-2">
           <div className="relative flex-1">
             <Input
@@ -197,7 +200,9 @@ export function DNIAutoComplete({
       {consulta.estado === 'completado' && consulta.datos && (
         <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 border border-green-200 rounded-md px-3 py-2">
           <CheckCircle className="h-4 w-4" />
-          <span>Usuario Existente</span>
+          <span>
+            Datos confirmados por RENIEC para: <strong>{consulta.datos.nombre_completo}</strong>
+          </span>
         </div>
       )}
 

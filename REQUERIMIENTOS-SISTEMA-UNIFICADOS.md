@@ -927,6 +927,137 @@ Frase guía: **"Seguridad clara y sin complicaciones."**
 
 Esta filosofía debe aplicarse en todos los módulos nuevos o refactorizados (Dashboard ejecutivo, Empeños, Contratos, Garantías, Remates, Pagos, Vencimientos), manteniendo siempre el balance entre **estructura bancaria** y **trato humano propio de casa de empeño**.
 
+### 📐 GUÍA DE TIPOGRAFÍA Y PATRONES DE UI (ESTÁNDAR GLOBAL)
+
+Esta guía define los patrones visuales que deben respetarse en todas las pantallas nuevas o refactorizadas para mantener una experiencia consistente y profesional.
+
+#### 1. Tipografía global y navegación
+
+- **Marca / Sidebar**
+  - Logo "JUNTAY": `text-sm md:text-base font-semibold text-gray-900`.
+  - Lema corto: `text-[11px] text-gray-500`.
+- **Ítems de menú lateral**
+  - Texto: `text-xs md:text-[13px] font-medium text-gray-600`.
+  - Íconos Lucide de 20px (`h-5 w-5`).
+- **Badges de estado (header superior)**
+  - Ej. "Caja abierta", montos rápidos.
+  - Tipografía: `text-[11px] font-medium`.
+  - Estilos suaves (bg-*50, border-*200) tipo banca.
+
+> Todas las nuevas entradas de navegación deben seguir esta escala para evitar menús visualmente desbalanceados.
+
+#### 2. Encabezados de página (h1) y subtítulos
+
+Patrón único para encabezados de módulos (Dashboard, Empeños, Contratos, Créditos, Vencimientos, Remates, Formularios):
+
+```tsx
+<h1 className="text-2xl md:text-3xl font-semibold text-gray-900">
+  Título de la pantalla
+</h1>
+<p className="text-sm text-gray-600">
+  Descripción corta / contexto.
+</p>
+```
+
+Ejemplos ya alineados:
+
+- Dashboard: "Dashboard".
+- Empeños: "Nuevo Préstamo Prendario", "Pago de Intereses", "Desempeño de Prendas".
+- Contratos: "Contratos".
+- Créditos: "Créditos".
+- Vencimientos: "Proceso de Vencimientos" (incluyendo estado de carga).
+- Remates: "Remates" (incluyendo estado de carga).
+- Formularios: "Nuevo Cliente", "Nueva Garantía", "Nueva Solicitud de Crédito".
+
+> Requisito: ninguna pantalla nueva debe inventar un tamaño distinto; siempre reutilizar este patrón de h1 + subtítulo.
+
+#### 3. Tablas tipo back-office bancario
+
+Objetivo: que todas las tablas (Contratos, Créditos, listados operativos) se vean como back-office profesional.
+
+- **Encabezados de tabla (`<th>`)**
+  - Patrones a usar:
+    - `text-[11px] font-medium text-gray-500 tracking-wide uppercase`.
+    - Fondo: `bg-gray-50 border-b`.
+  - Ejemplo:
+    ```tsx
+    <thead className="bg-gray-50 border-b">
+      <tr>
+        <th className="text-left p-3 text-[11px] font-medium text-gray-500 tracking-wide uppercase">
+          Código
+        </th>
+        ...
+      </tr>
+    </thead>
+    ```
+
+- **Cuerpo de tabla (`<td>`)**
+  - Datos clave: `text-sm` + `font-medium text-gray-900` o color según contexto.
+  - Datos secundarios: `text-xs` o `text-[11px] text-gray-600`.
+  - Códigos: `font-mono text-xs`.
+  - Filas hover: `hover:bg-gray-50`.
+
+Aplicado ya en:
+
+- `Contratos/Activos`, `Contratos/Vencidos`, `Contratos/Liquidados`.
+- `Créditos` (listado principal).
+
+> Requisito: toda tabla nueva debe heredar este estilo de encabezado y jerarquía de cuerpo.
+
+#### 4. Formularios estándar (Cliente, Garantía, Crédito, etc.)
+
+Patrón de layout para cualquier formulario principal del sistema:
+
+```tsx
+<form className="space-y-6 max-w-4xl mx-auto">
+  <div className="flex items-center space-x-4">
+    <Link href="/dashboard/...">
+      <Button type="button" variant="ghost" size="icon">
+        <ArrowLeft className="h-5 w-5" />
+      </Button>
+    </Link>
+    <div>
+      <h1 className="text-2xl md:text-3xl font-semibold text-gray-900">
+        Título del formulario
+      </h1>
+      <p className="text-sm text-gray-600">
+        Descripción corta de lo que se va a hacer.
+      </p>
+    </div>
+  </div>
+
+  {/* Secciones en Cards (datos de identificación, contacto, dirección, etc.) */}
+</form>
+```
+
+Ejemplos ya alineados:
+
+- **Nuevo Cliente**: `max-w-4xl mx-auto`, secciones en tarjetas (Tipo de Persona, Identificación/RENIEC, Contacto, Dirección/Ubicación, Laborales, Observaciones).
+- **Nueva Garantía**: `max-w-4xl mx-auto`, secciones (Información del bien, Valuación, Características físicas, Ubicación y control, Fotos).
+- **Nueva Solicitud de Crédito**: `max-w-5xl mx-auto`, layout 2 columnas
+  - Izquierda: Cliente, Datos del crédito, Garantía, Observaciones.
+  - Derecha: card fija "Resumen del Crédito".
+
+> Requisito: todos los formularios nuevos deben seguir este patrón de encabezado + `max-w-*` centrado + secciones en `Card`s.
+
+#### 5. Resúmenes laterales y transparencia
+
+Para operaciones críticas (empeños, créditos, vencimientos, remates) se debe incluir un **resumen lateral o card de resumen** que responda las 5 preguntas de transparencia definida en la filosofía UX:
+
+- ¿Cuánto recibe hoy?
+- ¿Cuánto pagará en total?
+- ¿Cuándo vence?
+- ¿Qué pasa si no paga?
+- ¿Cómo recupera su prenda?
+
+Ejemplos implementados:
+
+- `Nuevo Préstamo` (Empeños): card "Resumen del préstamo" con claves "Lo esencial", "Si no paga" y "Cómo recupera su prenda".
+- `Nueva Solicitud de Crédito`: card "Resumen del Crédito" con monto, interés total, total a pagar y cuota.
+- `Vencimientos`: sección resumen de monto en riesgo, créditos en gracia y listos para remate.
+
+Este patrón de resúmenes debe replicarse en cualquier flujo nuevo que implique montos, plazos y riesgo para el cliente o la empresa.
+
 ### **🚨 REQUERIMIENTOS CRÍTICOS DE SEGURIDAD (PRIORIDAD EXTREMA)**
 
 #### **FASE 1: SEGURIDAD INMEDIATA (2-3 semanas)**

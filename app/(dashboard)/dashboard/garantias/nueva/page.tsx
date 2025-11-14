@@ -129,7 +129,7 @@ export default function NuevaGarantiaPage() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl">
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto">
       <div className="flex items-center space-x-4">
         <Link href="/dashboard/garantias">
           <Button type="button" variant="ghost" size="icon">
@@ -137,8 +137,8 @@ export default function NuevaGarantiaPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Nueva Garantía</h1>
-          <p className="text-gray-600">Registra un bien empeñado</p>
+          <h1 className="text-2xl md:text-3xl font-semibold text-gray-900">Nueva Garantía</h1>
+          <p className="text-sm text-gray-600">Registra un bien empeñado</p>
         </div>
       </div>
 

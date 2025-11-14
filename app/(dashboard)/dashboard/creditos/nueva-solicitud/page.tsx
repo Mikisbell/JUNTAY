@@ -241,7 +241,7 @@ export default function NuevaSolicitudPage() {
   const clienteSeleccionado = clientes.find(c => c.id === formData.cliente_id)
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-5xl">
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-5xl mx-auto">
       <div className="flex items-center space-x-4">
         <Link href="/dashboard/creditos">
           <Button type="button" variant="ghost" size="icon">
@@ -249,8 +249,8 @@ export default function NuevaSolicitudPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Nueva Solicitud de Crédito</h1>
-          <p className="text-gray-600">Registra un nuevo préstamo</p>
+          <h1 className="text-2xl md:text-3xl font-semibold text-gray-900">Nueva Solicitud de Crédito</h1>
+          <p className="text-sm text-gray-600">Registra un nuevo préstamo</p>
         </div>
       </div>
 
