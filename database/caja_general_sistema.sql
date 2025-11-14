@@ -85,7 +85,9 @@ CREATE TABLE IF NOT EXISTS movimientos_caja_general (
     tipo_movimiento VARCHAR(30) NOT NULL CHECK (tipo_movimiento IN (
         'asignacion_cajero', 'devolucion_cajero', 'ingreso_efectivo', 
         'retiro_efectivo', 'transferencia_entrada', 'transferencia_salida',
-        'ajuste_inventario', 'deposito_banco'
+        'ajuste_inventario', 'deposito_banco', 'aporte_socio',
+        'transferencia_bancaria', 'cobranza_directa', 'venta_activo',
+        'pago_proveedor', 'retiro_socio', 'dividendo_socio'
     )),
     
     monto DECIMAL(15,2) NOT NULL,
@@ -108,8 +110,8 @@ CREATE TABLE IF NOT EXISTS movimientos_caja_general (
     
     -- CONSTRAINTS
     CONSTRAINT chk_saldo_coherente CHECK (
-        (tipo_movimiento IN ('asignacion_cajero', 'retiro_efectivo', 'transferencia_salida') AND saldo_nuevo = saldo_anterior - monto) OR
-        (tipo_movimiento IN ('devolucion_cajero', 'ingreso_efectivo', 'transferencia_entrada', 'deposito_banco') AND saldo_nuevo = saldo_anterior + monto) OR
+        (tipo_movimiento IN ('asignacion_cajero', 'retiro_efectivo', 'transferencia_salida', 'pago_proveedor', 'retiro_socio', 'dividendo_socio', 'deposito_banco') AND saldo_nuevo = saldo_anterior - monto) OR
+        (tipo_movimiento IN ('devolucion_cajero', 'ingreso_efectivo', 'transferencia_entrada', 'aporte_socio', 'transferencia_bancaria', 'cobranza_directa', 'venta_activo') AND saldo_nuevo = saldo_anterior + monto) OR
         (tipo_movimiento = 'ajuste_inventario')
     )
 );
@@ -205,6 +207,208 @@ BEGIN
     );
     
     RETURN v_caja_general_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 8. FUNCIÓN PARA REGISTRAR APORTE DE SOCIO
+CREATE OR REPLACE FUNCTION registrar_aporte_socio(
+    p_caja_general_id UUID,
+    p_monto DECIMAL(15,2),
+    p_socio_id UUID,
+    p_concepto VARCHAR(100) DEFAULT 'Aporte de socio',
+    p_descripcion TEXT DEFAULT NULL,
+    p_referencia_externa VARCHAR(50) DEFAULT NULL,
+    p_usuario_operacion UUID DEFAULT NULL
+)
+RETURNS UUID AS $$
+DECLARE
+    v_movimiento_id UUID;
+    v_saldo_anterior DECIMAL(15,2);
+    v_saldo_nuevo DECIMAL(15,2);
+BEGIN
+    -- Obtener saldo actual
+    SELECT saldo_total INTO v_saldo_anterior 
+    FROM caja_general 
+    WHERE id = p_caja_general_id;
+    
+    IF v_saldo_anterior IS NULL THEN
+        RAISE EXCEPTION 'Caja General no encontrada: %', p_caja_general_id;
+    END IF;
+    
+    v_saldo_nuevo := v_saldo_anterior + p_monto;
+    
+    -- Actualizar saldo de Caja General
+    UPDATE caja_general 
+    SET 
+        saldo_total = v_saldo_nuevo,
+        saldo_disponible = saldo_disponible + p_monto,
+        updated_at = NOW(),
+        updated_by = p_usuario_operacion
+    WHERE id = p_caja_general_id;
+    
+    -- Registrar movimiento
+    INSERT INTO movimientos_caja_general (
+        caja_general_id,
+        tipo_movimiento,
+        monto,
+        saldo_anterior,
+        saldo_nuevo,
+        concepto,
+        descripcion,
+        referencia_externa,
+        usuario_operacion,
+        created_by
+    ) VALUES (
+        p_caja_general_id,
+        'aporte_socio',
+        p_monto,
+        v_saldo_anterior,
+        v_saldo_nuevo,
+        p_concepto,
+        COALESCE(p_descripcion, 'Aporte de socio al capital de la empresa'),
+        p_referencia_externa,
+        p_usuario_operacion,
+        p_usuario_operacion
+    )
+    RETURNING id INTO v_movimiento_id;
+    
+    RETURN v_movimiento_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 9. FUNCIÓN PARA REGISTRAR TRANSFERENCIA BANCARIA
+CREATE OR REPLACE FUNCTION registrar_transferencia_bancaria(
+    p_caja_general_id UUID,
+    p_monto DECIMAL(15,2),
+    p_banco_origen VARCHAR(100),
+    p_numero_operacion VARCHAR(50),
+    p_concepto VARCHAR(100) DEFAULT 'Transferencia bancaria',
+    p_descripcion TEXT DEFAULT NULL,
+    p_usuario_operacion UUID DEFAULT NULL
+)
+RETURNS UUID AS $$
+DECLARE
+    v_movimiento_id UUID;
+    v_saldo_anterior DECIMAL(15,2);
+    v_saldo_nuevo DECIMAL(15,2);
+BEGIN
+    -- Obtener saldo actual
+    SELECT saldo_total INTO v_saldo_anterior 
+    FROM caja_general 
+    WHERE id = p_caja_general_id;
+    
+    IF v_saldo_anterior IS NULL THEN
+        RAISE EXCEPTION 'Caja General no encontrada: %', p_caja_general_id;
+    END IF;
+    
+    v_saldo_nuevo := v_saldo_anterior + p_monto;
+    
+    -- Actualizar saldo de Caja General
+    UPDATE caja_general 
+    SET 
+        saldo_total = v_saldo_nuevo,
+        saldo_disponible = saldo_disponible + p_monto,
+        updated_at = NOW(),
+        updated_by = p_usuario_operacion
+    WHERE id = p_caja_general_id;
+    
+    -- Registrar movimiento
+    INSERT INTO movimientos_caja_general (
+        caja_general_id,
+        tipo_movimiento,
+        monto,
+        saldo_anterior,
+        saldo_nuevo,
+        concepto,
+        descripcion,
+        referencia_externa,
+        usuario_operacion,
+        created_by
+    ) VALUES (
+        p_caja_general_id,
+        'transferencia_bancaria',
+        p_monto,
+        v_saldo_anterior,
+        v_saldo_nuevo,
+        p_concepto,
+        COALESCE(p_descripcion, 'Transferencia desde ' || p_banco_origen),
+        p_numero_operacion,
+        p_usuario_operacion,
+        p_usuario_operacion
+    )
+    RETURNING id INTO v_movimiento_id;
+    
+    RETURN v_movimiento_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 10. FUNCIÓN PARA DEPOSITAR A BANCO (EGRESO)
+CREATE OR REPLACE FUNCTION registrar_deposito_banco(
+    p_caja_general_id UUID,
+    p_monto DECIMAL(15,2),
+    p_banco_destino VARCHAR(100),
+    p_numero_operacion VARCHAR(50),
+    p_concepto VARCHAR(100) DEFAULT 'Depósito a banco',
+    p_descripcion TEXT DEFAULT NULL,
+    p_usuario_operacion UUID DEFAULT NULL
+)
+RETURNS UUID AS $$
+DECLARE
+    v_movimiento_id UUID;
+    v_saldo_anterior DECIMAL(15,2);
+    v_saldo_nuevo DECIMAL(15,2);
+BEGIN
+    -- Obtener saldo actual
+    SELECT saldo_total INTO v_saldo_anterior 
+    FROM caja_general 
+    WHERE id = p_caja_general_id;
+    
+    IF v_saldo_anterior IS NULL THEN
+        RAISE EXCEPTION 'Caja General no encontrada: %', p_caja_general_id;
+    END IF;
+    
+    IF v_saldo_anterior < p_monto THEN
+        RAISE EXCEPTION 'Saldo insuficiente para depósito. Disponible: %, Solicitado: %', v_saldo_anterior, p_monto;
+    END IF;
+    
+    v_saldo_nuevo := v_saldo_anterior - p_monto;
+    
+    -- Actualizar saldo de Caja General
+    UPDATE caja_general 
+    SET 
+        saldo_total = v_saldo_nuevo,
+        saldo_disponible = saldo_disponible - p_monto,
+        updated_at = NOW(),
+        updated_by = p_usuario_operacion
+    WHERE id = p_caja_general_id;
+    
+    -- Registrar movimiento
+    INSERT INTO movimientos_caja_general (
+        caja_general_id,
+        tipo_movimiento,
+        monto,
+        saldo_anterior,
+        saldo_nuevo,
+        concepto,
+        descripcion,
+        referencia_externa,
+        usuario_operacion,
+        created_by
+    ) VALUES (
+        p_caja_general_id,
+        'deposito_banco',
+        p_monto,
+        v_saldo_anterior,
+        v_saldo_nuevo,
+        p_concepto,
+        COALESCE(p_descripcion, 'Depósito a ' || p_banco_destino),
+        p_numero_operacion,
+        p_usuario_operacion,
+        p_usuario_operacion
+    )
+    RETURNING id INTO v_movimiento_id;
+    
+    RETURN v_movimiento_id;
 END;
 $$ LANGUAGE plpgsql;
 

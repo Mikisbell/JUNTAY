@@ -197,7 +197,9 @@ export interface MovimientoCajaGeneral {
   // Datos del movimiento
   tipo_movimiento: 'asignacion_cajero' | 'devolucion_cajero' | 'ingreso_efectivo' | 
                    'retiro_efectivo' | 'transferencia_entrada' | 'transferencia_salida' |
-                   'ajuste_inventario' | 'deposito_banco'
+                   'ajuste_inventario' | 'deposito_banco' | 'aporte_socio' |
+                   'transferencia_bancaria' | 'cobranza_directa' | 'venta_activo' |
+                   'pago_proveedor' | 'retiro_socio' | 'dividendo_socio'
   
   monto: number
   saldo_anterior: number
