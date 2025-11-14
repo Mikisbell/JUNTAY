@@ -83,11 +83,15 @@ CREATE TABLE IF NOT EXISTS movimientos_caja_general (
     
     -- DATOS DEL MOVIMIENTO
     tipo_movimiento VARCHAR(30) NOT NULL CHECK (tipo_movimiento IN (
+        -- OPERACIONES BANCARIAS GENERALES
         'asignacion_cajero', 'devolucion_cajero', 'ingreso_efectivo', 
         'retiro_efectivo', 'transferencia_entrada', 'transferencia_salida',
         'ajuste_inventario', 'deposito_banco', 'aporte_socio',
-        'transferencia_bancaria', 'cobranza_directa', 'venta_activo',
-        'pago_proveedor', 'retiro_socio', 'dividendo_socio'
+        'transferencia_bancaria', 'pago_proveedor', 'retiro_socio', 'dividendo_socio',
+        -- OPERACIONES ESPECÍFICAS DE CASA DE EMPEÑO
+        'prestamo_otorgado', 'pago_interes', 'pago_capital', 'desempeno_total',
+        'venta_remate', 'comision_tasacion', 'comision_almacenaje',
+        'multa_vencimiento', 'renovacion_contrato', 'gasto_operativo'
     )),
     
     monto DECIMAL(15,2) NOT NULL,
@@ -110,8 +114,11 @@ CREATE TABLE IF NOT EXISTS movimientos_caja_general (
     
     -- CONSTRAINTS
     CONSTRAINT chk_saldo_coherente CHECK (
-        (tipo_movimiento IN ('asignacion_cajero', 'retiro_efectivo', 'transferencia_salida', 'pago_proveedor', 'retiro_socio', 'dividendo_socio', 'deposito_banco') AND saldo_nuevo = saldo_anterior - monto) OR
-        (tipo_movimiento IN ('devolucion_cajero', 'ingreso_efectivo', 'transferencia_entrada', 'aporte_socio', 'transferencia_bancaria', 'cobranza_directa', 'venta_activo') AND saldo_nuevo = saldo_anterior + monto) OR
+        -- EGRESOS (reducen saldo disponible)
+        (tipo_movimiento IN ('asignacion_cajero', 'retiro_efectivo', 'transferencia_salida', 'pago_proveedor', 'retiro_socio', 'dividendo_socio', 'deposito_banco', 'prestamo_otorgado', 'gasto_operativo') AND saldo_nuevo = saldo_anterior - monto) OR
+        -- INGRESOS (aumentan saldo disponible)
+        (tipo_movimiento IN ('devolucion_cajero', 'ingreso_efectivo', 'transferencia_entrada', 'aporte_socio', 'transferencia_bancaria', 'pago_interes', 'pago_capital', 'desempeno_total', 'venta_remate', 'comision_tasacion', 'comision_almacenaje', 'multa_vencimiento', 'renovacion_contrato') AND saldo_nuevo = saldo_anterior + monto) OR
+        -- AJUSTES (pueden ser + o -)
         (tipo_movimiento = 'ajuste_inventario')
     )
 );
@@ -403,6 +410,209 @@ BEGIN
         p_concepto,
         COALESCE(p_descripcion, 'Depósito a ' || p_banco_destino),
         p_numero_operacion,
+        p_usuario_operacion,
+        p_usuario_operacion
+    )
+    RETURNING id INTO v_movimiento_id;
+    
+    RETURN v_movimiento_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- ========================================
+-- FUNCIONES ESPECÍFICAS PARA CASA DE EMPEÑO
+-- ========================================
+
+-- 11. FUNCIÓN PARA REGISTRAR PRÉSTAMO OTORGADO
+CREATE OR REPLACE FUNCTION registrar_prestamo_otorgado(
+    p_caja_general_id UUID,
+    p_contrato_id UUID,
+    p_monto DECIMAL(15,2),
+    p_cliente_nombre VARCHAR(200),
+    p_prenda_descripcion TEXT,
+    p_usuario_operacion UUID DEFAULT NULL
+)
+RETURNS UUID AS $$
+DECLARE
+    v_movimiento_id UUID;
+    v_saldo_anterior DECIMAL(15,2);
+    v_saldo_nuevo DECIMAL(15,2);
+BEGIN
+    -- Obtener saldo actual
+    SELECT saldo_total INTO v_saldo_anterior 
+    FROM caja_general 
+    WHERE id = p_caja_general_id;
+    
+    IF v_saldo_anterior IS NULL THEN
+        RAISE EXCEPTION 'Caja General no encontrada: %', p_caja_general_id;
+    END IF;
+    
+    IF v_saldo_anterior < p_monto THEN
+        RAISE EXCEPTION 'Saldo insuficiente para préstamo. Disponible: %, Solicitado: %', v_saldo_anterior, p_monto;
+    END IF;
+    
+    v_saldo_nuevo := v_saldo_anterior - p_monto;
+    
+    -- Actualizar saldo de Caja General
+    UPDATE caja_general 
+    SET 
+        saldo_total = v_saldo_nuevo,
+        saldo_disponible = saldo_disponible - p_monto,
+        updated_at = NOW(),
+        updated_by = p_usuario_operacion
+    WHERE id = p_caja_general_id;
+    
+    -- Registrar movimiento
+    INSERT INTO movimientos_caja_general (
+        caja_general_id,
+        tipo_movimiento,
+        monto,
+        saldo_anterior,
+        saldo_nuevo,
+        concepto,
+        descripcion,
+        referencia_externa,
+        usuario_operacion,
+        created_by
+    ) VALUES (
+        p_caja_general_id,
+        'prestamo_otorgado',
+        p_monto,
+        v_saldo_anterior,
+        v_saldo_nuevo,
+        'Préstamo otorgado',
+        'Préstamo de S/ ' || p_monto::text || ' a ' || p_cliente_nombre || ' sobre ' || p_prenda_descripcion,
+        p_contrato_id::text,
+        p_usuario_operacion,
+        p_usuario_operacion
+    )
+    RETURNING id INTO v_movimiento_id;
+    
+    RETURN v_movimiento_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 12. FUNCIÓN PARA REGISTRAR PAGO DE INTERESES
+CREATE OR REPLACE FUNCTION registrar_pago_interes(
+    p_caja_general_id UUID,
+    p_contrato_id UUID,
+    p_monto DECIMAL(15,2),
+    p_cliente_nombre VARCHAR(200),
+    p_periodo_pago VARCHAR(50),
+    p_usuario_operacion UUID DEFAULT NULL
+)
+RETURNS UUID AS $$
+DECLARE
+    v_movimiento_id UUID;
+    v_saldo_anterior DECIMAL(15,2);
+    v_saldo_nuevo DECIMAL(15,2);
+BEGIN
+    -- Obtener saldo actual
+    SELECT saldo_total INTO v_saldo_anterior 
+    FROM caja_general 
+    WHERE id = p_caja_general_id;
+    
+    IF v_saldo_anterior IS NULL THEN
+        RAISE EXCEPTION 'Caja General no encontrada: %', p_caja_general_id;
+    END IF;
+    
+    v_saldo_nuevo := v_saldo_anterior + p_monto;
+    
+    -- Actualizar saldo de Caja General
+    UPDATE caja_general 
+    SET 
+        saldo_total = v_saldo_nuevo,
+        saldo_disponible = saldo_disponible + p_monto,
+        updated_at = NOW(),
+        updated_by = p_usuario_operacion
+    WHERE id = p_caja_general_id;
+    
+    -- Registrar movimiento
+    INSERT INTO movimientos_caja_general (
+        caja_general_id,
+        tipo_movimiento,
+        monto,
+        saldo_anterior,
+        saldo_nuevo,
+        concepto,
+        descripcion,
+        referencia_externa,
+        usuario_operacion,
+        created_by
+    ) VALUES (
+        p_caja_general_id,
+        'pago_interes',
+        p_monto,
+        v_saldo_anterior,
+        v_saldo_nuevo,
+        'Pago de intereses',
+        'Pago de intereses S/ ' || p_monto::text || ' de ' || p_cliente_nombre || ' - ' || p_periodo_pago,
+        p_contrato_id::text,
+        p_usuario_operacion,
+        p_usuario_operacion
+    )
+    RETURNING id INTO v_movimiento_id;
+    
+    RETURN v_movimiento_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 13. FUNCIÓN PARA REGISTRAR VENTA DE REMATE
+CREATE OR REPLACE FUNCTION registrar_venta_remate(
+    p_caja_general_id UUID,
+    p_contrato_id UUID,
+    p_monto_venta DECIMAL(15,2),
+    p_prenda_descripcion TEXT,
+    p_comprador_nombre VARCHAR(200),
+    p_usuario_operacion UUID DEFAULT NULL
+)
+RETURNS UUID AS $$
+DECLARE
+    v_movimiento_id UUID;
+    v_saldo_anterior DECIMAL(15,2);
+    v_saldo_nuevo DECIMAL(15,2);
+BEGIN
+    -- Obtener saldo actual
+    SELECT saldo_total INTO v_saldo_anterior 
+    FROM caja_general 
+    WHERE id = p_caja_general_id;
+    
+    IF v_saldo_anterior IS NULL THEN
+        RAISE EXCEPTION 'Caja General no encontrada: %', p_caja_general_id;
+    END IF;
+    
+    v_saldo_nuevo := v_saldo_anterior + p_monto_venta;
+    
+    -- Actualizar saldo de Caja General
+    UPDATE caja_general 
+    SET 
+        saldo_total = v_saldo_nuevo,
+        saldo_disponible = saldo_disponible + p_monto_venta,
+        updated_at = NOW(),
+        updated_by = p_usuario_operacion
+    WHERE id = p_caja_general_id;
+    
+    -- Registrar movimiento
+    INSERT INTO movimientos_caja_general (
+        caja_general_id,
+        tipo_movimiento,
+        monto,
+        saldo_anterior,
+        saldo_nuevo,
+        concepto,
+        descripcion,
+        referencia_externa,
+        usuario_operacion,
+        created_by
+    ) VALUES (
+        p_caja_general_id,
+        'venta_remate',
+        p_monto_venta,
+        v_saldo_anterior,
+        v_saldo_nuevo,
+        'Venta de remate',
+        'Venta de remate S/ ' || p_monto_venta::text || ' - ' || p_prenda_descripcion || ' a ' || p_comprador_nombre,
+        p_contrato_id::text,
         p_usuario_operacion,
         p_usuario_operacion
     )
