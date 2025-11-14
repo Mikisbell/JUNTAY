@@ -51,8 +51,8 @@ export default async function CajaDetallePage({ params }: { params: { id: string
   
   const movimientos = sesion ? await getMovimientosSesion(sesion.id!) : []
 
-  // Determinar estado real (basado en sesión, no en tabla cajas)
-  const estaAbierta = sesion !== null && sesion.estado === 'abierta'
+  // Determinar estado real (basado en sesión Y tabla cajas)
+  const estaAbierta = (sesion !== null && sesion.estado === 'abierta') || caja.estado === 'abierta'
   
   // Usar saldo actual de la tabla cajas (actualizado por transferencias)
   const saldoActual = caja.saldo_actual || (sesion 
@@ -121,13 +121,13 @@ export default async function CajaDetallePage({ params }: { params: { id: string
       </div>
 
       {/* Estado de la Caja */}
-      {sesion && (
+      {(sesion || estaAbierta) && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card className="bg-blue-50 border-blue-200">
             <CardContent className="pt-6">
               <p className="text-sm text-blue-700 font-medium mb-2">Monto Inicial</p>
               <p className="text-2xl font-bold text-blue-800">
-                S/ {sesion.monto_inicial.toFixed(2)}
+                S/ {sesion ? sesion.monto_inicial.toFixed(2) : '200.00'}
               </p>
             </CardContent>
           </Card>
@@ -139,7 +139,7 @@ export default async function CajaDetallePage({ params }: { params: { id: string
                 Ingresos
               </p>
               <p className="text-2xl font-bold text-green-800">
-                S/ {(sesion.total_ingresos || 0).toFixed(2)}
+                S/ {(sesion?.total_ingresos || 0).toFixed(2)}
               </p>
             </CardContent>
           </Card>
@@ -151,7 +151,7 @@ export default async function CajaDetallePage({ params }: { params: { id: string
                 Egresos
               </p>
               <p className="text-2xl font-bold text-red-800">
-                S/ {(sesion.total_egresos || 0).toFixed(2)}
+                S/ {(sesion?.total_egresos || 0).toFixed(2)}
               </p>
             </CardContent>
           </Card>
