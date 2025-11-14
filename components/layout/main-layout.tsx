@@ -38,11 +38,9 @@ interface MainSection {
 const mainSections: MainSection[] = [
   {
     id: 'boveda',
-    title: 'Bóveda Central',
+    title: 'Caja General',
     icon: <Vault className="h-5 w-5" />,
     href: '/dashboard/boveda',
-    badge: 'Gerencial',
-    badgeVariant: 'default',
     subsections: [
       { id: 'saldos', title: 'Saldos', href: '/dashboard/boveda/saldos', description: 'Vista general de efectivo' },
       { id: 'asignaciones', title: 'Asignaciones', href: '/dashboard/boveda/asignaciones', description: 'Entregas a cajas' },
@@ -53,11 +51,9 @@ const mainSections: MainSection[] = [
   },
   {
     id: 'cajas',
-    title: 'Cajas Operativas',
+    title: 'Cajas',
     icon: <DollarSign className="h-5 w-5" />,
     href: '/dashboard/cajas',
-    badge: 'Operativo',
-    badgeVariant: 'secondary',
     subsections: [
       { id: 'mi-caja', title: 'Mi Caja', href: '/dashboard/cajas/mi-caja', description: 'Estado actual de mi turno' },
       { id: 'abrir', title: 'Abrir Turno', href: '/dashboard/cajas/abrir', description: 'Iniciar jornada laboral' },
@@ -68,11 +64,9 @@ const mainSections: MainSection[] = [
   },
   {
     id: 'operaciones',
-    title: 'Operaciones Empeño',
+    title: 'Empeños',
     icon: <Building2 className="h-5 w-5" />,
     href: '/dashboard/operaciones',
-    badge: 'Core',
-    badgeVariant: 'default',
     subsections: [
       { id: 'nuevo-prestamo', title: 'Nuevo Préstamo', href: '/dashboard/operaciones/nuevo-prestamo', description: 'Otorgar crédito prendario' },
       { id: 'pagar-interes', title: 'Pagar Interés', href: '/dashboard/operaciones/pagar-interes', description: 'Cobrar intereses mensuales' },
@@ -208,14 +202,9 @@ export default function MainLayout({ children }: MainLayoutProps) {
               >
                 <div className="flex items-center gap-3">
                   {section.icon}
-                  <span className="font-medium">{section.title}</span>
+                  <span className="text-sm font-medium truncate">{section.title}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  {section.badge && (
-                    <Badge variant={section.badgeVariant} className="text-xs">
-                      {section.badge}
-                    </Badge>
-                  )}
                   <ChevronRight className={`h-4 w-4 transition-transform ${
                     isActive ? 'rotate-90' : ''
                   }`} />
@@ -253,8 +242,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
               <Menu className="h-4 w-4" />
             </Button>
             
-            {/* Sub-navegación horizontal */}
-            <nav className="hidden md:flex items-center gap-1">
+            {/* Sub-navegación horizontal (una sola línea, con scroll si es necesario) */}
+            <nav className="hidden md:flex items-center gap-1 max-w-[60vw] overflow-x-auto">
               {activeSection?.subsections.map((subsection) => {
                 const isSubActive = pathname === subsection.href
                 
@@ -262,7 +251,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
                   <Link
                     key={subsection.id}
                     href={subsection.href}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    className={`px-3 py-1.5 rounded-md text-xs md:text-sm font-medium whitespace-nowrap transition-colors ${
                       isSubActive
                         ? 'bg-blue-100 text-blue-700'
                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
