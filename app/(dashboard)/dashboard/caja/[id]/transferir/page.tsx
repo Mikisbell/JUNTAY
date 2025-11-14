@@ -48,21 +48,38 @@ export default function TransferirCajaPage({ params }: { params: { id: string } 
       console.log('✅ Caja origen:', cajaData)
       setCajaOrigen(cajaData)
 
-      // Obtener otras cajas disponibles (sin filtro de activa primero)
+      // Obtener cajas con sus sesiones activas
       const { data: cajasData, error: cajasError } = await supabase
         .from('cajas')
-        .select('*')
+        .select(`
+          *,
+          sesiones_caja!inner(
+            id,
+            estado,
+            monto_inicial,
+            total_ingresos,
+            total_egresos
+          )
+        `)
         .neq('id', params.id)
+        .eq('activa', true)
+        .eq('sesiones_caja.estado', 'abierta')
 
       if (cajasError) {
         console.error('❌ Error cajas destino:', cajasError)
-        throw cajasError
+        // Si no hay cajas con sesiones abiertas, obtener todas las cajas activas
+        const { data: todasCajas } = await supabase
+          .from('cajas')
+          .select('*')
+          .neq('id', params.id)
+          .eq('activa', true)
+        
+        console.log('📦 Cajas activas (sin sesiones abiertas):', todasCajas)
+        setCajasDestino(todasCajas || [])
+      } else {
+        console.log('📦 Cajas con sesiones abiertas:', cajasData)
+        setCajasDestino(cajasData || [])
       }
-
-      console.log('📦 Cajas disponibles:', cajasData)
-      console.log('📊 Total cajas encontradas:', cajasData?.length || 0)
-      
-      setCajasDestino(cajasData || [])
     } catch (err: any) {
       console.error('💥 Error general:', err)
       setError(err.message)
@@ -216,6 +233,28 @@ export default function TransferirCajaPage({ params }: { params: { id: string } 
         </div>
       )}
 
+      {/* Indicador de Estado */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-medium text-blue-900">Estado de Transferencias</h3>
+            <p className="text-sm text-blue-700">
+              {cajasDestino.length > 0 
+                ? `${cajasDestino.length} caja(s) disponible(s) para transferencia`
+                : 'No hay cajas destino disponibles'
+              }
+            </p>
+          </div>
+          <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+            cajasDestino.length > 0 
+              ? 'bg-green-100 text-green-800' 
+              : 'bg-red-100 text-red-800'
+          }`}>
+            {cajasDestino.length > 0 ? '✅ Listo' : '❌ Bloqueado'}
+          </div>
+        </div>
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Información de Origen */}
         <Card className="bg-blue-50 border-blue-200">
@@ -254,21 +293,59 @@ export default function TransferirCajaPage({ params }: { params: { id: string } 
                   <SelectContent>
                     {cajasDestino.length === 0 ? (
                       <div className="px-2 py-3 text-sm text-gray-500 text-center">
-                        No hay otras cajas disponibles
+                        <AlertTriangle className="h-4 w-4 mx-auto mb-2 text-amber-500" />
+                        <p>No hay cajas abiertas disponibles</p>
+                        <p className="text-xs mt-1">Las cajas destino deben estar abiertas</p>
                       </div>
                     ) : (
-                      cajasDestino.map((caja) => (
-                        <SelectItem key={caja.id} value={caja.id}>
-                          {caja.nombre} - {caja.codigo}
-                        </SelectItem>
-                      ))
+                      cajasDestino.map((caja) => {
+                        const tieneSession = caja.sesiones_caja && caja.sesiones_caja.length > 0
+                        const estadoSession = tieneSession ? caja.sesiones_caja[0].estado : 'cerrada'
+                        
+                        return (
+                          <SelectItem key={caja.id} value={caja.id}>
+                            <div className="flex items-center justify-between w-full">
+                              <span>{caja.nombre} - {caja.codigo}</span>
+                              <span className={`ml-2 px-2 py-1 rounded text-xs ${
+                                estadoSession === 'abierta' 
+                                  ? 'bg-green-100 text-green-800' 
+                                  : 'bg-red-100 text-red-800'
+                              }`}>
+                                {estadoSession === 'abierta' ? '🟢 Abierta' : '🔴 Cerrada'}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        )
+                      })
                     )}
                   </SelectContent>
                 </Select>
                 {cajasDestino.length === 0 && (
-                  <p className="text-sm text-amber-600 mt-1">
-                    ⚠️ Necesitas crear más cajas para realizar transferencias
-                  </p>
+                  <div className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                    <p className="text-sm text-amber-800 font-medium">⚠️ No hay cajas destino disponibles</p>
+                    <p className="text-xs text-amber-700 mt-1">
+                      Para realizar transferencias, necesitas:
+                    </p>
+                    <ul className="text-xs text-amber-700 mt-1 ml-4 list-disc">
+                      <li>Otras cajas activas en el sistema</li>
+                      <li>Que las cajas destino tengan sesiones abiertas</li>
+                    </ul>
+                    <div className="mt-2 flex gap-2">
+                      <Link href="/dashboard/configuracion/cajas">
+                        <Button size="sm" variant="outline" className="text-xs">
+                          Gestionar Cajas
+                        </Button>
+                      </Link>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="text-xs"
+                        onClick={() => window.location.reload()}
+                      >
+                        Actualizar Lista
+                      </Button>
+                    </div>
+                  </div>
                 )}
               </div>
 
