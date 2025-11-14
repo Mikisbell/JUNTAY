@@ -21,11 +21,11 @@ export default async function DashboardPage() {
       {/* Dashboard Avanzado */}
       <DashboardStatsAvanzadas />
       
-      {/* Recent Activity */}
+      {/* Actividad reciente */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
-          <CardHeader>
-            <CardTitle>Créditos Recientes</CardTitle>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-gray-900">Créditos recientes</CardTitle>
           </CardHeader>
           <CardContent>
             {ultimosCreditos.length > 0 ? (
@@ -62,10 +62,15 @@ export default async function DashboardPage() {
         </Card>
         
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-3">
             <CardTitle className="flex items-center justify-between">
-              <span>Alertas</span>
-              <Badge variant="destructive">3</Badge>
+              <span className="text-sm font-medium text-gray-900">Alertas de riesgo</span>
+              <Link
+                href="/dashboard/notificaciones/historial"
+                className="text-xs font-medium text-blue-600 hover:underline"
+              >
+                Ver todas
+              </Link>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -126,15 +131,15 @@ function CreditoItem({
   const estadoText = estado === 'vigente' ? 'Vigente' : 'En Mora'
   
   return (
-    <div className="flex items-center justify-between pb-4 border-b last:border-0">
+    <div className="flex items-center justify-between py-3 border-b last:border-0">
       <div>
-        <p className="font-medium">{codigo}</p>
-        <p className="text-sm text-gray-600">{cliente}</p>
-        <p className="text-xs text-gray-500">{fecha}</p>
+        <p className="text-sm font-medium text-gray-900">{codigo}</p>
+        <p className="text-xs text-gray-600">{cliente}</p>
+        <p className="text-[11px] text-gray-500">{fecha}</p>
       </div>
       <div className="text-right">
-        <p className="font-semibold">{monto}</p>
-        <Badge variant={estadoColor as any} className="mt-1">
+        <p className="text-sm font-semibold text-gray-900">{monto}</p>
+        <Badge variant={estadoColor as any} className="mt-1 text-[11px] px-2 py-0.5">
           {estadoText}
         </Badge>
       </div>
@@ -151,14 +156,18 @@ function AlertItem({
   mensaje: string
   urgencia: string
 }) {
-  const color = urgencia === 'alta' ? 'text-red-600' : urgencia === 'media' ? 'text-yellow-600' : 'text-blue-600'
+  const color = urgencia === 'alta'
+    ? 'text-red-600'
+    : urgencia === 'media'
+    ? 'text-yellow-600'
+    : 'text-gray-500'
   
   return (
-    <div className="flex items-start space-x-3 pb-4 border-b last:border-0">
-      <AlertCircle className={`h-5 w-5 mt-0.5 ${color}`} />
+    <div className="flex items-start space-x-3 pb-3 border-b last:border-0">
+      <AlertCircle className={`h-4 w-4 mt-0.5 ${color}`} />
       <div className="flex-1">
-        <p className="text-sm font-medium capitalize">{tipo}</p>
-        <p className="text-sm text-gray-600">{mensaje}</p>
+        <p className="text-xs font-semibold capitalize text-gray-900">{tipo}</p>
+        <p className="text-xs text-gray-600">{mensaje}</p>
       </div>
     </div>
   )

@@ -854,6 +854,79 @@ interface ComprobanteElectronico {
 
 ---
 
+### 🎨 FILOSOFÍA UX/UI JUNTAY (CASA DE EMPEÑO)
+
+> "Seguridad y estructura bancaria, con trato humano, claro y guiado para la casa de empeño."
+
+Esta filosofía combina buenas prácticas de UX/UI bancario con las necesidades emocionales y operativas propias de una casa de empeño.
+
+#### 1. Columna Banco: Estructura y Seguridad
+
+- Módulos claros y separados:
+  - Caja General (Bóveda)
+  - Cajas Operativas
+  - Empeños (Operaciones)
+  - Contratos
+  - Garantías
+  - Remates
+  - Reportes
+  - Configuración / Roles y permisos
+- Diferenciar vistas de **operación diaria** (cajero) de vistas **gerenciales/estratégicas** (gerente, admin).
+- Dashboards con KPIs serios: cartera, mora, garantías, clientes, actividad.
+
+#### 2. Columna Casa de Empeño: Transparencia Radical
+
+Objetivo: que el usuario (interno y cliente final) **entienda todo sin letras pequeñas**.
+
+En cada flujo crítico (empeñar, renovar, desempeñar) se deben responder explícitamente estas 5 preguntas:
+
+1. ¿Cuánto recibe hoy?
+2. ¿Cuánto pagará en total?
+3. ¿Cuándo vence?
+4. ¿Qué pasa si no paga?
+5. ¿Cómo recupera su prenda?
+
+Aplicación UI:
+- Resúmenes visibles antes de confirmar cualquier operación.
+- Lenguaje simple, sin tecnicismos financieros.
+- Simuladores sencillos de plazo e interés cuando corresponda.
+
+Frase guía: **"Nada oculto, nada confuso."**
+
+#### 3. Columna Human-Centered + Guided Journeys
+
+La casa de empeño trabaja con personas en momentos de necesidad. La interfaz debe **acompañar**, no solo mostrar datos.
+
+Aplicación UI:
+- Flujos guiados por pasos (wizards):
+  - Empeño: Cliente → Prenda → Condiciones → Contrato.
+  - Recuperación: Contrato → Deuda → Pago → Confirmación.
+- Microcopys empáticos y explicativos:
+  - "Tu prenda está segura y puedes recuperarla mientras estés al día en tus pagos."
+  - "Revisa este resumen antes de confirmar, así evitamos sorpresas."
+- Ayudas inline en campos sensibles (intereses, plazos, penalidades).
+
+Frase guía: **"Acompañamos cada paso."**
+
+#### 4. Columna Seguridad Percibida (sin intimidar)
+
+El sistema debe transmitir confianza sin sentirse rígido o intimidante como un banco tradicional.
+
+Aplicación UI:
+- Sellos y mensajes de seguridad claros: 2FA activo, operación registrada, usuario autenticado.
+- Historial fácil de revisar: últimas operaciones, últimos accesos, logs de seguridad.
+- Confirmaciones amigables:
+  - "Operación registrada. Puedes ver los detalles en Contratos > Activos."
+  - "Esta acción queda registrada en el historial de seguridad."
+
+Frase guía: **"Seguridad clara y sin complicaciones."**
+
+#### 5. Resultado Esperado
+
+"Diseñamos una experiencia humana, clara y guiada, donde cada persona entiende, confía y controla su operación, sin complicaciones ni incertidumbre."
+
+Esta filosofía debe aplicarse en todos los módulos nuevos o refactorizados (Dashboard ejecutivo, Empeños, Contratos, Garantías, Remates, Pagos, Vencimientos), manteniendo siempre el balance entre **estructura bancaria** y **trato humano propio de casa de empeño**.
+
 ### **🚨 REQUERIMIENTOS CRÍTICOS DE SEGURIDAD (PRIORIDAD EXTREMA)**
 
 #### **FASE 1: SEGURIDAD INMEDIATA (2-3 semanas)**

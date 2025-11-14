@@ -169,7 +169,7 @@ const mainSections: MainSection[] = [
     href: '/dashboard/configuracion',
     subsections: [
       { id: 'empresa', title: 'Empresa', href: '/dashboard/configuracion/empresa', description: 'Datos generales' },
-      { id: 'usuarios', title: 'Usuarios', href: '/dashboard/configuracion/usuarios', description: 'Accesos y roles' },
+      { id: 'roles-permisos', title: 'Roles y permisos', href: '/dashboard/roles-permisos', description: 'Gestión de accesos y seguridad' },
       { id: 'parametros', title: 'Parámetros', href: '/dashboard/configuracion/parametros', description: 'Tasas e intereses' }
     ]
   }

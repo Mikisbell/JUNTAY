@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { 
@@ -241,120 +242,75 @@ export function DashboardStatsAvanzadas() {
         </Card>
       </div>
 
-      {/* Fila 2: Métricas Operativas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Notificaciones */}
-        <Card className="hover:shadow-md transition-shadow">
+      {/* Fila 2: Resumen Operativo (compacto) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="hover:shadow-sm transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Notificaciones</CardTitle>
-            <Bell className="h-4 w-4 text-orange-600" />
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <BarChart3 className="h-4 w-4 text-gray-600" />
+              Resumen operativo
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.notificaciones.enviadas_hoy}</div>
-            <div className="flex items-center gap-2 mt-2">
-              <Badge variant="outline" className="text-orange-600 border-orange-300">
-                {stats.notificaciones.pendientes} pendientes
-              </Badge>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Notificaciones</p>
+                <p className="font-semibold">{stats.notificaciones.pendientes} pendientes</p>
+                <p className="text-xs text-gray-500">
+                  {formatearPorcentaje(stats.notificaciones.tasa_entrega)} entrega
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Remates</p>
+                <p className="font-semibold">{stats.remates.programados} programados</p>
+                <p className="text-xs text-gray-500">
+                  Ingresos {formatearMoneda(stats.remates.ingresos_remates)}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Evaluaciones</p>
+                <p className="font-semibold">{stats.evaluaciones.realizadas_mes} este mes</p>
+                <p className="text-xs text-gray-500">
+                  {formatearPorcentaje(stats.evaluaciones.tasa_aprobacion)} aprobadas
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Actividad hoy</p>
+                <p className="font-semibold">47 transacciones</p>
+              </div>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {formatearPorcentaje(stats.notificaciones.tasa_entrega)} tasa entrega
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Remates */}
-        <Card className="hover:shadow-md transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Remates</CardTitle>
-            <Gavel className="h-4 w-4 text-indigo-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.remates.vendidos_mes}</div>
-            <div className="flex items-center gap-2 mt-2">
-              <Badge variant="outline" className="text-indigo-600 border-indigo-300">
-                {stats.remates.programados} programados
-              </Badge>
+            <div className="mt-3 text-xs">
+              <Link
+                href="/dashboard/reportes-gerenciales/dashboard"
+                className="text-blue-600 hover:underline"
+              >
+                Ver más métricas
+              </Link>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Ingresos: {formatearMoneda(stats.remates.ingresos_remates)}
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Evaluaciones */}
-        <Card className="hover:shadow-md transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Evaluaciones</CardTitle>
-            <Star className="h-4 w-4 text-yellow-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.evaluaciones.realizadas_mes}</div>
-            <div className="flex items-center gap-2 mt-2">
-              <span className="text-sm font-medium text-green-600">
-                {formatearPorcentaje(stats.evaluaciones.tasa_aprobacion)} aprobadas
-              </span>
-              <TrendingUp className="h-3 w-3 text-green-500" />
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Este mes
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Actividad General */}
-        <Card className="hover:shadow-md transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Actividad Hoy</CardTitle>
-            <Activity className="h-4 w-4 text-cyan-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">47</div>
-            <div className="flex items-center gap-2 mt-2">
-              <Badge variant="outline" className="text-cyan-600 border-cyan-300">
-                12 operaciones
-              </Badge>
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Transacciones totales
-            </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Alertas y Recordatorios */}
+      {/* Alertas y Recordatorios (compacto) */}
       <Card className="border-yellow-200 bg-yellow-50">
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-yellow-600" />
-            Alertas y Recordatorios
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex items-center gap-3 p-3 bg-white rounded-lg border border-yellow-200">
-              <Calendar className="h-8 w-8 text-red-500" />
-              <div>
-                <p className="font-medium text-red-700">5 créditos vencen hoy</p>
-                <p className="text-sm text-red-600">Requieren seguimiento</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-3 p-3 bg-white rounded-lg border border-yellow-200">
-              <Bell className="h-8 w-8 text-orange-500" />
-              <div>
-                <p className="font-medium text-orange-700">8 notificaciones pendientes</p>
-                <p className="text-sm text-orange-600">Por enviar</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-3 p-3 bg-white rounded-lg border border-yellow-200">
-              <Gavel className="h-8 w-8 text-purple-500" />
-              <div>
-                <p className="font-medium text-purple-700">3 remates programados</p>
-                <p className="text-sm text-purple-600">Esta semana</p>
-              </div>
+        <CardContent className="py-3 px-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <AlertTriangle className="h-4 w-4 text-yellow-700" />
+            <div>
+              <p className="text-sm font-medium text-yellow-800">
+                5 créditos vencen hoy
+              </p>
+              <p className="text-xs text-yellow-700">
+                Requieren seguimiento inmediato
+              </p>
             </div>
           </div>
+          <Link
+            href="/dashboard/notificaciones/historial"
+            className="text-xs font-medium text-blue-700 hover:underline whitespace-nowrap"
+          >
+            Ver todas las alertas
+          </Link>
         </CardContent>
       </Card>
     </div>
