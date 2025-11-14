@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { createClient } from '@/lib/supabase/client'
 import { 
   Vault, 
   DollarSign, 
@@ -33,6 +34,37 @@ interface MainSection {
     href: string
     description?: string
   }[]
+}
+
+type AppRole = 'cajero' | 'supervisor' | 'gerente' | 'admin'
+
+const SECTION_PERMISSIONS: Record<string, AppRole[]> = {
+  boveda: ['supervisor', 'gerente', 'admin'],
+  cajas: ['cajero', 'supervisor', 'gerente', 'admin'],
+  operaciones: ['cajero', 'supervisor', 'gerente', 'admin'],
+  clientes: ['cajero', 'supervisor', 'gerente', 'admin'],
+  contratos: ['cajero', 'supervisor', 'gerente', 'admin'],
+  garantias: ['cajero', 'supervisor', 'gerente', 'admin'],
+  remates: ['supervisor', 'gerente', 'admin'],
+  reportes: ['gerente', 'admin'],
+  configuracion: ['admin']
+}
+
+function mapToAppRole(rawRole?: string | null): AppRole {
+  const value = (rawRole || '').toLowerCase()
+  switch (value) {
+    case 'admin':
+    case 'administrador':
+      return 'admin'
+    case 'gerente':
+      return 'gerente'
+    case 'supervisor':
+      return 'supervisor'
+    case 'cajero':
+      return 'cajero'
+    default:
+      return 'cajero'
+  }
 }
 
 const mainSections: MainSection[] = [
@@ -150,12 +182,34 @@ interface MainLayoutProps {
 export default function MainLayout({ children }: MainLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const pathname = usePathname()
+  const [role, setRole] = useState<AppRole>('cajero')
+
+  useEffect(() => {
+    const supabase = createClient()
+
+    supabase.auth.getUser()
+      .then(({ data }) => {
+        const rawRole = data.user?.user_metadata?.rol as string | undefined
+        setRole(mapToAppRole(rawRole))
+      })
+      .catch(() => {
+        // Si falla, mantenemos rol por defecto (cajero)
+      })
+  }, [])
   
+  // Determinar secciones visibles según rol
+  const sectionsForRole = mainSections.filter(section => {
+    const allowedRoles = SECTION_PERMISSIONS[section.id] || SECTION_PERMISSIONS['cajas']
+    return allowedRoles.includes(role)
+  })
+
+  const visibleSections = sectionsForRole.length > 0 ? sectionsForRole : mainSections
+
   // Determinar sección activa basada en la URL
-  const activeSection = mainSections.find(section => 
+  const activeSection = visibleSections.find(section => 
     pathname.startsWith(section.href) || 
     section.subsections.some(sub => pathname.startsWith(sub.href))
-  ) || mainSections[0]
+  ) || visibleSections[0]
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -187,7 +241,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
         {/* Navegación Principal */}
         <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-          {mainSections.map((section) => {
+          {visibleSections.map((section) => {
             const isActive = activeSection?.id === section.id
             
             return (
