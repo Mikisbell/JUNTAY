@@ -99,6 +99,89 @@ export default function CerrarCajaPage({ params }: { params: { id: string } }) {
         estadoCierre = 'con_diferencia'
       }
 
+      // Obtener usuario actual
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      // Obtener asignación activa para devolución a Caja General
+      const { data: asignacionActiva, error: asignacionError } = await supabase
+        .from('asignaciones_caja')
+        .select(`
+          *,
+          caja_general:caja_general_id (*)
+        `)
+        .eq('caja_individual_id', params.id)
+        .eq('sesion_caja_id', sesion.id)
+        .eq('estado', 'activa')
+        .single()
+      
+      if (asignacionError || !asignacionActiva) {
+        throw new Error('No se encontró asignación activa para esta sesión')
+      }
+      
+      const cajaGeneral = asignacionActiva.caja_general
+      
+      // Calcular devolución y diferencia
+      const montoDevuelto = montoContado
+      const diferenciaOperacion = montoDevuelto - asignacionActiva.monto_asignado
+      
+      // Actualizar saldos de Caja General
+      const nuevoSaldoDisponible = cajaGeneral.saldo_disponible + montoDevuelto
+      const nuevoSaldoAsignado = cajaGeneral.saldo_asignado - asignacionActiva.monto_asignado
+      
+      const { error: updateCajaGeneralError } = await supabase
+        .from('caja_general')
+        .update({
+          saldo_disponible: nuevoSaldoDisponible,
+          saldo_asignado: nuevoSaldoAsignado,
+          updated_at: new Date().toISOString(),
+          updated_by: user?.id
+        })
+        .eq('id', cajaGeneral.id)
+      
+      if (updateCajaGeneralError) {
+        throw new Error(`Error al actualizar Caja General: ${updateCajaGeneralError.message}`)
+      }
+      
+      // Actualizar asignación como devuelta
+      const { error: updateAsignacionError } = await supabase
+        .from('asignaciones_caja')
+        .update({
+          tipo_operacion: 'devolucion',
+          monto_devuelto: montoDevuelto,
+          diferencia: diferenciaOperacion,
+          estado: 'devuelta',
+          fecha_devolucion: new Date().toISOString(),
+          observaciones: `${asignacionActiva.observaciones || ''} | Cierre: ${observaciones || 'Sin observaciones'}`,
+          updated_at: new Date().toISOString(),
+          updated_by: user?.id
+        })
+        .eq('id', asignacionActiva.id)
+      
+      if (updateAsignacionError) {
+        throw new Error(`Error al actualizar asignación: ${updateAsignacionError.message}`)
+      }
+      
+      // Registrar movimiento en Caja General
+      const { error: movCajaGeneralError } = await supabase
+        .from('movimientos_caja_general')
+        .insert([{
+          caja_general_id: cajaGeneral.id,
+          asignacion_id: asignacionActiva.id,
+          tipo_movimiento: 'devolucion_cajero',
+          monto: montoDevuelto,
+          saldo_anterior: cajaGeneral.saldo_disponible,
+          saldo_nuevo: nuevoSaldoDisponible,
+          concepto: 'Devolución de cajero',
+          descripcion: `Devolución de S/ ${montoDevuelto.toFixed(2)} al cierre de caja ${params.id}. Diferencia: S/ ${diferenciaOperacion.toFixed(2)}`,
+          usuario_operacion: user?.id,
+          autorizado_por: user?.id,
+          created_by: user?.id
+        }])
+      
+      if (movCajaGeneralError) {
+        throw new Error(`Error al registrar movimiento de Caja General: ${movCajaGeneralError.message}`)
+      }
+      
       // Actualizar sesión
       const { error: sesionError } = await supabase
         .from('sesiones_caja')
@@ -116,12 +199,14 @@ export default function CerrarCajaPage({ params }: { params: { id: string } }) {
 
       if (sesionError) throw sesionError
 
-      // Actualizar estado de caja
+      // Actualizar estado de caja y resetear saldo
       await supabase
         .from('cajas')
         .update({
           estado: 'cerrada',
-          fecha_ultimo_cierre: new Date().toISOString()
+          saldo_actual: 0.00,
+          fecha_ultimo_cierre: new Date().toISOString(),
+          responsable_actual_id: null
         })
         .eq('id', params.id)
 

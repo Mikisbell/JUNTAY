@@ -86,6 +86,39 @@ export default function AbrirCajaPage({ params }: { params: { id: string } }) {
       // Obtener usuario actual
       const { data: { user } } = await supabase.auth.getUser()
       
+      // NUEVO: Verificar y descontar de Caja General
+      const { data: cajaGeneral, error: cajaGeneralError } = await supabase
+        .from('caja_general')
+        .select('*')
+        .eq('activa', true)
+        .single()
+      
+      if (cajaGeneralError || !cajaGeneral) {
+        throw new Error('No se encontró Caja General activa. Contacte al administrador.')
+      }
+      
+      if (cajaGeneral.saldo_disponible < total) {
+        throw new Error(`Saldo insuficiente en Caja General. Disponible: S/ ${cajaGeneral.saldo_disponible.toFixed(2)}, Solicitado: S/ ${total.toFixed(2)}`)
+      }
+      
+      // Actualizar saldos de Caja General
+      const nuevoSaldoDisponible = cajaGeneral.saldo_disponible - total
+      const nuevoSaldoAsignado = cajaGeneral.saldo_asignado + total
+      
+      const { error: updateCajaGeneralError } = await supabase
+        .from('caja_general')
+        .update({
+          saldo_disponible: nuevoSaldoDisponible,
+          saldo_asignado: nuevoSaldoAsignado,
+          updated_at: new Date().toISOString(),
+          updated_by: user?.id
+        })
+        .eq('id', cajaGeneral.id)
+      
+      if (updateCajaGeneralError) {
+        throw new Error(`Error al actualizar Caja General: ${updateCajaGeneralError.message}`)
+      }
+      
       // Crear sesión
       const { data: sesion, error: sesionError } = await supabase
         .from('sesiones_caja')
@@ -110,11 +143,57 @@ export default function AbrirCajaPage({ params }: { params: { id: string } }) {
         throw new Error(`Error al crear sesión: ${sesionError.message}`)
       }
 
-      // Actualizar estado de caja
+      // Registrar asignación de efectivo
+      const { data: asignacion, error: asignacionError } = await supabase
+        .from('asignaciones_caja')
+        .insert([{
+          caja_general_id: cajaGeneral.id,
+          caja_individual_id: params.id,
+          sesion_caja_id: sesion.id,
+          tipo_operacion: 'asignacion',
+          monto_asignado: total,
+          saldo_caja_general_antes: cajaGeneral.saldo_disponible,
+          saldo_caja_general_despues: nuevoSaldoDisponible,
+          estado: 'activa',
+          observaciones: `Asignación inicial para apertura de caja. ${observaciones || ''}`,
+          cajero_responsable: user?.id,
+          autorizado_por: user?.id,
+          created_by: user?.id
+        }])
+        .select()
+        .single()
+      
+      if (asignacionError) {
+        throw new Error(`Error al registrar asignación: ${asignacionError.message}`)
+      }
+      
+      // Registrar movimiento en Caja General
+      const { error: movCajaGeneralError } = await supabase
+        .from('movimientos_caja_general')
+        .insert([{
+          caja_general_id: cajaGeneral.id,
+          asignacion_id: asignacion.id,
+          tipo_movimiento: 'asignacion_cajero',
+          monto: total,
+          saldo_anterior: cajaGeneral.saldo_disponible,
+          saldo_nuevo: nuevoSaldoDisponible,
+          concepto: 'Asignación a cajero',
+          descripcion: `Asignación de S/ ${total.toFixed(2)} para apertura de caja ${params.id}`,
+          usuario_operacion: user?.id,
+          autorizado_por: user?.id,
+          created_by: user?.id
+        }])
+      
+      if (movCajaGeneralError) {
+        throw new Error(`Error al registrar movimiento de Caja General: ${movCajaGeneralError.message}`)
+      }
+
+      // Actualizar estado de caja y saldo_actual
       const { error: cajaError } = await supabase
         .from('cajas')
         .update({
           estado: 'abierta',
+          saldo_actual: total,
           fecha_ultima_apertura: new Date().toISOString(),
           responsable_actual_id: user?.id || null
         })

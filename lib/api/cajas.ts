@@ -123,6 +123,101 @@ export interface ArqueoCaja {
   created_at?: string
 }
 
+// NUEVAS INTERFACES PARA SISTEMA BANCARIO
+
+export interface CajaGeneral {
+  id?: string
+  empresa_id?: string
+  codigo: string
+  nombre: string
+  descripcion?: string
+  
+  // Saldos
+  saldo_total: number
+  saldo_disponible: number
+  saldo_asignado: number
+  
+  // Límites
+  limite_asignacion_individual?: number
+  limite_total_asignaciones?: number
+  
+  // Control
+  activa?: boolean
+  responsable_id?: string
+  
+  // Auditoría
+  created_at?: string
+  updated_at?: string
+  created_by?: string
+  updated_by?: string
+}
+
+export interface AsignacionCaja {
+  id?: string
+  
+  // Relaciones
+  caja_general_id: string
+  caja_individual_id: string
+  sesion_caja_id: string
+  
+  // Datos de asignación
+  tipo_operacion: 'asignacion' | 'devolucion'
+  monto_asignado: number
+  monto_devuelto?: number
+  diferencia?: number
+  
+  // Saldos antes/después
+  saldo_caja_general_antes: number
+  saldo_caja_general_despues: number
+  
+  // Control y auditoría
+  estado?: 'activa' | 'devuelta' | 'pendiente_devolucion'
+  observaciones?: string
+  autorizado_por?: string
+  cajero_responsable: string
+  
+  // Fechas
+  fecha_asignacion?: string
+  fecha_devolucion?: string
+  
+  // Auditoría
+  created_at?: string
+  updated_at?: string
+  created_by?: string
+  updated_by?: string
+}
+
+export interface MovimientoCajaGeneral {
+  id?: string
+  
+  // Relaciones
+  caja_general_id: string
+  asignacion_id?: string
+  
+  // Datos del movimiento
+  tipo_movimiento: 'asignacion_cajero' | 'devolucion_cajero' | 'ingreso_efectivo' | 
+                   'retiro_efectivo' | 'transferencia_entrada' | 'transferencia_salida' |
+                   'ajuste_inventario' | 'deposito_banco'
+  
+  monto: number
+  saldo_anterior: number
+  saldo_nuevo: number
+  
+  // Detalles
+  concepto: string
+  descripcion?: string
+  referencia_externa?: string
+  
+  // Responsables
+  usuario_operacion: string
+  autorizado_por?: string
+  
+  // Auditoría
+  fecha?: string
+  created_at?: string
+  created_by?: string
+}
+
 export interface BilleteraDesglose {
   billetes_200: number
   billetes_100: number
