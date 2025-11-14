@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/client'
-import { createServerClient } from '@/lib/supabase/server'
 
 export interface SessionConfig {
   cajero: number      // 15 minutos
@@ -15,6 +14,13 @@ export interface SessionInfo {
   lastActivity: Date
   role: string
   shouldRefresh: boolean
+  valid: boolean
+}
+
+interface ValidarSesionResponse {
+  user_id: string
+  expires_at: string
+  should_refresh: boolean
   valid: boolean
 }
 
@@ -97,14 +103,16 @@ export class SessionManager {
         return null
       }
 
+      const result = data as ValidarSesionResponse
+
       return {
-        userId: data.user_id,
+        userId: result.user_id,
         sessionToken,
-        expiresAt: new Date(data.expires_at),
+        expiresAt: new Date(result.expires_at),
         lastActivity: new Date(),
         role: '', // Se obtendría de otra consulta si es necesario
-        shouldRefresh: data.should_refresh,
-        valid: data.valid
+        shouldRefresh: result.should_refresh,
+        valid: result.valid
       }
     } catch (error) {
       console.error('Error validando sesión:', error)
