@@ -186,6 +186,19 @@ export function RUCAutoComplete({
                   setConsulta({ estado: 'inicial' })
                 }
               }}
+              onBlur={() => {
+                if (validarRUC(ruc) && consulta.estado === 'inicial') {
+                  void consultarRUC()
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  if (validarRUC(ruc) && consulta.estado !== 'consultando') {
+                    void consultarRUC()
+                  }
+                }
+              }}
               placeholder="20123456789"
               maxLength={11}
               disabled={disabled || consulta.estado === 'consultando'}

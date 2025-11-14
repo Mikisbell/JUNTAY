@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Save, Loader2 } from 'lucide-react'
+import { ArrowLeft, Save, Loader2, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -19,6 +19,8 @@ export default function NuevoClientePage() {
   const [tipoPersona, setTipoPersona] = useState<'natural' | 'juridica'>('natural')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [mostrarDatosLaborales, setMostrarDatosLaborales] = useState(false)
+  const [mostrarObservaciones, setMostrarObservaciones] = useState(false)
   
   // Tracking de campos auto-rellenados vs campos completados manualmente
   const [camposAutoRellenados, setCamposAutoRellenados] = useState<Set<string>>(new Set())
@@ -165,13 +167,13 @@ export default function NuevoClientePage() {
     
     if (esInmutable) {
       // Campos inmutables de RENIEC: Verde más intenso con cursor no permitido
-      return 'border-green-600 bg-green-100 text-green-800 cursor-not-allowed font-medium'
+      return 'border-emerald-500 bg-emerald-50 cursor-not-allowed'
     } else if (esAutoRellenado || (tieneValor && esCompletadoManualmente)) {
       // Verde: auto-rellenado o completado manualmente
-      return 'border-green-500 bg-green-50 focus:border-green-600 focus:ring-green-500'
+      return 'border-emerald-300 bg-emerald-50 focus:border-emerald-500 focus:ring-emerald-200'
     } else if (!tieneValor && (camposAutoRellenados.size > 0 || camposCompletadosManualmente.size > 0)) {
       // Rojo: campo vacío después de que se han rellenado otros campos
-      return 'border-red-300 bg-red-50 focus:border-red-500 focus:ring-red-500'
+      return 'border-red-300 bg-red-50 focus:border-red-500 focus:ring-red-200'
     } else {
       // Normal: estado inicial
       return ''
@@ -348,6 +350,9 @@ export default function NuevoClientePage() {
           <Card>
             <CardHeader>
               <CardTitle>Datos de Identificación</CardTitle>
+              <p className="text-xs text-gray-500 mt-1">
+                Documento de identidad y datos personales básicos del cliente.
+              </p>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -475,6 +480,9 @@ export default function NuevoClientePage() {
           <Card>
             <CardHeader>
               <CardTitle>Datos de Contacto</CardTitle>
+              <p className="text-xs text-gray-500 mt-1">
+                Teléfonos y correo para recordatorios, avisos de vencimiento y soporte.
+              </p>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -522,6 +530,9 @@ export default function NuevoClientePage() {
           <Card>
             <CardHeader>
               <CardTitle>Dirección</CardTitle>
+              <p className="text-xs text-gray-500 mt-1">
+                Ubicación principal para análisis de riesgo y gestión de cobranzas.
+              </p>
             </CardHeader>
             <CardContent className="space-y-4">
               <UbicacionSelectorAPI
@@ -547,12 +558,26 @@ export default function NuevoClientePage() {
             </CardContent>
           </Card>
 
-          {/* Datos Laborales */}
+          {/* Datos Laborales (plegable) */}
           <Card>
-            <CardHeader>
-              <CardTitle>Datos Laborales</CardTitle>
+            <CardHeader
+              className="flex items-center justify-between cursor-pointer"
+              onClick={() => setMostrarDatosLaborales((prev) => !prev)}
+            >
+              <div>
+                <CardTitle>Datos Laborales</CardTitle>
+                <p className="text-xs text-gray-500 mt-1">
+                  Opcional. Mejora la evaluación de riesgo y conocimiento del cliente.
+                </p>
+              </div>
+              <ChevronDown
+                className={`h-4 w-4 text-gray-400 transition-transform ${
+                  mostrarDatosLaborales ? 'rotate-180' : ''
+                }`}
+              />
             </CardHeader>
-            <CardContent className="space-y-4">
+            {mostrarDatosLaborales && (
+              <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="ocupacion">Ocupación</Label>
@@ -591,25 +616,41 @@ export default function NuevoClientePage() {
                   className={getCampoStyle('ingreso_mensual', formData.ingreso_mensual)}
                 />
               </div>
-            </CardContent>
+              </CardContent>
+            )}
           </Card>
 
-          {/* Observaciones */}
+          {/* Observaciones (plegable) */}
           <Card>
-            <CardHeader>
-              <CardTitle>Observaciones</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Label htmlFor="observaciones">Notas Adicionales</Label>
-              <textarea
-                id="observaciones"
-                name="observaciones"
-                value={formData.observaciones}
-                onChange={handleInputChange}
-                className="w-full min-h-[100px] px-3 py-2 rounded-md border border-input bg-background"
-                placeholder="Información adicional sobre el cliente..."
+            <CardHeader
+              className="flex items-center justify-between cursor-pointer"
+              onClick={() => setMostrarObservaciones((prev) => !prev)}
+            >
+              <div>
+                <CardTitle>Observaciones</CardTitle>
+                <p className="text-xs text-gray-500 mt-1">
+                  Notas internas sobre el cliente (no se muestran en comprobantes).
+                </p>
+              </div>
+              <ChevronDown
+                className={`h-4 w-4 text-gray-400 transition-transform ${
+                  mostrarObservaciones ? 'rotate-180' : ''
+                }`}
               />
-            </CardContent>
+            </CardHeader>
+            {mostrarObservaciones && (
+              <CardContent>
+                <Label htmlFor="observaciones">Notas Adicionales</Label>
+                <textarea
+                  id="observaciones"
+                  name="observaciones"
+                  value={formData.observaciones}
+                  onChange={handleInputChange}
+                  className="w-full min-h-[100px] px-3 py-2 rounded-md border border-input bg-background"
+                  placeholder="Información adicional sobre el cliente..."
+                />
+              </CardContent>
+            )}
           </Card>
         </>
       ) : (

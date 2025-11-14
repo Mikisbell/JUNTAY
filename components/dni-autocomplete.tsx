@@ -149,6 +149,19 @@ export function DNIAutoComplete({
               id="dni"
               value={dni}
               onChange={handleDNIChange}
+              onBlur={() => {
+                if (validarFormatoDNI(dni) && consulta.estado === 'inicial') {
+                  void consultarDNI()
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  if (validarFormatoDNI(dni) && consulta.estado !== 'consultando') {
+                    void consultarDNI()
+                  }
+                }
+              }}
               placeholder="Ingrese DNI (8 dígitos)"
               maxLength={8}
               disabled={disabled || consulta.estado === 'consultando'}
