@@ -1,5 +1,8 @@
+-- Eliminar tabla si existe para recrearla limpia
+DROP TABLE IF EXISTS transferencias_caja;
+
 -- Tabla para registrar transferencias entre cajas
-CREATE TABLE IF NOT EXISTS transferencias_caja (
+CREATE TABLE transferencias_caja (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     caja_origen_id UUID NOT NULL REFERENCES cajas(id),
     caja_destino_id UUID NOT NULL REFERENCES cajas(id),
@@ -16,10 +19,10 @@ CREATE TABLE IF NOT EXISTS transferencias_caja (
 );
 
 -- Índices para mejorar rendimiento
-CREATE INDEX IF NOT EXISTS idx_transferencias_caja_origen ON transferencias_caja(caja_origen_id);
-CREATE INDEX IF NOT EXISTS idx_transferencias_caja_destino ON transferencias_caja(caja_destino_id);
-CREATE INDEX IF NOT EXISTS idx_transferencias_fecha ON transferencias_caja(fecha);
-CREATE INDEX IF NOT EXISTS idx_transferencias_referencia ON transferencias_caja(referencia);
+CREATE INDEX idx_transferencias_caja_origen ON transferencias_caja(caja_origen_id);
+CREATE INDEX idx_transferencias_caja_destino ON transferencias_caja(caja_destino_id);
+CREATE INDEX idx_transferencias_fecha ON transferencias_caja(fecha);
+CREATE INDEX idx_transferencias_referencia ON transferencias_caja(referencia);
 
 -- Agregar columna saldo_actual a la tabla cajas si no existe
 ALTER TABLE cajas ADD COLUMN IF NOT EXISTS saldo_actual DECIMAL(10,2) DEFAULT 0.00;

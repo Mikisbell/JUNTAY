@@ -49,6 +49,8 @@ export default function TransferirCajaPage({ params }: { params: { id: string } 
       setCajaOrigen(cajaData)
 
       // Obtener cajas abiertas (usando el estado de la caja, no de sesiones)
+      console.log('🔍 Buscando cajas destino para caja ID:', params.id)
+      
       const { data: cajasData, error: cajasError } = await supabase
         .from('cajas')
         .select('*')
@@ -63,6 +65,25 @@ export default function TransferirCajaPage({ params }: { params: { id: string } 
 
       console.log('📦 Cajas abiertas encontradas:', cajasData)
       console.log('📊 Total cajas abiertas:', cajasData?.length || 0)
+      
+      // Si no hay cajas con estado 'abierta', intentar con todas las activas para debug
+      if (!cajasData || cajasData.length === 0) {
+        console.log('🔍 No hay cajas con estado "abierta", verificando todas las activas...')
+        
+        const { data: todasCajas } = await supabase
+          .from('cajas')
+          .select('*')
+          .neq('id', params.id)
+          .eq('activa', true)
+        
+        console.log('📋 Todas las cajas activas:', todasCajas)
+        console.log('📋 Estados de cajas:', todasCajas?.map(c => ({ 
+          codigo: c.codigo, 
+          nombre: c.nombre, 
+          estado: c.estado,
+          activa: c.activa 
+        })))
+      }
       
       setCajasDestino(cajasData || [])
     } catch (err: any) {
