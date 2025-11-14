@@ -47,10 +47,10 @@ export default async function CajaDetallePage({ params }: { params: { id: string
   // Determinar estado real (basado en sesión, no en tabla cajas)
   const estaAbierta = sesion !== null && sesion.estado === 'abierta'
   
-  // Calcular saldo actual
-  const saldoActual = sesion 
+  // Usar saldo actual de la tabla cajas (actualizado por transferencias)
+  const saldoActual = caja.saldo_actual || (sesion 
     ? (sesion.monto_inicial || 0) + (sesion.total_ingresos || 0) - (sesion.total_egresos || 0)
-    : 0
+    : 0)
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">

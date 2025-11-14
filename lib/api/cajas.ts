@@ -16,6 +16,7 @@ export interface Caja {
   responsable_actual_id?: string
   fecha_ultima_apertura?: string
   fecha_ultimo_cierre?: string
+  saldo_actual?: number
   created_at?: string
   updated_at?: string
 }
