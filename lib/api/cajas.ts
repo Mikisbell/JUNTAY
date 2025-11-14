@@ -607,6 +607,90 @@ export async function getMovimientosSesion(sesionId: string) {
 }
 
 // =====================================================
+// FUNCIONES DE CAJA GENERAL
+// =====================================================
+
+export interface CajaGeneralData {
+  id: string
+  empresa_id: string
+  codigo: string
+  nombre: string
+  descripcion?: string
+  saldo_total: number
+  saldo_disponible: number
+  saldo_asignado: number
+  limite_asignacion_individual: number
+  limite_total_asignaciones: number
+  activa: boolean
+  responsable_id?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface MovimientoCajaGeneralData {
+  id: string
+  caja_general_id: string
+  tipo_movimiento: string
+  monto: number
+  saldo_anterior: number
+  saldo_nuevo: number
+  concepto: string
+  descripcion?: string
+  referencia_externa?: string
+  usuario_operacion: string
+  fecha: string
+  created_at: string
+}
+
+export async function getCajaGeneral() {
+  const supabase = createClient()
+  
+  const { data, error } = await supabase
+    .from('caja_general')
+    .select('*')
+    .eq('activa', true)
+    .single()
+  
+  if (error) {
+    console.error('Error fetching caja general:', error)
+    return null
+  }
+  
+  return data as CajaGeneralData
+}
+
+export async function getMovimientosCajaGeneral(limit = 10) {
+  const supabase = createClient()
+  
+  const { data, error } = await supabase
+    .from('movimientos_caja_general')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(limit)
+  
+  if (error) {
+    console.error('Error fetching movimientos caja general:', error)
+    return []
+  }
+  
+  return data as MovimientoCajaGeneralData[]
+}
+
+export async function getResumenOperacionesEmpeno() {
+  const supabase = createClient()
+  
+  const { data, error } = await supabase
+    .rpc('resumen_operaciones_empeno')
+  
+  if (error) {
+    console.error('Error fetching resumen operaciones:', error)
+    return []
+  }
+  
+  return data
+}
+
+// =====================================================
 // FUNCIONES AUXILIARES
 // =====================================================
 

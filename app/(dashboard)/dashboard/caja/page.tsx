@@ -2,13 +2,15 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { getCajas, getSaldoActualCaja } from '@/lib/api/cajas'
-import { DollarSign, TrendingUp, TrendingDown, Clock } from 'lucide-react'
+import { getCajas, getSaldoActualCaja, getCajaGeneral, getMovimientosCajaGeneral } from '@/lib/api/cajas'
+import { DollarSign, TrendingUp, TrendingDown, Clock, Vault, Building2 } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
 export default async function CajaPage() {
   const cajas = await getCajas()
+  const cajaGeneral = await getCajaGeneral()
+  const movimientosCajaGeneral = await getMovimientosCajaGeneral(5)
   
   // Obtener saldo actual de cada caja y determinar estado real
   const cajasConSaldo = await Promise.all(
@@ -33,6 +35,100 @@ export default async function CajaPage() {
           <p className="text-gray-600 mt-1">Gestión de cajas y movimientos diarios</p>
         </div>
       </div>
+
+      {/* Caja General (Bóveda Central) */}
+      {cajaGeneral && (
+        <Card className="border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <Vault className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm text-blue-600 font-medium">{cajaGeneral.codigo}</p>
+                <CardTitle className="text-xl text-blue-800">{cajaGeneral.nombre}</CardTitle>
+                <p className="text-xs text-blue-600">🏪 Bóveda Central - Casa de Empeño</p>
+              </div>
+            </div>
+            <Badge variant="default" className="bg-blue-600">
+              <Building2 className="h-3 w-3 mr-1" />
+              Activa
+            </Badge>
+          </CardHeader>
+          
+          <CardContent className="space-y-4">
+            {/* Saldos */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-white/70 p-4 rounded-lg border">
+                <p className="text-sm text-gray-600 font-medium">💰 Saldo Total</p>
+                <p className="text-2xl font-bold text-green-600">
+                  S/ {cajaGeneral.saldo_total.toFixed(2)}
+                </p>
+              </div>
+              <div className="bg-white/70 p-4 rounded-lg border">
+                <p className="text-sm text-gray-600 font-medium">✅ Disponible</p>
+                <p className="text-2xl font-bold text-blue-600">
+                  S/ {cajaGeneral.saldo_disponible.toFixed(2)}
+                </p>
+              </div>
+              <div className="bg-white/70 p-4 rounded-lg border">
+                <p className="text-sm text-gray-600 font-medium">📤 Asignado</p>
+                <p className="text-2xl font-bold text-orange-600">
+                  S/ {cajaGeneral.saldo_asignado.toFixed(2)}
+                </p>
+              </div>
+            </div>
+
+            {/* Últimos Movimientos */}
+            {movimientosCajaGeneral.length > 0 && (
+              <div className="bg-white/70 p-4 rounded-lg border">
+                <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  Últimos Movimientos
+                </h4>
+                <div className="space-y-2 max-h-32 overflow-y-auto">
+                  {movimientosCajaGeneral.slice(0, 3).map((mov) => (
+                    <div key={mov.id} className="flex justify-between items-center text-sm">
+                      <div>
+                        <span className="font-medium">{mov.concepto}</span>
+                        <p className="text-xs text-gray-500">{mov.descripcion?.slice(0, 50)}...</p>
+                      </div>
+                      <div className="text-right">
+                        <span className={`font-semibold ${
+                          mov.tipo_movimiento.includes('prestamo') || mov.tipo_movimiento.includes('gasto') 
+                            ? 'text-red-600' 
+                            : 'text-green-600'
+                        }`}>
+                          {mov.tipo_movimiento.includes('prestamo') || mov.tipo_movimiento.includes('gasto') ? '-' : '+'}
+                          S/ {mov.monto.toFixed(2)}
+                        </span>
+                        <p className="text-xs text-gray-500">
+                          {mov.fecha ? new Date(mov.fecha).toLocaleDateString() : 'Sin fecha'}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Acciones */}
+            <div className="flex gap-2">
+              <Link href="/dashboard/caja-general" className="flex-1">
+                <Button className="w-full bg-blue-600 hover:bg-blue-700" size="sm">
+                  <Vault className="h-4 w-4 mr-2" />
+                  Ver Caja General
+                </Button>
+              </Link>
+              <Link href="/dashboard/caja-general/operaciones" className="flex-1">
+                <Button variant="outline" className="w-full border-blue-300 text-blue-600 hover:bg-blue-50" size="sm">
+                  🏪 Operaciones de Empeño
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Grid de Cajas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
