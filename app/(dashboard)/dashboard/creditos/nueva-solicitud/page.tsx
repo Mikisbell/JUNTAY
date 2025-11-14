@@ -284,9 +284,12 @@ export default function NuevaSolicitudPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           {/* Cliente */}
-          <Card>
+          <Card className="hover:shadow-md transition-shadow">
             <CardHeader>
-              <CardTitle>Cliente</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-900">Cliente</CardTitle>
+              <p className="text-xs text-gray-500 mt-1">
+                Selecciona al cliente titular del crédito que se va a desembolsar.
+              </p>
             </CardHeader>
             <CardContent>
               <Label htmlFor="cliente_id">Seleccionar Cliente *</Label>
@@ -321,9 +324,12 @@ export default function NuevaSolicitudPage() {
           </Card>
 
           {/* Datos del Crédito */}
-          <Card>
+          <Card className="hover:shadow-md transition-shadow">
             <CardHeader>
-              <CardTitle>Datos del Crédito</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-900">Datos del Crédito</CardTitle>
+              <p className="text-xs text-gray-500 mt-1">
+                Monto, tasa, cuotas y frecuencia que definirán el cronograma de pagos.
+              </p>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -401,10 +407,10 @@ export default function NuevaSolicitudPage() {
           </Card>
 
           {/* Garantía */}
-          <Card>
+          <Card className="hover:shadow-md transition-shadow">
             <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                Garantía (Opcional)
+              <CardTitle className="flex items-center justify-between text-sm font-medium text-gray-900">
+                <span>Garantía (Opcional)</span>
                 <Link href="/dashboard/garantias/nueva" target="_blank">
                   <Button type="button" variant="outline" size="sm">
                     + Nueva Garantía
@@ -443,9 +449,12 @@ export default function NuevaSolicitudPage() {
           </Card>
 
           {/* Observaciones */}
-          <Card>
+          <Card className="hover:shadow-md transition-shadow">
             <CardHeader>
-              <CardTitle>Observaciones</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-900">Observaciones</CardTitle>
+              <p className="text-xs text-gray-500 mt-1">
+                Notas internas sobre la operación (no visibles para el cliente).
+              </p>
             </CardHeader>
             <CardContent>
               <textarea
@@ -462,7 +471,7 @@ export default function NuevaSolicitudPage() {
 
         {/* Preview del Crédito */}
         <div className="space-y-6">
-          <Card className="sticky top-4">
+          <Card className="sticky top-4 hover:shadow-md transition-shadow">
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Calculator className="h-5 w-5 mr-2" />

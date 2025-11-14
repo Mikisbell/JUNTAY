@@ -1040,7 +1040,26 @@ Ejemplos ya alineados:
 
 > Requisito: todos los formularios nuevos deben seguir este patrón de encabezado + `max-w-*` centrado + secciones en `Card`s.
 
-#### 5. Resúmenes laterales y transparencia
+#### 5. Cards y estados hover
+
+Patrón único para todas las cards del sistema (dashboard, formularios, resúmenes):
+
+- **Base de card**
+  - Componente `Card`: `rounded-lg border bg-card text-card-foreground shadow-sm`.
+  - Encabezado: `CardHeader` con padding `p-6`.
+  - Contenido: `CardContent` con `p-6 pt-0`.
+- **Títulos de card**
+  - Estándar compacto: `text-sm font-medium text-gray-900`.
+  - Siempre usar este estilo para secciones de dashboard y formularios.
+- **Hover**
+  - Interacción visual: `hover:shadow-md transition-shadow`.
+  - Aplicar en todas las cards principales:
+    - Dashboard: métricas principales, alertas, quick actions.
+    - Formularios: secciones de Nuevo Cliente, Nueva Garantía, Nueva Solicitud de Crédito.
+
+> Requisito: toda card nueva que represente un bloque funcional (sección de formulario, métrica, resumen) debe usar la misma estructura y hover para mantener coherencia visual tipo dashboard.
+
+#### 6. Resúmenes laterales y transparencia
 
 Para operaciones críticas (empeños, créditos, vencimientos, remates) se debe incluir un **resumen lateral o card de resumen** que responda las 5 preguntas de transparencia definida en la filosofía UX:
 

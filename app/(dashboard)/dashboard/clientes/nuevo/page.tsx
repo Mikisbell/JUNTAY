@@ -310,9 +310,9 @@ export default function NuevoClientePage() {
       )}
 
       {/* Tipo de Persona */}
-      <Card>
+      <Card className="hover:shadow-md transition-shadow">
         <CardHeader>
-          <CardTitle>Tipo de Persona</CardTitle>
+          <CardTitle className="text-sm font-medium text-gray-900">Tipo de Persona</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex space-x-4">
@@ -347,9 +347,9 @@ export default function NuevoClientePage() {
       {tipoPersona === 'natural' ? (
         <>
           {/* Datos de Identificación */}
-          <Card>
+          <Card className="hover:shadow-md transition-shadow">
             <CardHeader>
-              <CardTitle>Datos de Identificación</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-900">Datos de Identificación</CardTitle>
               <p className="text-xs text-gray-500 mt-1">
                 Documento de identidad y datos personales básicos del cliente.
               </p>
@@ -477,9 +477,9 @@ export default function NuevoClientePage() {
           </Card>
 
           {/* Datos de Contacto */}
-          <Card>
+          <Card className="hover:shadow-md transition-shadow">
             <CardHeader>
-              <CardTitle>Datos de Contacto</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-900">Datos de Contacto</CardTitle>
               <p className="text-xs text-gray-500 mt-1">
                 Teléfonos y correo para recordatorios, avisos de vencimiento y soporte.
               </p>
@@ -527,9 +527,9 @@ export default function NuevoClientePage() {
           </Card>
 
           {/* Dirección */}
-          <Card>
+          <Card className="hover:shadow-md transition-shadow">
             <CardHeader>
-              <CardTitle>Dirección</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-900">Dirección</CardTitle>
               <p className="text-xs text-gray-500 mt-1">
                 Ubicación principal para análisis de riesgo y gestión de cobranzas.
               </p>
@@ -559,13 +559,13 @@ export default function NuevoClientePage() {
           </Card>
 
           {/* Datos Laborales (plegable) */}
-          <Card>
+          <Card className="hover:shadow-md transition-shadow">
             <CardHeader
               className="flex items-center justify-between cursor-pointer"
               onClick={() => setMostrarDatosLaborales((prev) => !prev)}
             >
               <div>
-                <CardTitle>Datos Laborales</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-900">Datos Laborales</CardTitle>
                 <p className="text-xs text-gray-500 mt-1">
                   Opcional. Mejora la evaluación de riesgo y conocimiento del cliente.
                 </p>
@@ -621,13 +621,13 @@ export default function NuevoClientePage() {
           </Card>
 
           {/* Observaciones (plegable) */}
-          <Card>
+          <Card className="hover:shadow-md transition-shadow">
             <CardHeader
               className="flex items-center justify-between cursor-pointer"
               onClick={() => setMostrarObservaciones((prev) => !prev)}
             >
               <div>
-                <CardTitle>Observaciones</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-900">Observaciones</CardTitle>
                 <p className="text-xs text-gray-500 mt-1">
                   Notas internas sobre el cliente (no se muestran en comprobantes).
                 </p>
@@ -656,7 +656,7 @@ export default function NuevoClientePage() {
       ) : (
         <>
           {/* Persona Jurídica */}
-          <Card>
+          <Card className="hover:shadow-md transition-shadow">
             <CardHeader>
               <CardTitle>Datos de la Empresa</CardTitle>
             </CardHeader>

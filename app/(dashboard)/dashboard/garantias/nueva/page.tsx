@@ -148,9 +148,12 @@ export default function NuevaGarantiaPage() {
         </div>
       )}
 
-      <Card>
+      <Card className="hover:shadow-md transition-shadow">
         <CardHeader>
-          <CardTitle>Información del Bien</CardTitle>
+          <CardTitle className="text-sm font-medium text-gray-900">Información del Bien</CardTitle>
+          <p className="text-xs text-gray-500 mt-1">
+            Detalles generales de la prenda que se registrará como garantía.
+          </p>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -251,9 +254,12 @@ export default function NuevaGarantiaPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="hover:shadow-md transition-shadow">
         <CardHeader>
-          <CardTitle>Valuación</CardTitle>
+          <CardTitle className="text-sm font-medium text-gray-900">Valuación</CardTitle>
+          <p className="text-xs text-gray-500 mt-1">
+            Valores de referencia para definir el monto máximo de préstamo.
+          </p>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -305,7 +311,10 @@ export default function NuevaGarantiaPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Características Físicas</CardTitle>
+          <CardTitle className="text-sm font-medium text-gray-900">Características Físicas</CardTitle>
+          <p className="text-xs text-gray-500 mt-1">
+            Peso, dimensiones y materiales que ayudan a identificar el bien.
+          </p>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -360,7 +369,10 @@ export default function NuevaGarantiaPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Ubicación y Control</CardTitle>
+          <CardTitle className="text-sm font-medium text-gray-900">Ubicación y Control</CardTitle>
+          <p className="text-xs text-gray-500 mt-1">
+            Información para localizar físicamente la prenda dentro del almacén.
+          </p>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
