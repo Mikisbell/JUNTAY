@@ -245,7 +245,7 @@ export default function VencimientosPage() {
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Proceso de Vencimientos</h1>
+          <h1 className="text-2xl md:text-3xl font-semibold text-gray-900">Proceso de Vencimientos</h1>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {[1, 2, 3, 4].map(i => (
@@ -267,8 +267,8 @@ export default function VencimientosPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Proceso de Vencimientos</h1>
-          <p className="text-gray-600">Control automático de vencimientos y período de gracia</p>
+          <h1 className="text-2xl md:text-3xl font-semibold text-gray-900">Proceso de Vencimientos</h1>
+          <p className="text-sm text-gray-600">Control automático de vencimientos y período de gracia</p>
         </div>
         <div className="flex gap-2">
           <Link href="/dashboard/vencimientos/configuracion">

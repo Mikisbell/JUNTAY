@@ -14,7 +14,7 @@ export default function NuevoPrestamoPage() {
           <DollarSign className="h-7 w-7 text-blue-600" />
         </div>
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Nuevo Préstamo Prendario</h1>
+          <h1 className="text-2xl md:text-3xl font-semibold text-gray-900">Nuevo Préstamo Prendario</h1>
           <p className="text-sm text-gray-600">Proceso guiado para otorgar crédito con garantía</p>
         </div>
       </div>

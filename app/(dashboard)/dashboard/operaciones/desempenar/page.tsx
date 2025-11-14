@@ -78,8 +78,8 @@ export default function DesempenarPage() {
           <RotateCcw className="h-8 w-8 text-blue-600" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Desempeño de Prendas</h1>
-          <p className="text-gray-600">Recuperación de prendas mediante pago total</p>
+          <h1 className="text-2xl md:text-3xl font-semibold text-gray-900">Desempeño de Prendas</h1>
+          <p className="text-sm text-gray-600">Recuperación de prendas mediante pago total</p>
         </div>
       </div>
 

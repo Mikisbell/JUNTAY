@@ -66,8 +66,8 @@ export default function PagarInteresPage() {
           <TrendingUp className="h-8 w-8 text-green-600" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Pago de Intereses</h1>
-          <p className="text-gray-600">Cobro de intereses mensuales y mora</p>
+          <h1 className="text-2xl md:text-3xl font-semibold text-gray-900">Pago de Intereses</h1>
+          <p className="text-sm text-gray-600">Cobro de intereses mensuales y mora</p>
         </div>
       </div>
 

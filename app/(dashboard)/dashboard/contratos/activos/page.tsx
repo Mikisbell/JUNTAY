@@ -32,14 +32,14 @@ export default async function ContratosActivosPage() {
               <table className="w-full">
                 <thead className="bg-gray-50 border-b">
                   <tr>
-                    <th className="text-left p-3 font-medium text-gray-700">Código</th>
-                    <th className="text-left p-3 font-medium text-gray-700">Cliente</th>
-                    <th className="text-left p-3 font-medium text-gray-700">Documento</th>
-                    <th className="text-left p-3 font-medium text-gray-700">Monto</th>
-                    <th className="text-left p-3 font-medium text-gray-700">Saldo</th>
-                    <th className="text-left p-3 font-medium text-gray-700">Estado</th>
-                    <th className="text-left p-3 font-medium text-gray-700">Fecha desembolso</th>
-                    <th className="text-right p-3 font-medium text-gray-700">Acciones</th>
+                    <th className="text-left p-3 text-[11px] font-medium text-gray-500 tracking-wide uppercase">Código</th>
+                    <th className="text-left p-3 text-[11px] font-medium text-gray-500 tracking-wide uppercase">Cliente</th>
+                    <th className="text-left p-3 text-[11px] font-medium text-gray-500 tracking-wide uppercase">Documento</th>
+                    <th className="text-left p-3 text-[11px] font-medium text-gray-500 tracking-wide uppercase">Monto</th>
+                    <th className="text-left p-3 text-[11px] font-medium text-gray-500 tracking-wide uppercase">Saldo</th>
+                    <th className="text-left p-3 text-[11px] font-medium text-gray-500 tracking-wide uppercase">Estado</th>
+                    <th className="text-left p-3 text-[11px] font-medium text-gray-500 tracking-wide uppercase">Fecha desembolso</th>
+                    <th className="text-right p-3 text-[11px] font-medium text-gray-500 tracking-wide uppercase">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>

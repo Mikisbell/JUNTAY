@@ -225,7 +225,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
               <Building2 className="h-5 w-5 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-base font-semibold tracking-tight text-gray-900">JUNTAY</h1>
+              <h1 className="text-sm md:text-base font-semibold tracking-tight text-gray-900">JUNTAY</h1>
               <p className="text-[11px] text-gray-500">Casa de Empeño</p>
             </div>
           </div>
@@ -256,7 +256,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
               >
                 <div className="flex items-center gap-2">
                   {section.icon}
-                  <span className="text-[13px] font-medium truncate">{section.title}</span>
+                  <span className="text-xs md:text-[13px] font-medium truncate">{section.title}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <ChevronRight className={`h-4 w-4 transition-transform ${
@@ -320,10 +320,10 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
           {/* Indicadores de Estado */}
           <div className="flex items-center gap-3">
-            <Badge variant="outline" className="text-xs font-medium text-green-700 border-green-200 bg-green-50">
+            <Badge variant="outline" className="text-[11px] font-medium text-green-700 border-green-200 bg-green-50">
               Caja abierta
             </Badge>
-            <Badge variant="outline" className="text-xs font-medium text-gray-700 border-gray-200 bg-gray-50">
+            <Badge variant="outline" className="text-[11px] font-medium text-gray-700 border-gray-200 bg-gray-50">
               S/ 15,420.00
             </Badge>
           </div>

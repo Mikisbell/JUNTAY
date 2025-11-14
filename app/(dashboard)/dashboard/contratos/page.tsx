@@ -14,7 +14,7 @@ export default async function ContratosOverviewPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Contratos</h1>
+          <h1 className="text-2xl md:text-3xl font-semibold text-gray-900">Contratos</h1>
           <p className="text-sm text-gray-600">
             Visión general de los contratos prendarios: activos, vencidos y liquidados.
           </p>

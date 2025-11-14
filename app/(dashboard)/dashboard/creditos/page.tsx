@@ -15,8 +15,8 @@ export default async function CreditosPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Créditos</h1>
-          <p className="text-gray-600">Gestión de préstamos y empeños</p>
+          <h1 className="text-2xl md:text-3xl font-semibold text-gray-900">Créditos</h1>
+          <p className="text-sm text-gray-600">Gestión de préstamos y empeños</p>
         </div>
         <Link href="/dashboard/creditos/nueva-solicitud">
           <Button>
@@ -107,14 +107,14 @@ export default async function CreditosPage() {
               <table className="w-full">
                 <thead className="bg-gray-50 border-b">
                   <tr>
-                    <th className="text-left p-4 font-medium text-gray-700">Código</th>
-                    <th className="text-left p-4 font-medium text-gray-700">Cliente</th>
-                    <th className="text-left p-4 font-medium text-gray-700">Monto</th>
-                    <th className="text-left p-4 font-medium text-gray-700">Saldo</th>
-                    <th className="text-left p-4 font-medium text-gray-700">Cuotas</th>
-                    <th className="text-left p-4 font-medium text-gray-700">Estado</th>
-                    <th className="text-left p-4 font-medium text-gray-700">Fecha</th>
-                    <th className="text-right p-4 font-medium text-gray-700">Acciones</th>
+                    <th className="text-left p-4 text-[11px] font-medium text-gray-500 tracking-wide uppercase">Código</th>
+                    <th className="text-left p-4 text-[11px] font-medium text-gray-500 tracking-wide uppercase">Cliente</th>
+                    <th className="text-left p-4 text-[11px] font-medium text-gray-500 tracking-wide uppercase">Monto</th>
+                    <th className="text-left p-4 text-[11px] font-medium text-gray-500 tracking-wide uppercase">Saldo</th>
+                    <th className="text-left p-4 text-[11px] font-medium text-gray-500 tracking-wide uppercase">Cuotas</th>
+                    <th className="text-left p-4 text-[11px] font-medium text-gray-500 tracking-wide uppercase">Estado</th>
+                    <th className="text-left p-4 text-[11px] font-medium text-gray-500 tracking-wide uppercase">Fecha</th>
+                    <th className="text-right p-4 text-[11px] font-medium text-gray-500 tracking-wide uppercase">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
