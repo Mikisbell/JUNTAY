@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { Suspense, useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -35,6 +35,14 @@ interface Garantia {
 }
 
 export default function NuevoRematePage() {
+  return (
+    <Suspense fallback={<div className="p-6 text-sm text-gray-600">Cargando nuevo remate...</div>}>
+      <NuevoRematePageInner />
+    </Suspense>
+  )
+}
+
+function NuevoRematePageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const contratoDesdeVencimiento = searchParams.get('contrato') || ''
