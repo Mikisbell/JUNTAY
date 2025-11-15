@@ -15,9 +15,14 @@ export default async function GarantiasPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-semibold text-gray-900">Garantías</h1>
-          <p className="text-sm text-gray-600">Gestión de bienes empeñados</p>
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-purple-50 rounded-lg">
+            <Package className="h-6 w-6 text-purple-600" />
+          </div>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-semibold text-gray-900">Garantías</h1>
+            <p className="text-sm text-gray-600">Gestión de bienes empeñados</p>
+          </div>
         </div>
         <Link href="/dashboard/garantias/nueva">
           <Button>

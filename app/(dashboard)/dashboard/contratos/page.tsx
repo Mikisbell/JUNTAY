@@ -13,11 +13,16 @@ export default async function ContratosOverviewPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-semibold text-gray-900">Contratos</h1>
-          <p className="text-sm text-gray-600">
-            Visión general de los contratos prendarios: activos, vencidos y liquidados.
-          </p>
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-indigo-50 rounded-lg">
+            <FileText className="h-6 w-6 text-indigo-600" />
+          </div>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-semibold text-gray-900">Contratos</h1>
+            <p className="text-sm text-gray-600">
+              Visión general de los contratos prendarios: activos, vencidos y liquidados.
+            </p>
+          </div>
         </div>
         <div className="flex gap-2">
           <Link href="/dashboard/contratos/activos">

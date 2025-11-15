@@ -139,10 +139,7 @@ export function DNIAutoComplete({
     <div className={`space-y-4 ${className}`}>
       {/* Input DNI */}
       <div className="space-y-2">
-        <Label htmlFor="dni">DNI (RENIEC)</Label>
-        <p className="text-xs text-gray-500">
-          Se consultará RENIEC para autocompletar los datos del cliente. Solo DNI peruano de 8 dígitos.
-        </p>
+        <Label htmlFor="dni">DNI</Label>        
         <div className="flex gap-2">
           <div className="relative flex-1">
             <Input
@@ -208,16 +205,6 @@ export function DNIAutoComplete({
           </div>
         )}
       </div>
-
-      {/* Mensaje de éxito simple */}
-      {consulta.estado === 'completado' && consulta.datos && (
-        <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 border border-green-200 rounded-md px-3 py-2">
-          <CheckCircle className="h-4 w-4" />
-          <span>
-            Datos confirmados por RENIEC para: <strong>{consulta.datos.nombre_completo}</strong>
-          </span>
-        </div>
-      )}
 
       {/* Cliente existente */}
       {consulta.estado === 'existente' && consulta.clienteExistente && (

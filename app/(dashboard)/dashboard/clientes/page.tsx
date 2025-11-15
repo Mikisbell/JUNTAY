@@ -2,7 +2,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Plus } from "lucide-react"
+import { Plus, Users } from "lucide-react"
 import { getClientes, getClientesStats } from "@/lib/api/clientes"
 import { ClientesSearch } from "@/components/clientes-search"
 import { ClienteActions } from "@/components/cliente-actions"
@@ -17,9 +17,14 @@ export default async function ClientesPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-semibold text-gray-900">Clientes</h1>
-          <p className="text-sm text-gray-600">Gestión de clientes y prestatarios</p>
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-blue-50 rounded-lg">
+            <Users className="h-6 w-6 text-blue-600" />
+          </div>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-semibold text-gray-900">Clientes</h1>
+            <p className="text-sm text-gray-600">Gestión de clientes y prestatarios</p>
+          </div>
         </div>
         <Link href="/dashboard/clientes/nuevo">
           <Button>
