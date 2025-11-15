@@ -353,6 +353,11 @@ export default function NuevoClientePage() {
               <p className="text-xs text-gray-500 mt-1">
                 Documento de identidad y datos personales básicos del cliente.
               </p>
+              {formData.numero_documento && (
+                <p className="text-xs text-gray-400">
+                  {formData.tipo_documento}: {formData.numero_documento}
+                </p>
+              )}
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -483,6 +488,21 @@ export default function NuevoClientePage() {
               <p className="text-xs text-gray-500 mt-1">
                 Teléfonos y correo para recordatorios, avisos de vencimiento y soporte.
               </p>
+              {(formData.celular || formData.telefono || formData.email) && (
+                <p className="text-xs text-gray-400">
+                  {formData.celular && <>
+                    Cel: {formData.celular}
+                  </>}
+                  {formData.telefono && <>
+                    {formData.celular && ' · '}
+                    Tel: {formData.telefono}
+                  </>}
+                  {formData.email && <>
+                    {(formData.celular || formData.telefono) && ' · '}
+                    {formData.email}
+                  </>}
+                </p>
+              )}
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -533,6 +553,21 @@ export default function NuevoClientePage() {
               <p className="text-xs text-gray-500 mt-1">
                 Ubicación principal para análisis de riesgo y gestión de cobranzas.
               </p>
+              {(formData.departamento || formData.provincia || formData.distrito) && (
+                <p className="text-xs text-gray-400">
+                  {formData.departamento && <>
+                    {formData.departamento}
+                  </>}
+                  {formData.provincia && <>
+                    {formData.departamento && ' / '}
+                    {formData.provincia}
+                  </>}
+                  {formData.distrito && <>
+                    {(formData.departamento || formData.provincia) && ' / '}
+                    {formData.distrito}
+                  </>}
+                </p>
+              )}
             </CardHeader>
             <CardContent className="space-y-4">
               <UbicacionSelectorAPI
@@ -658,7 +693,21 @@ export default function NuevoClientePage() {
           {/* Persona Jurídica */}
           <Card className="hover:shadow-md transition-shadow">
             <CardHeader>
-              <CardTitle>Datos de la Empresa</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-900">Datos de la Empresa</CardTitle>
+              <p className="text-xs text-gray-500 mt-1">
+                Información general de la empresa y su representante legal.
+              </p>
+              {(formData.numero_documento || formData.razon_social) && (
+                <p className="text-xs text-gray-400">
+                  {formData.numero_documento && <>
+                    RUC: {formData.numero_documento}
+                  </>}
+                  {formData.razon_social && <>
+                    {formData.numero_documento && ' · '}
+                    {formData.razon_social}
+                  </>}
+                </p>
+              )}
             </CardHeader>
             <CardContent className="space-y-4">
               <RUCAutoComplete
