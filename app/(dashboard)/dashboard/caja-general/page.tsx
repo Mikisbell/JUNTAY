@@ -21,7 +21,7 @@ export default async function CajaGeneralPage() {
               Volver
             </Button>
           </Link>
-          <h1 className="text-3xl font-bold">Caja General</h1>
+          <h1 className="text-2xl md:text-3xl font-semibold text-gray-900">Caja General</h1>
         </div>
         
         <Card>
@@ -48,15 +48,15 @@ export default async function CajaGeneralPage() {
             <Vault className="h-6 w-6 text-blue-600" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-blue-800">{cajaGeneral.nombre}</h1>
-            <p className="text-gray-600">🏪 Bóveda Central - Casa de Empeño</p>
+            <h1 className="text-2xl md:text-3xl font-semibold text-gray-900">{cajaGeneral.nombre}</h1>
+            <p className="text-sm text-gray-600">🏪 Bóveda Central - Casa de Empeño</p>
           </div>
         </div>
       </div>
 
       {/* Información Principal */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:shadow-md transition-shadow">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-green-700 flex items-center gap-2">
               💰 Saldo Total
@@ -72,7 +72,7 @@ export default async function CajaGeneralPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-md transition-shadow">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-blue-700 flex items-center gap-2">
               ✅ Disponible
@@ -88,7 +88,7 @@ export default async function CajaGeneralPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:shadow-md transition-shadow">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-orange-700 flex items-center gap-2">
               📤 Asignado
@@ -106,7 +106,7 @@ export default async function CajaGeneralPage() {
       </div>
 
       {/* Acciones Rápidas */}
-      <Card>
+      <Card className="hover:shadow-md transition-shadow">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Building2 className="h-5 w-5" />
@@ -155,7 +155,7 @@ export default async function CajaGeneralPage() {
       </Card>
 
       {/* Historial de Movimientos */}
-      <Card>
+      <Card className="hover:shadow-md transition-shadow">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Clock className="h-5 w-5" />

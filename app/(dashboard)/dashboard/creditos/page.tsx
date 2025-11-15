@@ -27,7 +27,7 @@ export default async function CreditosPage() {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <Card>
+        <Card className="hover:shadow-md transition-shadow">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -38,7 +38,7 @@ export default async function CreditosPage() {
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="hover:shadow-md transition-shadow">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -86,9 +86,12 @@ export default async function CreditosPage() {
         </Card>
       </div>
       
-      <Card>
-        <CardHeader>
-          <CardTitle>Listado de Créditos</CardTitle>
+      <Card className="hover:shadow-md transition-shadow">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm font-medium text-gray-900">Listado de Créditos</CardTitle>
+          <p className="text-xs text-gray-500 mt-1">
+            Créditos otorgados, su estado y saldos pendientes.
+          </p>
         </CardHeader>
         <CardContent>
           {creditos.length === 0 ? (
@@ -119,27 +122,27 @@ export default async function CreditosPage() {
                 </thead>
                 <tbody>
                   {creditos.map((credito) => (
-                    <tr key={credito.id} className="border-b hover:bg-gray-50">
-                      <td className="p-4 font-mono text-sm">{credito.codigo}</td>
-                      <td className="p-4">
-                        <p className="font-medium">
+                    <tr key={credito.id} className="border-b hover:bg-gray-50 text-sm">
+                      <td className="px-4 py-3 font-mono text-sm text-gray-900">{credito.codigo}</td>
+                      <td className="px-4 py-3">
+                        <p className="font-medium text-gray-900">
                           {credito.clientes?.tipo_persona === 'natural'
                             ? `${credito.clientes?.nombres} ${credito.clientes?.apellido_paterno}`
                             : credito.clientes?.razon_social}
                         </p>
-                        <p className="text-sm text-gray-600">{credito.clientes?.numero_documento}</p>
+                        <p className="text-xs text-gray-500">{credito.clientes?.numero_documento}</p>
                       </td>
-                      <td className="p-4">
-                        <p className="font-medium">S/ {credito.monto_prestado.toFixed(2)}</p>
-                        <p className="text-xs text-gray-600">Total: S/ {credito.monto_total.toFixed(2)}</p>
+                      <td className="px-4 py-3">
+                        <p className="font-medium text-gray-900">S/ {credito.monto_prestado.toFixed(2)}</p>
+                        <p className="text-xs text-gray-500">Total: S/ {credito.monto_total.toFixed(2)}</p>
                       </td>
-                      <td className="p-4">
+                      <td className="px-4 py-3">
                         <p className="font-medium text-orange-600">S/ {credito.saldo_pendiente.toFixed(2)}</p>
                       </td>
-                      <td className="p-4">
+                      <td className="px-4 py-3">
                         <p>{credito.cuotas_pagadas || 0} / {credito.numero_cuotas}</p>
                       </td>
-                      <td className="p-4">
+                      <td className="px-4 py-3">
                         <Badge 
                           variant={
                             credito.estado === 'vigente' ? 'default' : 
@@ -151,10 +154,10 @@ export default async function CreditosPage() {
                           {credito.estado.replace('_', ' ')}
                         </Badge>
                       </td>
-                      <td className="p-4 text-sm">
+                      <td className="px-4 py-3 text-xs text-gray-500">
                         {new Date(credito.fecha_desembolso).toLocaleDateString('es-PE')}
                       </td>
-                      <td className="p-4">
+                      <td className="px-4 py-3">
                         <div className="flex items-center justify-end space-x-2">
                           <Link href={`/dashboard/creditos/${credito.id}`}>
                             <Button variant="ghost" size="sm">

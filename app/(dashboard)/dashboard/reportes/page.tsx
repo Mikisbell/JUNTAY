@@ -10,8 +10,8 @@ export default function ReportesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Reportes</h1>
-          <p className="text-gray-600">Análisis y reportes del negocio</p>
+          <h1 className="text-2xl md:text-3xl font-semibold text-gray-900">Reportes</h1>
+          <p className="text-sm text-gray-600">Análisis y reportes del negocio</p>
         </div>
         <Button>
           <Download className="h-4 w-4 mr-2" />
@@ -22,7 +22,7 @@ export default function ReportesPage() {
       {/* Reportes Disponibles */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Reporte de Créditos */}
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
           <CardHeader>
             <CardTitle className="flex items-center">
               <TrendingUp className="h-5 w-5 mr-2 text-blue-600" />
@@ -44,7 +44,7 @@ export default function ReportesPage() {
         </Card>
 
         {/* Reporte de Cobranzas */}
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
           <CardHeader>
             <CardTitle className="flex items-center">
               <BarChart3 className="h-5 w-5 mr-2 text-green-600" />
@@ -66,7 +66,7 @@ export default function ReportesPage() {
         </Card>
 
         {/* Reporte de Mora */}
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
           <CardHeader>
             <CardTitle className="flex items-center">
               <TrendingUp className="h-5 w-5 mr-2 text-red-600" />
@@ -88,7 +88,7 @@ export default function ReportesPage() {
         </Card>
 
         {/* Reporte de Garantías */}
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
           <CardHeader>
             <CardTitle className="flex items-center">
               <BarChart3 className="h-5 w-5 mr-2 text-purple-600" />
@@ -110,7 +110,7 @@ export default function ReportesPage() {
         </Card>
 
         {/* Reporte de Caja */}
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
           <CardHeader>
             <CardTitle className="flex items-center">
               <TrendingUp className="h-5 w-5 mr-2 text-indigo-600" />
@@ -132,7 +132,7 @@ export default function ReportesPage() {
         </Card>
 
         {/* Reporte de Clientes */}
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
           <CardHeader>
             <CardTitle className="flex items-center">
               <BarChart3 className="h-5 w-5 mr-2 text-orange-600" />
@@ -155,7 +155,7 @@ export default function ReportesPage() {
       </div>
 
       {/* Placeholder para reportes futuros */}
-      <Card>
+      <Card className="hover:shadow-md transition-shadow">
         <CardHeader>
           <CardTitle>Próximamente</CardTitle>
         </CardHeader>

@@ -16,8 +16,8 @@ export default async function GarantiasPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Garantías</h1>
-          <p className="text-gray-600">Gestión de bienes empeñados</p>
+          <h1 className="text-2xl md:text-3xl font-semibold text-gray-900">Garantías</h1>
+          <p className="text-sm text-gray-600">Gestión de bienes empeñados</p>
         </div>
         <Link href="/dashboard/garantias/nueva">
           <Button>
@@ -29,7 +29,7 @@ export default async function GarantiasPage() {
       
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
+        <Card className="hover:shadow-md transition-shadow">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -40,7 +40,7 @@ export default async function GarantiasPage() {
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="hover:shadow-md transition-shadow">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -76,9 +76,12 @@ export default async function GarantiasPage() {
       </div>
       
       {/* Tabla de Garantías */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Listado de Garantías</CardTitle>
+      <Card className="hover:shadow-md transition-shadow">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm font-medium text-gray-900">Listado de Garantías</CardTitle>
+          <p className="text-xs text-gray-500 mt-1">
+            Bienes empeñados, su estado y valor de tasación.
+          </p>
         </CardHeader>
         <CardContent>
           {garantias.length === 0 ? (
@@ -97,39 +100,53 @@ export default async function GarantiasPage() {
               <table className="w-full">
                 <thead className="bg-gray-50 border-b">
                   <tr>
-                    <th className="text-left p-4 font-medium text-gray-700">Código</th>
-                    <th className="text-left p-4 font-medium text-gray-700">Bien</th>
-                    <th className="text-left p-4 font-medium text-gray-700">Categoría</th>
-                    <th className="text-left p-4 font-medium text-gray-700">Valor Tasación</th>
-                    <th className="text-left p-4 font-medium text-gray-700">Estado</th>
-                    <th className="text-left p-4 font-medium text-gray-700">Conservación</th>
-                    <th className="text-right p-4 font-medium text-gray-700">Acciones</th>
+                    <th className="px-4 py-2 text-[11px] font-medium text-gray-500 tracking-wide uppercase text-left">
+                      Código
+                    </th>
+                    <th className="px-4 py-2 text-[11px] font-medium text-gray-500 tracking-wide uppercase text-left">
+                      Bien
+                    </th>
+                    <th className="px-4 py-2 text-[11px] font-medium text-gray-500 tracking-wide uppercase text-left">
+                      Categoría
+                    </th>
+                    <th className="px-4 py-2 text-[11px] font-medium text-gray-500 tracking-wide uppercase text-left">
+                      Valor Tasación
+                    </th>
+                    <th className="px-4 py-2 text-[11px] font-medium text-gray-500 tracking-wide uppercase text-left">
+                      Estado
+                    </th>
+                    <th className="px-4 py-2 text-[11px] font-medium text-gray-500 tracking-wide uppercase text-left">
+                      Conservación
+                    </th>
+                    <th className="px-4 py-2 text-[11px] font-medium text-gray-500 tracking-wide uppercase text-right">
+                      Acciones
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {garantias.map((garantia) => (
-                    <tr key={garantia.id} className="border-b hover:bg-gray-50">
-                      <td className="p-4 font-mono text-sm">{garantia.codigo}</td>
-                      <td className="p-4">
-                        <p className="font-medium">{garantia.nombre}</p>
+                    <tr key={garantia.id} className="border-b hover:bg-gray-50 text-sm">
+                      <td className="px-4 py-3 font-mono text-sm text-gray-900">{garantia.codigo}</td>
+                      <td className="px-4 py-3">
+                        <p className="font-medium text-gray-900">{garantia.nombre}</p>
                         {garantia.marca && (
-                          <p className="text-sm text-gray-600">{garantia.marca} {garantia.modelo}</p>
+                          <p className="text-xs text-gray-500">{garantia.marca} {garantia.modelo}</p>
                         )}
                       </td>
-                      <td className="p-4">
+                      <td className="px-4 py-3">
                         <Badge variant="outline">
                           {garantia.categoria?.nombre || 'Sin categoría'}
                         </Badge>
                       </td>
-                      <td className="p-4">
-                        <p className="font-medium">S/ {garantia.valor_tasacion.toFixed(2)}</p>
+                      <td className="px-4 py-3">
+                        <p className="font-medium text-gray-900">S/ {garantia.valor_tasacion.toFixed(2)}</p>
                         {garantia.valor_comercial !== garantia.valor_tasacion && (
-                          <p className="text-xs text-gray-600">
+                          <p className="text-xs text-gray-500">
                             Comercial: S/ {garantia.valor_comercial.toFixed(2)}
                           </p>
                         )}
                       </td>
-                      <td className="p-4">
+                      <td className="px-4 py-3">
                         <Badge 
                           variant={
                             garantia.estado === 'disponible' ? 'default' : 
@@ -142,14 +159,14 @@ export default async function GarantiasPage() {
                           {garantia.estado.replace('_', ' ')}
                         </Badge>
                       </td>
-                      <td className="p-4">
+                      <td className="px-4 py-3">
                         {garantia.estado_conservacion && (
                           <Badge variant="outline">
                             {garantia.estado_conservacion.replace('_', ' ')}
                           </Badge>
                         )}
                       </td>
-                      <td className="p-4">
+                      <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end space-x-2">
                           <Link href={`/dashboard/garantias/${garantia.id}`}>
                             <Button variant="ghost" size="sm">
