@@ -299,7 +299,7 @@ export default function NuevoClientePage() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-6 max-w-5xl 2xl:max-w-6xl mx-auto px-4 sm:px-0"
+      className="space-y-6 px-4 lg:px-0"
     >
       {/* Header */}
       <div className="flex items-center space-x-4">
