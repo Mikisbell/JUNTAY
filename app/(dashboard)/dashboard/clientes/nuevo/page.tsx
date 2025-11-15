@@ -49,6 +49,15 @@ export default function NuevoClientePage() {
     observaciones: ''
   })
 
+  const nombreCompleto =
+    tipoPersona === 'natural'
+      ? [formData.nombres, formData.apellido_paterno, formData.apellido_materno]
+          .filter(Boolean)
+          .join(' ')
+      : formData.razon_social
+
+  const telefonoPrincipal = formData.celular || formData.telefono
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     
@@ -288,7 +297,10 @@ export default function NuevoClientePage() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-6 max-w-5xl 2xl:max-w-6xl mx-auto px-4 sm:px-0"
+    >
       {/* Header */}
       <div className="flex items-center space-x-4">
         <Link href="/dashboard/clientes">
@@ -345,349 +357,391 @@ export default function NuevoClientePage() {
       </Card>
 
       {tipoPersona === 'natural' ? (
-        <>
-          {/* Datos de Identificación */}
-          <Card className="hover:shadow-md transition-shadow">
-            <CardHeader>
-              <CardTitle className="text-sm font-medium text-gray-900">Datos de Identificación</CardTitle>
-              <p className="text-xs text-gray-500 mt-1">
-                Documento de identidad y datos personales básicos del cliente.
-              </p>
-              {formData.numero_documento && (
-                <p className="text-xs text-gray-400">
-                  {formData.tipo_documento}: {formData.numero_documento}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            {/* Datos de Identificación */}
+            <Card className="hover:shadow-md transition-shadow">
+              <CardHeader>
+                <CardTitle className="text-sm font-medium text-gray-900">Datos de Identificación</CardTitle>
+                <p className="text-xs text-gray-500 mt-1">
+                  Documento y datos personales del cliente.
                 </p>
-              )}
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="tipo_documento">Tipo de Documento</Label>
-                  <select
-                    id="tipo_documento"
-                    name="tipo_documento"
-                    value={formData.tipo_documento}
-                    onChange={handleInputChange}
-                    className="w-full h-10 px-3 rounded-md border border-input bg-background"
-                  >
-                    <option value="DNI">DNI</option>
-                    <option value="PASAPORTE">Pasaporte</option>
-                    <option value="CE">Carnet de Extranjería</option>
-                  </select>
-                </div>
-                {formData.tipo_documento === 'DNI' ? (
-                  <DNIAutoComplete
-                    onDatosObtenidos={handleDatosRENIEC}
-                    onClienteExistente={handleClienteExistente}
-                    valorInicial={formData.numero_documento}
-                    disabled={loading}
-                  />
-                ) : (
+                {formData.numero_documento && (
+                  <p className="text-xs text-gray-400">
+                    {formData.tipo_documento}: {formData.numero_documento}
+                  </p>
+                )}
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="numero_documento">Número de Documento *</Label>
-                    <Input
-                      id="numero_documento"
-                      name="numero_documento"
-                      value={formData.numero_documento}
+                    <Label htmlFor="tipo_documento">Tipo de Documento</Label>
+                    <select
+                      id="tipo_documento"
+                      name="tipo_documento"
+                      value={formData.tipo_documento}
                       onChange={handleInputChange}
-                      placeholder={formData.tipo_documento === 'CE' ? 'CE12345678' : '12345678'}
-                      maxLength={20}
+                      className="w-full h-10 px-3 rounded-md border border-input bg-background"
+                    >
+                      <option value="DNI">DNI</option>
+                      <option value="PASAPORTE">Pasaporte</option>
+                      <option value="CE">Carnet de Extranjería</option>
+                    </select>
+                  </div>
+                  {formData.tipo_documento === 'DNI' ? (
+                    <DNIAutoComplete
+                      onDatosObtenidos={handleDatosRENIEC}
+                      onClienteExistente={handleClienteExistente}
+                      valorInicial={formData.numero_documento}
+                      disabled={loading}
+                    />
+                  ) : (
+                    <div>
+                      <Label htmlFor="numero_documento">Número de Documento *</Label>
+                      <Input
+                        id="numero_documento"
+                        name="numero_documento"
+                        value={formData.numero_documento}
+                        onChange={handleInputChange}
+                        placeholder={formData.tipo_documento === 'CE' ? 'CE12345678' : '12345678'}
+                        maxLength={20}
+                        required
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div>
+                    <Label htmlFor="nombres">
+                      Nombres * 
+                      {esCampoInmutable('nombres') && (
+                        <span className="text-xs text-green-600 ml-2 font-medium">
+                          (Obtenido de RENIEC - No editable)
+                        </span>
+                      )}
+                    </Label>
+                    <Input
+                      id="nombres"
+                      name="nombres"
+                      value={formData.nombres}
+                      onChange={handleInputChange}
+                      placeholder="Juan Carlos"
+                      className={getCampoStyle('nombres', formData.nombres)}
+                      readOnly={esCampoInmutable('nombres')}
                       required
                     />
                   </div>
+                  <div>
+                    <Label htmlFor="apellido_paterno">
+                      Apellido Paterno *
+                      {esCampoInmutable('apellido_paterno') && (
+                        <span className="text-xs text-green-600 ml-2 font-medium">
+                          (Obtenido de RENIEC - No editable)
+                        </span>
+                      )}
+                    </Label>
+                    <Input
+                      id="apellido_paterno"
+                      name="apellido_paterno"
+                      value={formData.apellido_paterno}
+                      onChange={handleInputChange}
+                      placeholder="Pérez"
+                      className={getCampoStyle('apellido_paterno', formData.apellido_paterno)}
+                      readOnly={esCampoInmutable('apellido_paterno')}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="apellido_materno">
+                      Apellido Materno
+                      {esCampoInmutable('apellido_materno') && (
+                        <span className="text-xs text-green-600 ml-2 font-medium">
+                          (Obtenido de RENIEC - No editable)
+                        </span>
+                      )}
+                    </Label>
+                    <Input
+                      id="apellido_materno"
+                      name="apellido_materno"
+                      value={formData.apellido_materno}
+                      onChange={handleInputChange}
+                      placeholder="López"
+                      className={getCampoStyle('apellido_materno', formData.apellido_materno)}
+                      readOnly={esCampoInmutable('apellido_materno')}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="fecha_nacimiento">
+                      Fecha de Nacimiento
+                      {esCampoInmutable('fecha_nacimiento') && (
+                        <span className="text-xs text-green-600 ml-2 font-medium">
+                          (Obtenido de RENIEC - No editable)
+                        </span>
+                      )}
+                    </Label>
+                    <Input
+                      id="fecha_nacimiento"
+                      name="fecha_nacimiento"
+                      type="date"
+                      value={formData.fecha_nacimiento}
+                      onChange={handleInputChange}
+                      className={getCampoStyle('fecha_nacimiento', formData.fecha_nacimiento)}
+                      readOnly={esCampoInmutable('fecha_nacimiento')}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+              {/* Datos de Contacto */}
+              <Card className="hover:shadow-md transition-shadow">
+                <CardHeader>
+                  <CardTitle className="text-sm font-medium text-gray-900">Datos de Contacto</CardTitle>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Teléfonos y correo de contacto.
+                  </p>
+                  {(formData.celular || formData.telefono || formData.email) && (
+                    <p className="text-xs text-gray-400">
+                      {formData.celular && <>
+                        Cel: {formData.celular}
+                      </>}
+                      {formData.telefono && <>
+                        {formData.celular && ' · '}
+                        Tel: {formData.telefono}
+                      </>}
+                      {formData.email && <>
+                        {(formData.celular || formData.telefono) && ' · '}
+                        {formData.email}
+                      </>}
+                    </p>
+                  )}
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="celular">Celular *</Label>
+                      <Input
+                        id="celular"
+                        name="celular"
+                        value={formData.celular}
+                        onChange={handleInputChange}
+                        placeholder="987654321"
+                        maxLength={9}
+                        className={getCampoStyle('celular', formData.celular)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="telefono">Teléfono Fijo</Label>
+                      <Input
+                        id="telefono"
+                        name="telefono"
+                        value={formData.telefono}
+                        onChange={handleInputChange}
+                        placeholder="012345678"
+                        className={getCampoStyle('telefono', formData.telefono)}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      placeholder="cliente@email.com"
+                      className={getCampoStyle('email', formData.email)}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Dirección */}
+              <Card className="hover:shadow-md transition-shadow">
+                <CardHeader>
+                  <CardTitle className="text-sm font-medium text-gray-900">Dirección</CardTitle>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Domicilio principal del cliente.
+                  </p>
+                  {(formData.departamento || formData.provincia || formData.distrito) && (
+                    <p className="text-xs text-gray-400">
+                      {formData.departamento && <>
+                        {formData.departamento}
+                      </>}
+                      {formData.provincia && <>
+                        {formData.departamento && ' / '}
+                        {formData.provincia}
+                      </>}
+                      {formData.distrito && <>
+                        {(formData.departamento || formData.provincia) && ' / '}
+                        {formData.distrito}
+                      </>}
+                    </p>
+                  )}
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <UbicacionSelectorAPI
+                    departamentoInicial={formData.departamento}
+                    provinciaInicial={formData.provincia}
+                    distritoInicial={formData.distrito}
+                    onUbicacionChange={handleUbicacionChange}
+                    getCampoStyle={getCampoStyle}
+                    disabled={loading}
+                  />
+
+                  <div>
+                    <Label htmlFor="direccion">Dirección Completa</Label>
+                    <Input
+                      id="direccion"
+                      name="direccion"
+                      value={formData.direccion}
+                      onChange={handleInputChange}
+                      placeholder="Av. Principal 123, Urb. Los Jardines"
+                      className={getCampoStyle('direccion', formData.direccion)}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Datos Laborales (plegable) */}
+              <Card className="hover:shadow-md transition-shadow">
+                <CardHeader
+                  className="flex items-center justify-between cursor-pointer"
+                  onClick={() => setMostrarDatosLaborales((prev) => !prev)}
+                >
+                  <div>
+                    <CardTitle className="text-sm font-medium text-gray-900">Datos Laborales</CardTitle>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Información laboral opcional.
+                    </p>
+                  </div>
+                  <ChevronDown
+                    className={`h-4 w-4 text-gray-400 transition-transform ${
+                      mostrarDatosLaborales ? 'rotate-180' : ''
+                    }`}
+                  />
+                </CardHeader>
+                {mostrarDatosLaborales && (
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="ocupacion">Ocupación</Label>
+                        <Input
+                          id="ocupacion"
+                          name="ocupacion"
+                          value={formData.ocupacion}
+                          onChange={handleInputChange}
+                          placeholder="Comerciante"
+                          className={getCampoStyle('ocupacion', formData.ocupacion)}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="empresa_trabaja">Empresa donde Trabaja</Label>
+                        <Input
+                          id="empresa_trabaja"
+                          name="empresa_trabaja"
+                          value={formData.empresa_trabaja}
+                          onChange={handleInputChange}
+                          placeholder="Nombre de la empresa"
+                          className={getCampoStyle('empresa_trabaja', formData.empresa_trabaja)}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="ingreso_mensual">Ingreso Mensual (S/)</Label>
+                      <Input
+                        id="ingreso_mensual"
+                        name="ingreso_mensual"
+                        type="number"
+                        value={formData.ingreso_mensual}
+                        onChange={handleInputChange}
+                        placeholder="2500.00"
+                        step="0.01"
+                        className={getCampoStyle('ingreso_mensual', formData.ingreso_mensual)}
+                      />
+                    </div>
+                  </CardContent>
                 )}
-              </div>
+              </Card>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Observaciones (plegable) */}
+              <Card className="hover:shadow-md transition-shadow">
+                <CardHeader
+                  className="flex items-center justify-between cursor-pointer"
+                  onClick={() => setMostrarObservaciones((prev) => !prev)}
+                >
+                  <div>
+                    <CardTitle className="text-sm font-medium text-gray-900">Observaciones</CardTitle>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Notas internas del cliente.
+                    </p>
+                  </div>
+                  <ChevronDown
+                    className={`h-4 w-4 text-gray-400 transition-transform ${
+                      mostrarObservaciones ? 'rotate-180' : ''
+                    }`}
+                  />
+                </CardHeader>
+                {mostrarObservaciones && (
+                  <CardContent>
+                    <Label htmlFor="observaciones">Notas Adicionales</Label>
+                    <textarea
+                      id="observaciones"
+                      name="observaciones"
+                      value={formData.observaciones}
+                      onChange={handleInputChange}
+                      className="w-full min-h-[100px] px-3 py-2 rounded-md border border-input bg-background"
+                      placeholder="Información adicional sobre el cliente..."
+                    />
+                  </CardContent>
+                )}
+              </Card>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <Card className="sticky top-4 hover:shadow-md transition-shadow">
+              <CardHeader>
+                <CardTitle className="text-sm font-medium text-gray-900">
+                  Resumen del Cliente
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4 text-sm">
                 <div>
-                  <Label htmlFor="nombres">
-                    Nombres * 
-                    {esCampoInmutable('nombres') && (
-                      <span className="text-xs text-green-600 ml-2 font-medium">
-                        (Obtenido de RENIEC - No editable)
-                      </span>
+                  <p className="text-xs text-gray-500 uppercase tracking-wide">Documento</p>
+                  <p className="font-medium text-gray-900">
+                    {formData.numero_documento
+                      ? `${formData.tipo_documento} ${formData.numero_documento}`
+                      : 'Sin documento'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 uppercase tracking-wide">Nombre</p>
+                  <p className="font-medium text-gray-900">
+                    {nombreCompleto || 'Sin nombre aún'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 uppercase tracking-wide">Contacto principal</p>
+                  <p className="text-gray-900">
+                    {telefonoPrincipal || 'Sin teléfono'}
+                    {formData.email && (
+                      <>
+                        {' · '}
+                        {formData.email}
+                      </>
                     )}
-                  </Label>
-                  <Input
-                    id="nombres"
-                    name="nombres"
-                    value={formData.nombres}
-                    onChange={handleInputChange}
-                    placeholder="Juan Carlos"
-                    className={getCampoStyle('nombres', formData.nombres)}
-                    readOnly={esCampoInmutable('nombres')}
-                    required
-                  />
+                  </p>
                 </div>
-                <div>
-                  <Label htmlFor="apellido_paterno">
-                    Apellido Paterno *
-                    {esCampoInmutable('apellido_paterno') && (
-                      <span className="text-xs text-green-600 ml-2 font-medium">
-                        (Obtenido de RENIEC - No editable)
-                      </span>
-                    )}
-                  </Label>
-                  <Input
-                    id="apellido_paterno"
-                    name="apellido_paterno"
-                    value={formData.apellido_paterno}
-                    onChange={handleInputChange}
-                    placeholder="Pérez"
-                    className={getCampoStyle('apellido_paterno', formData.apellido_paterno)}
-                    readOnly={esCampoInmutable('apellido_paterno')}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="apellido_materno">
-                    Apellido Materno
-                    {esCampoInmutable('apellido_materno') && (
-                      <span className="text-xs text-green-600 ml-2 font-medium">
-                        (Obtenido de RENIEC - No editable)
-                      </span>
-                    )}
-                  </Label>
-                  <Input
-                    id="apellido_materno"
-                    name="apellido_materno"
-                    value={formData.apellido_materno}
-                    onChange={handleInputChange}
-                    placeholder="López"
-                    className={getCampoStyle('apellido_materno', formData.apellido_materno)}
-                    readOnly={esCampoInmutable('apellido_materno')}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="fecha_nacimiento">
-                    Fecha de Nacimiento
-                    {esCampoInmutable('fecha_nacimiento') && (
-                      <span className="text-xs text-green-600 ml-2 font-medium">
-                        (Obtenido de RENIEC - No editable)
-                      </span>
-                    )}
-                  </Label>
-                  <Input
-                    id="fecha_nacimiento"
-                    name="fecha_nacimiento"
-                    type="date"
-                    value={formData.fecha_nacimiento}
-                    onChange={handleInputChange}
-                    className={getCampoStyle('fecha_nacimiento', formData.fecha_nacimiento)}
-                    readOnly={esCampoInmutable('fecha_nacimiento')}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Datos de Contacto */}
-          <Card className="hover:shadow-md transition-shadow">
-            <CardHeader>
-              <CardTitle className="text-sm font-medium text-gray-900">Datos de Contacto</CardTitle>
-              <p className="text-xs text-gray-500 mt-1">
-                Teléfonos y correo para recordatorios, avisos de vencimiento y soporte.
-              </p>
-              {(formData.celular || formData.telefono || formData.email) && (
-                <p className="text-xs text-gray-400">
-                  {formData.celular && <>
-                    Cel: {formData.celular}
-                  </>}
-                  {formData.telefono && <>
-                    {formData.celular && ' · '}
-                    Tel: {formData.telefono}
-                  </>}
-                  {formData.email && <>
-                    {(formData.celular || formData.telefono) && ' · '}
-                    {formData.email}
-                  </>}
-                </p>
-              )}
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="celular">Celular *</Label>
-                  <Input
-                    id="celular"
-                    name="celular"
-                    value={formData.celular}
-                    onChange={handleInputChange}
-                    placeholder="987654321"
-                    maxLength={9}
-                    className={getCampoStyle('celular', formData.celular)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="telefono">Teléfono Fijo</Label>
-                  <Input
-                    id="telefono"
-                    name="telefono"
-                    value={formData.telefono}
-                    onChange={handleInputChange}
-                    placeholder="012345678"
-                    className={getCampoStyle('telefono', formData.telefono)}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  placeholder="cliente@email.com"
-                  className={getCampoStyle('email', formData.email)}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Dirección */}
-          <Card className="hover:shadow-md transition-shadow">
-            <CardHeader>
-              <CardTitle className="text-sm font-medium text-gray-900">Dirección</CardTitle>
-              <p className="text-xs text-gray-500 mt-1">
-                Ubicación principal para análisis de riesgo y gestión de cobranzas.
-              </p>
-              {(formData.departamento || formData.provincia || formData.distrito) && (
-                <p className="text-xs text-gray-400">
-                  {formData.departamento && <>
-                    {formData.departamento}
-                  </>}
-                  {formData.provincia && <>
-                    {formData.departamento && ' / '}
-                    {formData.provincia}
-                  </>}
-                  {formData.distrito && <>
-                    {(formData.departamento || formData.provincia) && ' / '}
-                    {formData.distrito}
-                  </>}
-                </p>
-              )}
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <UbicacionSelectorAPI
-                departamentoInicial={formData.departamento}
-                provinciaInicial={formData.provincia}
-                distritoInicial={formData.distrito}
-                onUbicacionChange={handleUbicacionChange}
-                getCampoStyle={getCampoStyle}
-                disabled={loading}
-              />
-
-              <div>
-                <Label htmlFor="direccion">Dirección Completa</Label>
-                <Input
-                  id="direccion"
-                  name="direccion"
-                  value={formData.direccion}
-                  onChange={handleInputChange}
-                  placeholder="Av. Principal 123, Urb. Los Jardines"
-                  className={getCampoStyle('direccion', formData.direccion)}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Datos Laborales (plegable) */}
-          <Card className="hover:shadow-md transition-shadow">
-            <CardHeader
-              className="flex items-center justify-between cursor-pointer"
-              onClick={() => setMostrarDatosLaborales((prev) => !prev)}
-            >
-              <div>
-                <CardTitle className="text-sm font-medium text-gray-900">Datos Laborales</CardTitle>
-                <p className="text-xs text-gray-500 mt-1">
-                  Opcional. Mejora la evaluación de riesgo y conocimiento del cliente.
-                </p>
-              </div>
-              <ChevronDown
-                className={`h-4 w-4 text-gray-400 transition-transform ${
-                  mostrarDatosLaborales ? 'rotate-180' : ''
-                }`}
-              />
-            </CardHeader>
-            {mostrarDatosLaborales && (
-              <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="ocupacion">Ocupación</Label>
-                  <Input
-                    id="ocupacion"
-                    name="ocupacion"
-                    value={formData.ocupacion}
-                    onChange={handleInputChange}
-                    placeholder="Comerciante"
-                    className={getCampoStyle('ocupacion', formData.ocupacion)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="empresa_trabaja">Empresa donde Trabaja</Label>
-                  <Input
-                    id="empresa_trabaja"
-                    name="empresa_trabaja"
-                    value={formData.empresa_trabaja}
-                    onChange={handleInputChange}
-                    placeholder="Nombre de la empresa"
-                    className={getCampoStyle('empresa_trabaja', formData.empresa_trabaja)}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="ingreso_mensual">Ingreso Mensual (S/)</Label>
-                <Input
-                  id="ingreso_mensual"
-                  name="ingreso_mensual"
-                  type="number"
-                  value={formData.ingreso_mensual}
-                  onChange={handleInputChange}
-                  placeholder="2500.00"
-                  step="0.01"
-                  className={getCampoStyle('ingreso_mensual', formData.ingreso_mensual)}
-                />
-              </div>
               </CardContent>
-            )}
-          </Card>
-
-          {/* Observaciones (plegable) */}
-          <Card className="hover:shadow-md transition-shadow">
-            <CardHeader
-              className="flex items-center justify-between cursor-pointer"
-              onClick={() => setMostrarObservaciones((prev) => !prev)}
-            >
-              <div>
-                <CardTitle className="text-sm font-medium text-gray-900">Observaciones</CardTitle>
-                <p className="text-xs text-gray-500 mt-1">
-                  Notas internas sobre el cliente (no se muestran en comprobantes).
-                </p>
-              </div>
-              <ChevronDown
-                className={`h-4 w-4 text-gray-400 transition-transform ${
-                  mostrarObservaciones ? 'rotate-180' : ''
-                }`}
-              />
-            </CardHeader>
-            {mostrarObservaciones && (
-              <CardContent>
-                <Label htmlFor="observaciones">Notas Adicionales</Label>
-                <textarea
-                  id="observaciones"
-                  name="observaciones"
-                  value={formData.observaciones}
-                  onChange={handleInputChange}
-                  className="w-full min-h-[100px] px-3 py-2 rounded-md border border-input bg-background"
-                  placeholder="Información adicional sobre el cliente..."
-                />
-              </CardContent>
-            )}
-          </Card>
-        </>
+            </Card>
+          </div>
+        </div>
       ) : (
         <>
           {/* Persona Jurídica */}
@@ -695,7 +749,7 @@ export default function NuevoClientePage() {
             <CardHeader>
               <CardTitle className="text-sm font-medium text-gray-900">Datos de la Empresa</CardTitle>
               <p className="text-xs text-gray-500 mt-1">
-                Información general de la empresa y su representante legal.
+                Datos básicos de la empresa.
               </p>
               {(formData.numero_documento || formData.razon_social) && (
                 <p className="text-xs text-gray-400">
