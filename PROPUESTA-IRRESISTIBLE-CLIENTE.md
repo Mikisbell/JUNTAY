@@ -123,6 +123,14 @@ interface ControlBancario {
 }
 ```
 
+### **🎨 Filosofía UX/UI JUNTAY (Experiencia tipo banco)**
+
+- Interfaces con **estructura bancaria**: pantallas limpias, ordenadas y enfocadas en la operación diaria (clientes, créditos, garantías, caja).
+- **Transparencia total**: el sistema explica claramente qué está pasando y por qué (mensajes claros, estados visibles, microcopy honesto).
+- **Diseño centrado en la persona**: pensado para asesores y cajeros reales, con menos clics, menos recargos visuales y flujos directos.
+- **Seguridad percibida tipo banco**: tipografía sobria, colores neutros, consistencia en todas las pantallas y mensajes que transmiten control.
+- **Mismo look & feel en todo el sistema**: la experiencia de `Nuevo Cliente`, créditos, garantías, remates y reportes sigue los mismos patrones visuales.
+
 ---
 
 ## 📋 FUNCIONALIDADES COMPLETAS
